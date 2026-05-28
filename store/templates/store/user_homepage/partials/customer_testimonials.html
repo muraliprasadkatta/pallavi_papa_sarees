@@ -1,0 +1,446 @@
+{% load static %}
+
+<section class="customer-testimonials-section" aria-label="Customer testimonials">
+  <div class="customer-testimonials-card">
+
+    <div class="customer-testimonials-head">
+      <span class="customer-head-line" aria-hidden="true"></span>
+      <h2>Loved by Our Customers</h2>
+      <span class="customer-head-line" aria-hidden="true"></span>
+    </div>
+
+    <div class="customer-testimonials-grid">
+
+      <!-- Review 1 -->
+      <article class="customer-review-card">
+        <div class="customer-quote" aria-hidden="true">“</div>
+
+        <p class="customer-review-text">
+          The saree quality is amazing! Exactly as shown in pictures.
+        </p>
+
+        <div class="customer-stars" aria-label="5 star rating">
+          ★★★★★
+        </div>
+
+        <div class="customer-profile">
+          <div class="customer-avatar customer-avatar--one" aria-hidden="true">
+            <span>S</span>
+          </div>
+
+          <div class="customer-info">
+            <h3>Sowmya R.</h3>
+            <p>Hyderabad</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Review 2 -->
+      <article class="customer-review-card">
+        <div class="customer-quote" aria-hidden="true">“</div>
+
+        <p class="customer-review-text">
+          Very quick response on WhatsApp and safe delivery. Thank you!
+        </p>
+
+        <div class="customer-stars" aria-label="5 star rating">
+          ★★★★★
+        </div>
+
+        <div class="customer-profile">
+          <div class="customer-avatar customer-avatar--two" aria-hidden="true">
+            <span>L</span>
+          </div>
+
+          <div class="customer-info">
+            <h3>Lakshmi P.</h3>
+            <p>Vijayawada</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Review 3 -->
+      <article class="customer-review-card">
+        <div class="customer-quote" aria-hidden="true">“</div>
+
+        <p class="customer-review-text">
+          Beautiful collection and reasonable prices. Highly satisfied!
+        </p>
+
+        <div class="customer-stars" aria-label="5 star rating">
+          ★★★★★
+        </div>
+
+        <div class="customer-profile">
+          <div class="customer-avatar customer-avatar--three" aria-hidden="true">
+            <span>A</span>
+          </div>
+
+          <div class="customer-info">
+            <h3>Anusha K.</h3>
+            <p>Bangalore</p>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .customer-testimonials-section {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(199, 146, 67, 0.06), transparent 24%),
+      linear-gradient(180deg, #fffaf6 0%, #fff7f1 100%);
+    padding: 0 0 clamp(10px, 2.4vw, 20px);
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .customer-testimonials-card {
+    width: min(100% - clamp(6px, 2.2vw, 56px), 1680px);
+    margin-inline: auto;
+    background:
+      linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(255, 250, 245, 0.94));
+    border: 1px solid rgba(143, 23, 49, 0.08);
+    border-radius: clamp(14px, 2.8vw, 24px);
+    box-shadow: 0 10px 28px rgba(80, 36, 40, 0.07);
+    padding:
+      clamp(8px, 1.6vw, 16px)
+      clamp(6px, 1.8vw, 18px)
+      clamp(10px, 2vw, 20px);
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .customer-testimonials-head {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(7px, 1.4vw, 14px);
+    text-align: center;
+    margin-bottom: clamp(8px, 1.5vw, 16px);
+  }
+
+  .customer-testimonials-head h2 {
+    margin: 0;
+    color: #5f1020;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(15px, 2.2vw, 30px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+
+  .customer-head-line {
+    flex: 1;
+    max-width: clamp(24px, 7vw, 92px);
+    height: 1px;
+    background:
+      linear-gradient(90deg, transparent, rgba(199, 146, 67, 0.95), transparent);
+    position: relative;
+  }
+
+  .customer-head-line::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 4px;
+    height: 4px;
+    border-radius: 999px;
+    background: #c79243;
+    transform: translateY(-50%);
+  }
+
+  .customer-head-line:first-child::after {
+    right: 0;
+  }
+
+  .customer-head-line:last-child::after {
+    left: 0;
+  }
+
+  .customer-testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(8px, 1.5vw, 18px);
+  }
+
+  .customer-review-card {
+    min-width: 0;
+    position: relative;
+    border-radius: clamp(12px, 2vw, 20px);
+    border: 1px solid rgba(143, 23, 49, 0.09);
+    background:
+      radial-gradient(circle at 18% 0%, rgba(199, 146, 67, 0.08), transparent 28%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 249, 242, 0.82));
+    box-shadow: 0 8px 20px rgba(80, 36, 40, 0.055);
+    padding:
+      clamp(12px, 2vw, 22px)
+      clamp(12px, 2vw, 22px)
+      clamp(12px, 1.8vw, 20px);
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .customer-quote {
+    position: absolute;
+    top: clamp(8px, 1.4vw, 16px);
+    left: clamp(12px, 1.8vw, 22px);
+    color: rgba(199, 146, 67, 0.9);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(32px, 4vw, 58px);
+    line-height: 0.8;
+    font-weight: 900;
+  }
+
+  .customer-review-text {
+    margin:
+      clamp(4px, 0.8vw, 8px)
+      0
+      clamp(9px, 1.4vw, 14px)
+      clamp(34px, 4vw, 58px);
+    color: #51484b;
+    font-size: clamp(11px, 1.15vw, 16px);
+    line-height: 1.45;
+    font-weight: 560;
+    max-width: 520px;
+  }
+
+  .customer-stars {
+    margin: 0 0 clamp(10px, 1.4vw, 16px) clamp(34px, 4vw, 58px);
+    color: #e2a241;
+    font-size: clamp(12px, 1.4vw, 18px);
+    line-height: 1;
+    letter-spacing: clamp(1px, 0.25vw, 3px);
+    white-space: nowrap;
+  }
+
+  .customer-profile {
+    display: flex;
+    align-items: center;
+    gap: clamp(8px, 1.4vw, 14px);
+  }
+
+  .customer-avatar {
+    width: clamp(42px, 4.8vw, 66px);
+    height: clamp(42px, 4.8vw, 66px);
+    flex: 0 0 auto;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    color: #fff8ef;
+    box-shadow:
+      inset 0 0 0 2px rgba(255, 255, 255, 0.45),
+      0 8px 18px rgba(80, 36, 40, 0.10);
+    overflow: hidden;
+  }
+
+  .customer-avatar span {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(18px, 2vw, 28px);
+    font-weight: 900;
+    background:
+      radial-gradient(circle at 50% 24%, rgba(255, 255, 255, 0.30), transparent 18%),
+      linear-gradient(135deg, rgba(143, 23, 49, 0.95), rgba(199, 146, 67, 0.92));
+  }
+
+  .customer-avatar--two span {
+    background:
+      radial-gradient(circle at 50% 24%, rgba(255, 255, 255, 0.30), transparent 18%),
+      linear-gradient(135deg, #b77b2e, #8f1731);
+  }
+
+  .customer-avatar--three span {
+    background:
+      radial-gradient(circle at 50% 24%, rgba(255, 255, 255, 0.30), transparent 18%),
+      linear-gradient(135deg, #0e6268, #8f1731);
+  }
+
+  .customer-info {
+    min-width: 0;
+  }
+
+  .customer-info h3 {
+    margin: 0;
+    color: #611726;
+    font-size: clamp(12px, 1.3vw, 17px);
+    line-height: 1.12;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .customer-info p {
+    margin: 3px 0 0;
+    color: #82757b;
+    font-size: clamp(10px, 1.05vw, 14px);
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media (min-width: 1200px) {
+    .customer-testimonials-card {
+      width: min(100% - 56px, 1680px);
+    }
+
+    .customer-testimonials-grid {
+      gap: clamp(14px, 1.35vw, 22px);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .customer-testimonials-card {
+      width: min(100% - 8px, 980px);
+    }
+
+    .customer-testimonials-grid {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: clamp(230px, 82vw, 360px);
+      grid-template-columns: none;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      gap: clamp(10px, 3vw, 14px);
+      padding: 1px 2px 5px;
+      scrollbar-width: none;
+    }
+
+    .customer-testimonials-grid::-webkit-scrollbar {
+      display: none;
+    }
+
+    .customer-review-card {
+      scroll-snap-align: start;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .customer-testimonials-card {
+      width: min(100% - 6px, 980px);
+      padding: 8px 6px 10px;
+    }
+
+    .customer-testimonials-head {
+      margin-bottom: 8px;
+    }
+
+    .customer-head-line {
+      max-width: 28px;
+    }
+
+    .customer-testimonials-grid {
+      grid-auto-columns: clamp(224px, 84vw, 330px);
+      gap: 9px;
+    }
+
+    .customer-review-card {
+      border-radius: 13px;
+      padding: 12px 12px 13px;
+    }
+
+    .customer-review-text {
+      margin-left: 34px;
+      font-size: 11px;
+      line-height: 1.36;
+    }
+
+    .customer-stars {
+      margin-left: 34px;
+      font-size: 12px;
+    }
+
+    .customer-avatar {
+      width: 42px;
+      height: 42px;
+    }
+
+    .customer-info h3 {
+      font-size: 12px;
+    }
+
+    .customer-info p {
+      font-size: 10px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .customer-testimonials-head h2 {
+      font-size: 14.5px;
+    }
+
+    .customer-head-line {
+      max-width: 18px;
+    }
+
+    .customer-testimonials-grid {
+      grid-auto-columns: clamp(210px, 86vw, 300px);
+      gap: 8px;
+    }
+
+    .customer-quote {
+      font-size: 30px;
+      left: 11px;
+    }
+
+    .customer-review-text {
+      margin-left: 30px;
+      font-size: 10px;
+      line-height: 1.32;
+    }
+
+    .customer-stars {
+      margin-left: 30px;
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+  }
+
+  @media (max-width: 320px) {
+    .customer-head-line {
+      display: none;
+    }
+
+    .customer-testimonials-card {
+      width: min(100% - 4px, 980px);
+      padding-inline: 5px;
+    }
+
+    .customer-testimonials-grid {
+      grid-auto-columns: 204px;
+      gap: 7px;
+    }
+
+    .customer-review-card {
+      padding: 10px;
+    }
+
+    .customer-review-text {
+      font-size: 9.5px;
+      margin-left: 27px;
+    }
+
+    .customer-stars {
+      margin-left: 27px;
+      font-size: 10px;
+    }
+
+    .customer-avatar {
+      width: 38px;
+      height: 38px;
+    }
+  }
+</style>

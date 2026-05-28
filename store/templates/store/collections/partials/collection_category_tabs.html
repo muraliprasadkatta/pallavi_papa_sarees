@@ -1,0 +1,270 @@
+{% load static %}
+
+<section class="collection-tabs-wrap" aria-label="Collection categories">
+  <div class="collection-tabs">
+
+    <a href="{% url 'store:collections' %}?category=all"
+       class="collection-tab {% if active_category == 'all' %}is-active{% endif %}">
+      <span class="collection-tab__media">
+        <img src="{% static 'store/collections/tabs/all.webp' %}" alt="All sarees">
+      </span>
+      <span class="collection-tab__label">All</span>
+    </a>
+
+    <a href="{% url 'store:collections' %}?category=pattu"
+       class="collection-tab {% if active_category == 'pattu' %}is-active{% endif %}">
+      <span class="collection-tab__media">
+        <img src="{% static 'store/collections/tabs/pattu.webp' %}" alt="Pattu sarees">
+      </span>
+      <span class="collection-tab__label">Pattu</span>
+    </a>
+
+    <a href="{% url 'store:collections' %}?category=cotton"
+       class="collection-tab {% if active_category == 'cotton' %}is-active{% endif %}">
+      <span class="collection-tab__media">
+        <img src="{% static 'store/collections/tabs/cotton.webp' %}" alt="Cotton sarees">
+      </span>
+      <span class="collection-tab__label">Cotton</span>
+    </a>
+
+    <a href="{% url 'store:collections' %}?category=silk"
+       class="collection-tab {% if active_category == 'silk' %}is-active{% endif %}">
+      <span class="collection-tab__media">
+        <img src="{% static 'store/collections/tabs/silk.webp' %}" alt="Silk sarees">
+      </span>
+      <span class="collection-tab__label">Silk</span>
+    </a>
+
+    <a href="{% url 'store:collections' %}?category=designer"
+       class="collection-tab {% if active_category == 'designer' %}is-active{% endif %}">
+      <span class="collection-tab__media">
+        <img src="{% static 'store/collections/tabs/designer.webp' %}" alt="Designer sarees">
+      </span>
+      <span class="collection-tab__label">Designer</span>
+    </a>
+
+    <a href="{% url 'store:collections' %}?category=wedding"
+       class="collection-tab {% if active_category == 'wedding' %}is-active{% endif %}">
+      <span class="collection-tab__media">
+        <img src="{% static 'store/collections/tabs/wedding.webp' %}" alt="Wedding sarees">
+      </span>
+      <span class="collection-tab__label">Wedding</span>
+    </a>
+
+    <a href="{% url 'store:collections' %}?category=daily"
+       class="collection-tab {% if active_category == 'daily' %}is-active{% endif %}">
+      <span class="collection-tab__media">
+        <img src="{% static 'store/collections/tabs/daily.webp' %}" alt="Daily sarees">
+      </span>
+      <span class="collection-tab__label">Daily</span>
+    </a>
+
+  </div>
+</section>
+
+<style>
+  .collection-tabs-wrap,
+  .collection-tabs-wrap * {
+    box-sizing: border-box;
+  }
+
+  .collection-tabs-wrap {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: clamp(14px, 3vw, 24px);
+
+    background: #fffaf6;
+    border-bottom: 1px solid rgba(143, 23, 49, 0.10);
+    box-shadow: 0 8px 22px rgba(70, 28, 35, 0.06);
+    overflow: hidden;
+
+    --tab-media-height: clamp(78px, 7.1vw, 122px);
+    --tab-radius: clamp(13px, 1.3vw, 20px);
+    --tab-gap: clamp(8px, 1.2vw, 16px);
+  }
+
+  .collection-tabs {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: var(--tab-gap);
+
+    padding:
+      clamp(12px, 1.8vw, 22px)
+      clamp(16px, 2vw, 30px)
+      clamp(11px, 1.5vw, 18px);
+
+    background: #fffaf6;
+  }
+
+  .collection-tab {
+    position: relative;
+    min-width: 0;
+    text-decoration: none;
+    color: #4a222b;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(6px, 0.8vw, 10px);
+
+    padding: 0;
+    border-radius: var(--tab-radius);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .collection-tab__media {
+    width: 100%;
+    height: var(--tab-media-height);
+
+    display: block;
+    overflow: hidden;
+    border-radius: var(--tab-radius);
+
+    background: #f7ece6;
+    border: 1px solid rgba(143, 23, 49, 0.08);
+    box-shadow: 0 8px 18px rgba(70, 28, 35, 0.08);
+  }
+
+  .collection-tab__media img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center top;
+  }
+
+  .collection-tab__label {
+    width: 100%;
+    min-width: 0;
+    display: block;
+    text-align: center;
+
+    color: #4b1e29;
+    font-size: clamp(11px, 1.05vw, 16px);
+    line-height: 1.05;
+    font-weight: 800;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .collection-tab.is-active .collection-tab__media {
+    background: #8f1731;
+    border-color: #8f1731;
+    box-shadow: 0 10px 22px rgba(143, 23, 49, 0.24);
+  }
+
+  .collection-tab.is-active .collection-tab__media img {
+    opacity: 0.88;
+  }
+
+  .collection-tab.is-active .collection-tab__label {
+    color: #8f1731;
+  }
+
+  .collection-tab::after {
+    content: "";
+    position: absolute;
+    left: 20%;
+    right: 20%;
+    bottom: -10px;
+    height: 2px;
+    border-radius: 999px;
+    background: transparent;
+  }
+
+  .collection-tab.is-active::after {
+    background: #8f1731;
+  }
+
+  @media (max-width: 1100px) {
+    .collection-tabs-wrap {
+      --tab-media-height: clamp(68px, 7.5vw, 92px);
+      --tab-gap: clamp(6px, 1vw, 10px);
+      --tab-radius: 14px;
+    }
+
+    .collection-tabs {
+      padding: 12px 14px 11px;
+    }
+
+    .collection-tab__label {
+      font-size: clamp(10.5px, 1.25vw, 14px);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .collection-tabs-wrap {
+      margin-bottom: 14px;
+      --tab-media-height: clamp(46px, 12vw, 68px);
+      --tab-gap: 7px;
+      --tab-radius: 12px;
+    }
+
+    .collection-tabs {
+      padding: 10px 8px 10px;
+    }
+
+    .collection-tab {
+      gap: 5px;
+    }
+
+    .collection-tab__label {
+      font-size: 10.5px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .collection-tabs-wrap {
+      --tab-media-height: clamp(42px, 12vw, 60px);
+      --tab-gap: 6px;
+      --tab-radius: 10px;
+    }
+
+    .collection-tabs {
+      padding: 9px 6px 10px;
+    }
+
+    .collection-tab__label {
+      font-size: 10px;
+      letter-spacing: -0.02em;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .collection-tabs-wrap {
+      --tab-media-height: clamp(39px, 11.5vw, 52px);
+      --tab-gap: 5px;
+      --tab-radius: 9px;
+    }
+
+    .collection-tabs {
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+
+    .collection-tab__label {
+      font-size: 9.4px;
+    }
+  }
+
+  @media (max-width: 340px) {
+    .collection-tabs-wrap {
+      --tab-media-height: 36px;
+      --tab-gap: 4px;
+    }
+
+    .collection-tabs {
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+
+    .collection-tab__label {
+      font-size: 8.8px;
+    }
+  }
+</style>

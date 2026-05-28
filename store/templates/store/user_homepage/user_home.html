@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Home | Pallavi Papa Sarees Collections{% endblock %}
+
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'store/css/user_home.css' %}">
+{% endblock %}
+
+{% block content %}
+
+  {# Collection page URL once define chesi partials ki pass chestunnam #}
+  {% url 'store:collections' as collection_page_url %}
+
+  {% include "store/user_homepage/partials/top_slider.html" %}
+
+  {# Shop by Collection section #}
+  {% include "store/user_homepage/partials/collection_discovery.html" with collection_page_url=collection_page_url collection_focus="shop" %}
+
+  {# New Arrivals section #}
+  {% include "store/user_homepage/partials/new_arrivals_preview.html" with collection_page_url=collection_page_url collection_focus="new" %}
+
+  {# Trending Collection section #}
+  {% include "store/user_homepage/partials/trending_collections.html" with collection_page_url=collection_page_url collection_focus="trending" %}
+
+  {% include "store/user_homepage/partials/top_sale_products.html" %}
+  {% include "store/user_homepage/partials/watch_and_buy_slider.html" %}
+  {% include "store/user_homepage/partials/how_to_order.html" %}
+  {% include "store/user_homepage/partials/why_choose_pallavi.html" %}
+  {% include "store/user_homepage/partials/featured_collection_slider.html" %}
+  {% include "store/user_homepage/partials/customer_testimonials.html" %}
+  {% include "store/user_homepage/partials/trust_info_bar.html" %}
+  {% include "store/user_homepage/partials/site_footer.html" %}
+
+{% endblock %}

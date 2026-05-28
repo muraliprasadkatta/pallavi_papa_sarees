@@ -1,0 +1,303 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Owner Dashboard</title>
+
+  <style>
+    :root {
+      --bg: #fff7f0;
+      --card: #ffffff;
+      --soft: #fffaf6;
+      --text: #3f1d25;
+      --muted: #7d646a;
+      --primary: #8f1731;
+      --primary-dark: #681021;
+      --border: rgba(143, 23, 49, 0.13);
+      --shadow: 0 14px 42px rgba(70, 28, 35, 0.10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(244, 199, 107, 0.18), transparent 32%),
+        linear-gradient(135deg, #fffaf6 0%, var(--bg) 100%);
+    }
+
+    .owner-header {
+      width: 100%;
+      min-height: 72px;
+      padding: 12px clamp(14px, 3vw, 34px);
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+
+      background: rgba(255, 250, 246, 0.94);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(14px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+
+      display: grid;
+      place-items: center;
+
+      color: #fff;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 0.03em;
+
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      box-shadow: 0 10px 24px rgba(143, 23, 49, 0.22);
+      flex: 0 0 auto;
+    }
+
+    .brand-text {
+      min-width: 0;
+    }
+
+    .brand-text strong {
+      display: block;
+      font-size: clamp(15px, 1.5vw, 19px);
+      line-height: 1.1;
+      letter-spacing: 0.01em;
+    }
+
+    .brand-text span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.2;
+    }
+
+    .logout-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      min-height: 38px;
+      padding: 9px 16px;
+      border-radius: 999px;
+
+      text-decoration: none;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+      box-shadow: 0 10px 24px rgba(143, 23, 49, 0.18);
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 18px clamp(12px, 2.6vw, 24px);
+    }
+
+    .welcome-card {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: clamp(18px, 2.4vw, 26px);
+      box-shadow: var(--shadow);
+    }
+
+    .welcome-card h1 {
+      margin: 0;
+      font-size: clamp(23px, 3vw, 34px);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+
+    .welcome-card p {
+      margin: 8px 0 0;
+      max-width: 700px;
+      color: var(--muted);
+      font-size: clamp(13px, 1.2vw, 15px);
+      line-height: 1.55;
+    }
+
+    .actions {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .action-card {
+      min-height: 112px;
+      padding: 16px;
+      border-radius: 18px;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      border: 1px solid var(--border);
+      background: var(--soft);
+      text-decoration: none;
+      color: var(--text);
+
+      box-shadow: 0 8px 22px rgba(70, 28, 35, 0.055);
+      transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+    }
+
+    .action-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(143, 23, 49, 0.24);
+      box-shadow: 0 14px 30px rgba(70, 28, 35, 0.10);
+    }
+
+    .action-card strong {
+      display: block;
+      margin-bottom: 7px;
+      font-size: clamp(15px, 1.45vw, 18px);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .action-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 900px) {
+      .actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 767px) {
+      .owner-header {
+        min-height: 66px;
+        padding: 11px 14px;
+      }
+
+      .brand-logo {
+        width: 38px;
+        height: 38px;
+        border-radius: 13px;
+      }
+
+      .brand-text span {
+        display: none;
+      }
+
+      .wrap {
+        padding: 14px 10px;
+      }
+
+      .welcome-card {
+        border-radius: 20px;
+        padding: 16px;
+      }
+
+      .actions {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .action-card {
+        min-height: 94px;
+        padding: 14px;
+        border-radius: 16px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .logout-btn {
+        min-height: 36px;
+        padding: 8px 13px;
+        font-size: 12.5px;
+      }
+
+      .welcome-card h1 {
+        font-size: 24px;
+      }
+
+      .welcome-card p {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="owner-header">
+    <div class="brand">
+      <div class="brand-logo">PP</div>
+      <div class="brand-text">
+        <strong>Owner Dashboard</strong>
+        <span>Pallavi Papa Sarees Collections</span>
+      </div>
+    </div>
+
+    <a class="logout-btn" href="{% url 'store_owner:owner_logout' %}">
+      Logout
+    </a>
+  </header>
+
+  <main class="wrap">
+    <section class="welcome-card">
+      <h1>Welcome, {{ owner_display_name }}</h1>
+      <p>
+        Manage products, upload saree images, update prices, and organize collections from here.
+      </p>
+
+      <div class="actions">
+        <a class="action-card" href="{% url 'store_owner:owner_product_add' %}">
+          <strong>Add Products</strong>
+          <span>Upload new product image, price, category, and details.</span>
+        </a>
+
+        <a class="action-card" href="#">
+          <strong>Manage Products</strong>
+          <span>Edit existing products, update stock, and mark sold out.</span>
+        </a>
+
+        <a class="action-card" href="{% url 'store:user_home' %}">
+          <strong>View Website</strong>
+          <span>Open customer-facing saree collection page.</span>
+        </a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

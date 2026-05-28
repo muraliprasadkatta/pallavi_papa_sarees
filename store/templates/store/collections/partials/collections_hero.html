@@ -1,0 +1,507 @@
+{% load static %}
+
+<section class="collections-hero" aria-label="Collection hero">
+  <div class="collections-hero-card">
+
+    <div class="collections-hero-card__pattern" aria-hidden="true"></div>
+
+    <div class="collections-hero-card__content">
+      <span class="collections-eyebrow">Premium Collections</span>
+
+      <h1>
+        {{ page_title|default:"All Saree Collections" }}
+      </h1>
+
+      <p>
+        {{ page_description|default:"Handpicked sarees for every occasion and every you." }}
+      </p>
+
+      <a class="collections-hero-btn" href="#collectionsGrid">
+        <span>Explore Collection</span>
+        <b>›</b>
+      </a>
+    </div>
+
+    <div class="collections-hero-card__visual" aria-hidden="true">
+      {% if hero_image_url %}
+        <img src="{{ hero_image_url }}" alt="">
+      {% else %}
+        <div class="collections-fallback-art">
+          <div class="collections-fallback-art__head"></div>
+          <div class="collections-fallback-art__body"></div>
+          <div class="collections-fallback-art__saree"></div>
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="collections-hero-dots" aria-hidden="true">
+      <span class="active"></span>
+      <span></span>
+      <span></span>
+    </div>
+  </div>
+</section>
+
+<style>
+/* =========================
+   COLLECTIONS HERO
+========================= */
+
+.collections-hero,
+.collections-hero * {
+  box-sizing: border-box;
+}
+
+.collections-hero {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: -3px;
+  padding: 0 0 clamp(10px, 2.5vw, 22px);
+  overflow: hidden;
+}
+
+.collections-hero-card {
+  position: relative;
+  width: 100%;
+  min-height: clamp(300px, 42vw, 430px);
+  overflow: hidden;
+  border-top: none !important;
+  border-radius: 0 0 clamp(18px, 4vw, 30px) clamp(18px, 4vw, 30px);
+  background:
+    radial-gradient(circle at 78% 22%, rgba(230, 157, 57, 0.28), transparent 25%),
+    radial-gradient(circle at 18% 16%, rgba(165, 33, 46, 0.34), transparent 24%),
+    linear-gradient(115deg, #37070a 0%, #5b0d12 42%, #260506 100%);
+  box-shadow: 0 18px 42px rgba(54, 8, 12, 0.22);
+  isolation: isolate;
+}
+
+.collections-hero-card__pattern {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.32;
+  background:
+    radial-gradient(circle at 15% 18%, transparent 0 16px, rgba(219, 157, 75, 0.18) 17px 18px, transparent 19px),
+    repeating-linear-gradient(
+      135deg,
+      rgba(255, 207, 129, 0.08) 0 1px,
+      transparent 1px 18px
+    );
+  mask-image: linear-gradient(90deg, #000 0%, #000 55%, transparent 92%);
+}
+
+.collections-hero-card::before {
+  content: "";
+  position: absolute;
+  right: -90px;
+  top: -90px;
+  width: clamp(240px, 45vw, 540px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(207, 120, 34, 0.38), transparent 68%);
+  z-index: 0;
+}
+
+.collections-hero-card::after {
+  content: "";
+  position: absolute;
+  right: 4%;
+  bottom: -24%;
+  width: clamp(260px, 52vw, 620px);
+  height: clamp(180px, 34vw, 380px);
+  border-radius: 55% 45% 0 0;
+  transform: rotate(-5deg);
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 211, 103, 0) 0 18px,
+      rgba(255, 215, 112, 0.45) 18px 21px
+    ),
+    linear-gradient(135deg, rgba(120, 22, 112, 0.42), rgba(216, 47, 61, 0.55), rgba(226, 144, 41, 0.45));
+  z-index: 1;
+  opacity: 0.78;
+}
+
+.collections-hero-card__content {
+  position: relative;
+  z-index: 3;
+  width: min(58%, 560px);
+  padding:
+    clamp(30px, 6vw, 58px)
+    clamp(18px, 5vw, 56px)
+    clamp(58px, 7vw, 76px);
+}
+
+.collections-eyebrow {
+  display: inline-block;
+  margin-bottom: clamp(14px, 3vw, 22px);
+  color: #f1c85b;
+  font-size: clamp(12px, 2.8vw, 17px);
+  line-height: 1;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+.collections-hero-card__content h1 {
+  margin: 0;
+  max-width: 520px;
+  color: #fff8ef;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(38px, 7vw, 64px);
+  line-height: 0.98;
+  letter-spacing: -0.045em;
+  font-weight: 700;
+  text-shadow: 0 6px 22px rgba(0, 0, 0, 0.18);
+}
+
+.collections-hero-card__content p {
+  max-width: 470px;
+  margin: clamp(14px, 3vw, 22px) 0 0;
+  color: rgba(255, 248, 239, 0.92);
+  font-size: clamp(14px, 2.6vw, 18px);
+  line-height: 1.58;
+  font-weight: 500;
+}
+
+.collections-hero-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: clamp(18px, 4vw, 28px);
+  min-height: clamp(42px, 7vw, 52px);
+  padding: 0 clamp(18px, 4vw, 30px);
+  border-radius: 999px;
+  background: #fff0bd;
+  color: #5a0f14;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: clamp(12px, 2.6vw, 15px);
+  font-weight: 900;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+}
+
+.collections-hero-btn b {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #6d1518;
+  color: #fff6e5;
+  font-size: 22px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.collections-hero-card__visual {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: 0;
+  width: 54%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.collections-hero-card__visual img {
+  width: auto;
+  height: 96%;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: bottom right;
+  filter: drop-shadow(-18px 18px 32px rgba(0, 0, 0, 0.32));
+}
+
+.collections-fallback-art {
+  position: relative;
+  width: min(82%, 430px);
+  height: 86%;
+  margin-right: clamp(4px, 3vw, 42px);
+}
+
+.collections-fallback-art__head {
+  position: absolute;
+  top: 9%;
+  right: 33%;
+  width: clamp(54px, 9vw, 92px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #ad6f42, #f0c08a);
+  box-shadow: inset -10px -8px 0 rgba(58, 23, 12, 0.16);
+}
+
+.collections-fallback-art__body {
+  position: absolute;
+  right: 20%;
+  bottom: 10%;
+  width: clamp(160px, 28vw, 285px);
+  height: clamp(230px, 39vw, 390px);
+  border-radius: 48% 48% 10% 10%;
+  background:
+    linear-gradient(100deg, transparent 0 34%, rgba(255, 212, 112, 0.72) 35% 40%, transparent 41%),
+    linear-gradient(135deg, #b91224 0%, #df482b 52%, #8d0d19 100%);
+  box-shadow:
+    inset 18px 0 0 rgba(255, 212, 112, 0.24),
+    inset -18px 0 0 rgba(74, 5, 9, 0.24),
+    0 20px 42px rgba(0, 0, 0, 0.25);
+}
+
+.collections-fallback-art__saree {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: clamp(220px, 42vw, 420px);
+  height: clamp(160px, 29vw, 270px);
+  border-radius: 60% 40% 0 0;
+  transform: rotate(-5deg);
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0 16px,
+      rgba(255, 216, 111, 0.72) 16px 19px
+    ),
+    linear-gradient(135deg, #7c173a, #d31f2f 48%, #f08a28);
+}
+
+.collections-hero-dots {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  bottom: clamp(18px, 4vw, 30px);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.collections-hero-dots span {
+  width: 28px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.collections-hero-dots span.active {
+  width: 42px;
+  background: #fff;
+}
+
+/* =========================
+   MOBILE COMPACT HERO
+========================= */
+
+@media (max-width: 767px) {
+  .collections-hero {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    margin-top: -3px;
+    padding: 0 0 9px;
+  }
+
+  .collections-hero-card {
+    width: 100%;
+    min-height: clamp(238px, 64vw, 285px);
+    border-top: 0 !important;
+    border-radius: 0 0 18px 18px;
+    box-shadow: 0 10px 24px rgba(54, 8, 12, 0.16);
+  }
+
+  .collections-eyebrow {
+    display: none;
+  }
+
+  .collections-hero-card__content {
+    width: 63%;
+    padding: 25px 10px 34px 22px;
+  }
+
+  .collections-hero-card__content h1 {
+    max-width: 205px;
+    font-size: clamp(26px, 8.2vw, 32px);
+    line-height: 0.98;
+    letter-spacing: -0.045em;
+  }
+
+  .collections-hero-card__content p {
+    max-width: 215px;
+    margin-top: 10px;
+    font-size: clamp(11.5px, 3.35vw, 13px);
+    line-height: 1.38;
+    font-weight: 600;
+  }
+
+  .collections-hero-btn {
+    margin-top: 14px;
+    min-height: 34px;
+    padding: 0 11px 0 14px;
+    gap: 8px;
+    border-radius: 999px;
+    font-size: 9.5px;
+    letter-spacing: 0.065em;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+  }
+
+  .collections-hero-btn b {
+    width: 22px;
+    height: 22px;
+    font-size: 17px;
+  }
+
+  .collections-hero-card__visual {
+    width: 51%;
+    right: -13%;
+    bottom: -2px;
+    height: 100%;
+    opacity: 0.94;
+  }
+
+  .collections-fallback-art {
+    width: 100%;
+    height: 68%;
+    margin-right: 0;
+  }
+
+  .collections-fallback-art__head {
+    top: 4%;
+    right: 36%;
+    width: clamp(34px, 10vw, 48px);
+  }
+
+  .collections-fallback-art__body {
+    right: 22%;
+    bottom: 8%;
+    width: clamp(96px, 29vw, 135px);
+    height: clamp(138px, 42vw, 185px);
+  }
+
+  .collections-fallback-art__saree {
+    width: clamp(158px, 48vw, 230px);
+    height: clamp(104px, 31vw, 145px);
+  }
+
+  .collections-hero-card::before {
+    right: -95px;
+    top: -105px;
+    width: clamp(210px, 58vw, 285px);
+    opacity: 0.85;
+  }
+
+  .collections-hero-card::after {
+    right: -2%;
+    bottom: -28%;
+    width: clamp(230px, 65vw, 330px);
+    height: clamp(130px, 37vw, 180px);
+    opacity: 0.72;
+  }
+
+  .collections-hero-dots {
+    display: none;
+  }
+}
+
+/* =========================
+   SMALL MOBILE POLISH
+========================= */
+
+@media (max-width: 480px) {
+  .collections-hero {
+    padding-bottom: 8px;
+  }
+
+  .collections-hero-card {
+    min-height: clamp(230px, 65vw, 265px);
+    border-radius: 0 0 16px 16px;
+  }
+
+  .collections-hero-card__content {
+    width: 65%;
+    padding: 23px 8px 30px 20px;
+  }
+
+  .collections-hero-card__content h1 {
+    max-width: 195px;
+    font-size: clamp(25px, 8.4vw, 30px);
+  }
+
+  .collections-hero-card__content p {
+    max-width: 200px;
+    margin-top: 9px;
+    font-size: 12px;
+    line-height: 1.34;
+  }
+
+  .collections-hero-btn {
+    min-height: 33px;
+    margin-top: 13px;
+    padding-inline: 13px 9px;
+    font-size: 9px;
+  }
+
+  .collections-hero-btn b {
+    width: 21px;
+    height: 21px;
+    font-size: 16px;
+  }
+
+  .collections-hero-card__visual {
+    width: 54%;
+    right: -18%;
+  }
+
+  .collections-fallback-art {
+    height: 66%;
+  }
+}
+
+/* =========================
+   EXTRA SMALL PHONES
+========================= */
+
+@media (max-width: 360px) {
+  .collections-hero-card {
+    min-height: 220px;
+  }
+
+  .collections-hero-card__content {
+    width: 66%;
+    padding: 22px 8px 28px 18px;
+  }
+
+  .collections-hero-card__content h1 {
+    max-width: 175px;
+    font-size: 24px;
+  }
+
+  .collections-hero-card__content p {
+    max-width: 178px;
+    font-size: 11.2px;
+    line-height: 1.32;
+  }
+
+  .collections-hero-btn {
+    min-height: 31px;
+    margin-top: 11px;
+    padding-inline: 12px 8px;
+    font-size: 8.5px;
+  }
+
+  .collections-hero-btn b {
+    width: 20px;
+    height: 20px;
+    font-size: 15px;
+  }
+
+  .collections-hero-card__visual {
+    right: -21%;
+    width: 56%;
+  }
+}
+</style>

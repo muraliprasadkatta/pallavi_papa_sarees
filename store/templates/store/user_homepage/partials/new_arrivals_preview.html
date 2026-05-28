@@ -1,0 +1,354 @@
+{% load static %}
+{% url 'store:collections' as collections_url %}
+
+<section class="new-arrivals-preview" aria-label="New saree arrivals">
+
+  <div class="arrival-card">
+    <div class="arrival-head">
+      <h2>New Arrivals</h2>
+
+      <a href="{{ collections_url }}?focus=new">
+        View All <span>›</span>
+      </a>
+    </div>
+
+    <div class="arrival-scroll">
+
+      <a class="arrival-product" href="{{ collections_url }}?focus=new">
+        <div class="arrival-img arrival-img--one">
+          <span>New</span>
+        </div>
+        <div class="arrival-info">
+          <strong>Soft Pattu Saree</strong>
+          <p>Premium festive collection</p>
+        </div>
+      </a>
+
+      <a class="arrival-product" href="{{ collections_url }}?focus=new">
+        <div class="arrival-img arrival-img--two">
+          <span>New</span>
+        </div>
+        <div class="arrival-info">
+          <strong>Pastel Silk Saree</strong>
+          <p>Elegant daily function wear</p>
+        </div>
+      </a>
+
+      <a class="arrival-product" href="{{ collections_url }}?focus=new">
+        <div class="arrival-img arrival-img--three">
+          <span>New</span>
+        </div>
+        <div class="arrival-info">
+          <strong>Designer Saree</strong>
+          <p>Handpicked premium style</p>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+</section>
+<style>
+  .new-arrivals-preview {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    background:
+      radial-gradient(circle at 10% 0%, rgba(199, 146, 67, 0.07), transparent 26%),
+      linear-gradient(180deg, #fffaf6 0%, #fff7f1 100%);
+    padding: 0 0 clamp(8px, 2vw, 18px);
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .arrival-card {
+    width: min(100% - clamp(6px, 2.2vw, 56px), 1680px);
+    margin-inline: auto;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1px solid rgba(143, 23, 49, 0.08);
+    border-radius: clamp(16px, 3vw, 30px);
+    padding:
+      clamp(10px, 2.2vw, 24px)
+      clamp(8px, 2.2vw, 24px)
+      clamp(10px, 2vw, 22px);
+    box-shadow: 0 10px 34px rgba(80, 36, 40, 0.07);
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .arrival-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(8px, 2vw, 16px);
+    margin-bottom: clamp(10px, 2vw, 18px);
+    min-width: 0;
+  }
+
+  .arrival-head h2 {
+    margin: 0;
+    color: var(--pp-maroon-dark, #5f1020);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(17px, 2.2vw, 30px);
+    line-height: 1.06;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+  }
+
+  .arrival-head a {
+    flex: 0 0 auto;
+    color: var(--pp-maroon, #8f1731);
+    text-decoration: none;
+    font-size: clamp(12px, 1.35vw, 16px);
+    font-weight: 850;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .arrival-head a span {
+    color: var(--pp-gold, #c79243);
+    font-size: clamp(17px, 2vw, 23px);
+    vertical-align: -2px;
+    margin-left: 3px;
+  }
+
+  .arrival-scroll {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: clamp(138px, 68vw, 236px);
+    gap: clamp(10px, 2.6vw, 18px);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    padding: 1px 2px 5px;
+    scrollbar-width: none;
+  }
+
+  .arrival-scroll::-webkit-scrollbar {
+    display: none;
+  }
+
+  .arrival-product {
+    min-width: 0;
+    scroll-snap-align: start;
+    color: var(--pp-text, #3d2430);
+    text-decoration: none;
+    display: block;
+  }
+
+  .arrival-img {
+    position: relative;
+    height: clamp(118px, 40vw, 185px);
+    border-radius: clamp(13px, 3.5vw, 21px);
+    overflow: hidden;
+    box-shadow: 0 10px 22px rgba(80, 36, 40, 0.11);
+    transform: translateZ(0);
+  }
+
+  .arrival-img::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.13) 0 2px,
+        transparent 2px 15px
+      );
+  }
+
+  .arrival-img span {
+    position: absolute;
+    top: clamp(7px, 2vw, 10px);
+    left: clamp(7px, 2vw, 10px);
+    background: var(--pp-maroon, #8f1731);
+    color: #fff;
+    font-size: clamp(9px, 2.4vw, 12px);
+    font-weight: 900;
+    line-height: 1;
+    padding:
+      clamp(4px, 1vw, 5px)
+      clamp(7px, 2vw, 10px);
+    border-radius: 999px;
+    box-shadow: 0 5px 14px rgba(95, 16, 32, 0.18);
+  }
+
+  .arrival-img--one {
+    background:
+      radial-gradient(circle at 28% 28%, rgba(255, 221, 133, 0.6), transparent 14%),
+      linear-gradient(135deg, #b81766, #7c1831 54%, #d29a3c);
+  }
+
+  .arrival-img--two {
+    background:
+      radial-gradient(circle at 58% 30%, rgba(255, 255, 255, 0.32), transparent 15%),
+      linear-gradient(135deg, #dfe6bd, #b5bd84 55%, #fff0c9);
+  }
+
+  .arrival-img--three {
+    background:
+      radial-gradient(circle at 34% 24%, rgba(244, 199, 107, 0.65), transparent 15%),
+      linear-gradient(135deg, #6b4da2, #7f2f6d 55%, #c69a44);
+  }
+
+  .arrival-info {
+    min-width: 0;
+    padding: clamp(7px, 1.5vw, 10px) 2px 0;
+  }
+
+  .arrival-info strong {
+    display: block;
+    color: var(--pp-maroon-dark, #5f1020);
+    font-size: clamp(12px, 1.25vw, 16px);
+    line-height: 1.15;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+  }
+
+  .arrival-info p {
+    margin: clamp(3px, 0.8vw, 5px) 0 0;
+    color: var(--pp-muted, #82757b);
+    font-size: clamp(10px, 1.05vw, 14px);
+    line-height: 1.28;
+  }
+
+  @media (min-width: 768px) {
+    .arrival-scroll {
+      grid-auto-flow: initial;
+      grid-auto-columns: initial;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      overflow: visible;
+      scroll-snap-type: none;
+      padding: 0;
+      gap: clamp(12px, 2vw, 22px);
+    }
+
+    .arrival-product {
+      scroll-snap-align: none;
+    }
+
+    .arrival-img {
+      height: clamp(150px, 18vw, 260px);
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .arrival-card {
+      width: min(100% - 56px, 1680px);
+    }
+
+    .arrival-scroll {
+      gap: clamp(16px, 1.6vw, 28px);
+    }
+
+    .arrival-img {
+      height: clamp(190px, 15vw, 290px);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .arrival-card {
+      width: min(100% - 6px, 980px);
+      padding: 10px 8px 10px;
+    }
+
+    .arrival-head {
+      margin-bottom: 9px;
+    }
+
+    .arrival-scroll {
+      grid-auto-columns: clamp(132px, 66vw, 220px);
+      gap: 10px;
+    }
+
+    .arrival-img {
+      height: clamp(112px, 38vw, 165px);
+    }
+
+    .arrival-info strong {
+      font-size: clamp(11.5px, 3.35vw, 14px);
+    }
+
+    .arrival-info p {
+      font-size: clamp(9.5px, 2.85vw, 12px);
+    }
+  }
+
+  @media (max-width: 360px) {
+    .arrival-card {
+      width: min(100% - 4px, 980px);
+      padding: 9px 6px 9px;
+      border-radius: 15px;
+    }
+
+    .arrival-head h2 {
+      font-size: 16px;
+    }
+
+    .arrival-head a {
+      font-size: 11px;
+    }
+
+    .arrival-scroll {
+      grid-auto-columns: clamp(124px, 65vw, 200px);
+      gap: 8px;
+    }
+
+    .arrival-img {
+      height: clamp(104px, 37vw, 145px);
+      border-radius: 12px;
+    }
+
+    .arrival-img span {
+      font-size: 8.5px;
+      padding: 4px 7px;
+    }
+
+    .arrival-info {
+      padding-top: 6px;
+    }
+
+    .arrival-info strong {
+      font-size: 11px;
+    }
+
+    .arrival-info p {
+      font-size: 9px;
+      line-height: 1.2;
+    }
+  }
+
+  @media (max-width: 320px) {
+    .arrival-head {
+      gap: 6px;
+    }
+
+    .arrival-head h2 {
+      font-size: 15px;
+    }
+
+    .arrival-head a {
+      font-size: 10.5px;
+    }
+
+    .arrival-scroll {
+      grid-auto-columns: 122px;
+      gap: 7px;
+    }
+
+    .arrival-img {
+      height: 100px;
+    }
+
+    .arrival-info strong {
+      font-size: 10.5px;
+    }
+
+    .arrival-info p {
+      font-size: 8.5px;
+    }
+  }
+</style>

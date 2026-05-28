@@ -1,0 +1,250 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Owner Login Form</title>
+
+  <style>
+    :root {
+      --bg: #fff7f0;
+      --card: rgba(255, 255, 255, 0.92);
+      --text: #3f1d25;
+      --muted: #8a6a70;
+      --primary: #8f1731;
+      --primary-dark: #681021;
+      --border: rgba(143, 23, 49, 0.14);
+      --shadow: 0 24px 70px rgba(70, 28, 35, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(244, 199, 107, 0.24), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(143, 23, 49, 0.13), transparent 35%),
+        linear-gradient(135deg, #fffaf6 0%, var(--bg) 100%);
+      display: grid;
+      place-items: center;
+      padding: 22px;
+    }
+
+    .owner-login {
+      width: min(100%, 430px);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(14px);
+    }
+
+    .owner-login__top {
+      padding: 30px 28px 22px;
+      text-align: center;
+      background:
+        linear-gradient(135deg, rgba(143, 23, 49, 0.10), rgba(244, 199, 107, 0.10));
+      border-bottom: 1px solid var(--border);
+    }
+
+    .owner-login__logo {
+      width: 62px;
+      height: 62px;
+      margin: 0 auto 14px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 900;
+      font-size: 22px;
+      letter-spacing: 0.04em;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      box-shadow: 0 14px 32px rgba(143, 23, 49, 0.28);
+    }
+
+    .owner-login__top h1 {
+      margin: 0;
+      font-size: clamp(24px, 5vw, 32px);
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .owner-login__top p {
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .owner-login__form {
+      padding: 26px 28px 30px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #4b1e29;
+    }
+
+    .field input {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      padding: 0 15px;
+      font-size: 15px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .field input:focus {
+      border-color: rgba(143, 23, 49, 0.55);
+      box-shadow: 0 0 0 4px rgba(143, 23, 49, 0.10);
+    }
+
+    .owner-login__btn {
+      width: 100%;
+      min-height: 50px;
+      border: 0;
+      border-radius: 16px;
+      cursor: pointer;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.01em;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      box-shadow: 0 16px 34px rgba(143, 23, 49, 0.25);
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    .owner-login__btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 20px 42px rgba(143, 23, 49, 0.30);
+    }
+
+    .owner-login__btn:active {
+      transform: translateY(0);
+    }
+
+    .owner-login__back {
+      display: block;
+      margin-top: 18px;
+      text-align: center;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .owner-login__back:hover {
+      color: var(--primary);
+    }
+
+    .alert {
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: #7a1025;
+      background: rgba(143, 23, 49, 0.08);
+      border: 1px solid rgba(143, 23, 49, 0.16);
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 16px;
+      }
+
+      .owner-login {
+        border-radius: 24px;
+      }
+
+      .owner-login__top {
+        padding: 26px 22px 20px;
+      }
+
+      .owner-login__form {
+        padding: 22px;
+      }
+
+      .owner-login__logo {
+        width: 56px;
+        height: 56px;
+        border-radius: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="owner-login">
+    <section class="owner-login__top">
+      <div class="owner-login__logo">PP</div>
+      <h1>Owner Login Form</h1>
+      <p>Login to manage sarees, prices, images, and collections.</p>
+    </section>
+
+    <form class="owner-login__form" method="post" action="">
+      {% csrf_token %}
+
+      {% if error %}
+        <div class="alert">{{ error }}</div>
+      {% endif %}
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      <div class="field">
+        <label for="username">Username or Email</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          placeholder="Enter owner username"
+          autocomplete="username"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Enter password"
+          autocomplete="current-password"
+          required
+        >
+      </div>
+
+      <button class="owner-login__btn" type="submit">
+        Login
+      </button>
+
+      <a class="owner-login__back" href="{% url 'store:user_home' %}">
+        ← Back to website
+      </a>
+    </form>
+  </main>
+</body>
+</html>

@@ -1,0 +1,855 @@
+{% load static %}
+
+<section class="watch-buy-section" aria-label="Watch and buy saree collections">
+  <div class="watch-buy-card" data-watch-buy-slider tabindex="0">
+
+<div class="watch-buy-head">
+  <svg
+    class="watch-buy-title-svg"
+    viewBox="0 0 1200 280"
+    role="img"
+    aria-label="Watch and Buy"
+  >
+    <defs>
+      <path id="watchBuyArcDeep" d="M 90 196 Q 600 132 1110 196"></path>
+      <path id="watchBuyArcShadow" d="M 90 184 Q 600 120 1110 184"></path>
+      <path id="watchBuyArcMain" d="M 90 168 Q 600 104 1110 168"></path>
+    </defs>
+
+    <!-- soft deep shadow -->
+    <text class="watch-buy-title-deep">
+      <textPath href="#watchBuyArcDeep" startOffset="50%" text-anchor="middle">
+        WATCH AND BUY
+      </textPath>
+    </text>
+
+    <!-- dark bold shadow -->
+    <text class="watch-buy-title-shadow">
+      <textPath href="#watchBuyArcShadow" startOffset="50%" text-anchor="middle">
+        WATCH AND BUY
+      </textPath>
+    </text>
+
+    <!-- main yellow text -->
+    <text class="watch-buy-title-main">
+      <textPath href="#watchBuyArcMain" startOffset="50%" text-anchor="middle">
+        WATCH AND BUY
+      </textPath>
+    </text>
+  </svg>
+
+  <p>Explore saree looks and shop the full collection</p>
+</div>
+
+    <div class="watch-buy-stage" data-watch-buy-stage>
+
+      <article class="watch-buy-slide is-active" data-watch-buy-slide>
+        <div class="watch-buy-thumb watch-buy-thumb--one">
+          <span class="watch-buy-views">1.2L</span>
+          <span class="watch-buy-products">4 Products</span>
+        </div>
+      </article>
+
+      <article class="watch-buy-slide is-next" data-watch-buy-slide aria-hidden="true">
+        <div class="watch-buy-thumb watch-buy-thumb--two">
+          <span class="watch-buy-views">85.6K</span>
+          <span class="watch-buy-products">6 Products</span>
+        </div>
+      </article>
+
+      <article class="watch-buy-slide is-next-2" data-watch-buy-slide aria-hidden="true">
+        <div class="watch-buy-thumb watch-buy-thumb--three">
+          <span class="watch-buy-views">94.4K</span>
+          <span class="watch-buy-products">8 Products</span>
+        </div>
+      </article>
+
+      <article class="watch-buy-slide is-prev-2" data-watch-buy-slide aria-hidden="true">
+        <div class="watch-buy-thumb watch-buy-thumb--four">
+          <span class="watch-buy-views">2.1L</span>
+          <span class="watch-buy-products">5 Products</span>
+        </div>
+      </article>
+
+      <article class="watch-buy-slide is-prev" data-watch-buy-slide aria-hidden="true">
+        <div class="watch-buy-thumb watch-buy-thumb--five">
+          <span class="watch-buy-views">73.8K</span>
+          <span class="watch-buy-products">3 Products</span>
+        </div>
+      </article>
+
+    </div>
+
+    <button class="watch-buy-nav watch-buy-nav--prev" type="button" aria-label="Previous video" data-watch-buy-prev>
+      ‹
+    </button>
+
+    <button class="watch-buy-nav watch-buy-nav--next" type="button" aria-label="Next video" data-watch-buy-next>
+      ›
+    </button>
+
+    <div class="watch-buy-dots" aria-label="Watch and buy slider controls">
+      <button type="button" class="is-active" aria-label="Show first video" aria-current="true" data-watch-buy-dot></button>
+      <button type="button" aria-label="Show second video" data-watch-buy-dot></button>
+      <button type="button" aria-label="Show third video" data-watch-buy-dot></button>
+      <button type="button" aria-label="Show fourth video" data-watch-buy-dot></button>
+      <button type="button" aria-label="Show fifth video" data-watch-buy-dot></button>
+    </div>
+
+    <a href="#" class="watch-buy-cta">
+      Explore the Whole Collection <span>→</span>
+    </a>
+
+  </div>
+</section>
+
+<style>
+  .watch-buy-section {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(199, 146, 67, 0.06), transparent 24%),
+      linear-gradient(180deg, #fffaf6 0%, #fff7f1 100%);
+    padding: 0 0 clamp(10px, 2.4vw, 20px);
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .watch-buy-card {
+    position: relative;
+    width: min(100% - clamp(6px, 2.2vw, 56px), 1680px);
+    margin-inline: auto;
+    min-height: clamp(420px, 62vw, 760px);
+    border-radius: clamp(20px, 4vw, 44px);
+    background:
+      radial-gradient(circle at 82% 8%, rgba(255, 255, 255, 0.55), transparent 18%),
+      linear-gradient(180deg, #ffd5da 0%, #ff7177 100%);
+    box-shadow: 0 14px 34px rgba(80, 36, 40, 0.10);
+    overflow: hidden;
+    box-sizing: border-box;
+    padding:
+      clamp(22px, 4vw, 54px)
+      clamp(10px, 2vw, 28px)
+      clamp(22px, 4vw, 46px);
+    isolation: isolate;
+    outline: none;
+    touch-action: pan-y;
+  }
+
+  .watch-buy-card {
+    cursor: grab;
+    user-select: none;
+    }
+
+    .watch-buy-card.is-dragging {
+    cursor: grabbing;
+    }
+
+    .watch-buy-stage {
+    user-select: none;
+    }
+
+  .watch-buy-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 20% 75%, rgba(255, 255, 255, 0.20), transparent 18%),
+      repeating-linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.08) 0 2px,
+        transparent 2px 18px
+      );
+    pointer-events: none;
+    z-index: -1;
+  }
+
+
+
+.watch-buy-head {
+  text-align: center;
+  position: relative;
+  z-index: 5;
+  margin-bottom: clamp(16px, 3vw, 34px);
+  padding-inline: clamp(8px, 1.6vw, 16px);
+}
+
+.watch-buy-title-svg {
+  width: min(100%, 1080px);
+  display: block;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.watch-buy-title-svg text {
+  font-family: Impact, Haettenschweiler, "Arial Black", system-ui, sans-serif;
+  font-size: clamp(88px, 12vw, 156px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+}
+
+.watch-buy-title-deep {
+  fill: rgba(46, 22, 50, 0.18);
+}
+
+.watch-buy-title-shadow {
+  fill: #211126;
+}
+
+.watch-buy-title-main {
+  fill: #f2e912;
+  stroke: #171021;
+  stroke-width: 10px;
+  paint-order: stroke fill;
+  stroke-linejoin: round;
+}
+
+.watch-buy-head p {
+  margin: clamp(2px, 0.8vw, 8px) auto 0;
+  max-width: 620px;
+  color: rgba(95, 16, 32, 0.84);
+  font-size: clamp(11px, 1.2vw, 17px);
+  font-weight: 900;
+  line-height: 1.22;
+}
+
+  .watch-buy-stage {
+    position: relative;
+    width: 100%;
+    height: clamp(260px, 42vw, 520px);
+    margin-inline: auto;
+    perspective: 1200px;
+    transform-style: preserve-3d;
+  }
+
+.watch-buy-slide {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(190px, 33vw, 420px);
+  height: clamp(260px, 44vw, 560px);
+  border-radius: clamp(16px, 2vw, 28px);
+  overflow: hidden;
+
+  transform: translate(-50%, -50%) scale(0.64);
+  opacity: 0;
+  visibility: hidden;
+  z-index: 1;
+
+  transition:
+    transform 620ms cubic-bezier(.2, .8, .2, 1),
+    opacity 360ms ease,
+    filter 360ms ease,
+    visibility 0s linear 360ms;
+
+  filter: saturate(0.8) brightness(0.78);
+  pointer-events: none;
+}
+
+.watch-buy-slide.is-active {
+  transform: translate(-50%, -50%) scale(1) rotateY(0deg);
+  opacity: 1;
+  visibility: visible;
+  z-index: 6;
+  filter: saturate(1) brightness(1);
+  pointer-events: auto;
+  transition:
+    transform 620ms cubic-bezier(.2, .8, .2, 1),
+    opacity 360ms ease,
+    filter 360ms ease,
+    visibility 0s;
+}
+
+.watch-buy-slide.is-prev {
+  transform: translate(calc(-50% - clamp(160px, 30vw, 420px)), -50%) scale(0.74) rotateY(20deg);
+  opacity: 0.54;
+  visibility: visible;
+  z-index: 4;
+  filter: saturate(0.82) brightness(0.76);
+  transition:
+    transform 620ms cubic-bezier(.2, .8, .2, 1),
+    opacity 360ms ease,
+    filter 360ms ease,
+    visibility 0s;
+}
+
+.watch-buy-slide.is-next {
+  transform: translate(calc(-50% + clamp(160px, 30vw, 420px)), -50%) scale(0.74) rotateY(-20deg);
+  opacity: 0.54;
+  visibility: visible;
+  z-index: 4;
+  filter: saturate(0.82) brightness(0.76);
+  transition:
+    transform 620ms cubic-bezier(.2, .8, .2, 1),
+    opacity 360ms ease,
+    filter 360ms ease,
+    visibility 0s;
+}
+
+/* Far cards hidden to avoid wrap-around jump */
+.watch-buy-slide.is-prev-2,
+.watch-buy-slide.is-next-2 {
+  opacity: 0;
+  visibility: hidden;
+  z-index: 1;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.58);
+}
+
+  .watch-buy-thumb {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    overflow: hidden;
+    box-shadow:
+      0 24px 42px rgba(55, 10, 20, 0.24),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  }
+
+  .watch-buy-thumb::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 42% 26%, rgba(255, 255, 255, 0.20), transparent 16%),
+      repeating-linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.10) 0 2px,
+        transparent 2px 16px
+      );
+    z-index: 1;
+  }
+
+  .watch-buy-thumb::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(0, 0, 0, 0.05), transparent 35%, rgba(0, 0, 0, 0.34));
+    z-index: 2;
+  }
+
+  .watch-buy-thumb--one {
+    background:
+      radial-gradient(circle at 46% 35%, rgba(255, 231, 170, 0.34), transparent 16%),
+      linear-gradient(135deg, #b81766, #7c1831 55%, #f4c76b);
+  }
+
+  .watch-buy-thumb--two {
+    background:
+      radial-gradient(circle at 46% 35%, rgba(255, 255, 255, 0.36), transparent 16%),
+      linear-gradient(135deg, #f5d8d4, #c96b7d 55%, #f2c36a);
+  }
+
+  .watch-buy-thumb--three {
+    background:
+      radial-gradient(circle at 46% 35%, rgba(244, 199, 107, 0.42), transparent 16%),
+      linear-gradient(135deg, #0e6268, #16444e 58%, #c79243);
+  }
+
+  .watch-buy-thumb--four {
+    background:
+      radial-gradient(circle at 46% 35%, rgba(244, 199, 107, 0.42), transparent 16%),
+      linear-gradient(135deg, #6b4da2, #7f2f6d 56%, #c69a44);
+  }
+
+  .watch-buy-thumb--five {
+    background:
+      radial-gradient(circle at 46% 35%, rgba(255, 255, 255, 0.38), transparent 16%),
+      linear-gradient(135deg, #dfe6bd, #b5bd84 55%, #fff0c9);
+  }
+
+  .watch-buy-views {
+    position: absolute;
+    left: clamp(14px, 2vw, 24px);
+    top: clamp(14px, 2vw, 24px);
+    z-index: 4;
+    color: #ffffff;
+    font-size: clamp(15px, 2.2vw, 30px);
+    font-weight: 900;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  }
+
+  .watch-buy-views::before {
+    content: "◉";
+    margin-right: 8px;
+    font-size: 0.78em;
+    opacity: 0.82;
+  }
+
+  .watch-buy-products {
+    position: absolute;
+    left: clamp(14px, 2vw, 24px);
+    bottom: clamp(18px, 2.5vw, 32px);
+    z-index: 4;
+    display: inline-flex;
+    align-items: center;
+    min-height: clamp(30px, 4vw, 46px);
+    padding:
+      clamp(7px, 1vw, 12px)
+      clamp(13px, 2vw, 22px);
+    border-radius: 999px;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.38);
+    backdrop-filter: blur(8px);
+    font-size: clamp(13px, 1.7vw, 24px);
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .watch-buy-nav {
+    position: absolute;
+    top: 52%;
+    z-index: 9;
+    width: clamp(30px, 4vw, 48px);
+    height: clamp(30px, 4vw, 48px);
+    border: 0;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    color: #fff8ef;
+    background: rgba(95, 16, 32, 0.42);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+      0 10px 22px rgba(24, 4, 12, 0.18);
+    backdrop-filter: blur(8px);
+    font-size: clamp(24px, 4vw, 42px);
+    line-height: 1;
+    transition: transform 180ms ease, background 180ms ease;
+  }
+
+  .watch-buy-nav:hover {
+    background: rgba(95, 16, 32, 0.62);
+  }
+
+  .watch-buy-nav:active {
+    transform: scale(0.94);
+  }
+
+  .watch-buy-nav--prev {
+    left: clamp(10px, 2vw, 26px);
+  }
+
+  .watch-buy-nav--next {
+    right: clamp(10px, 2vw, 26px);
+  }
+
+  .watch-buy-dots {
+    position: relative;
+    z-index: 10;
+    margin-top: clamp(8px, 1.5vw, 16px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(5px, 0.8vw, 8px);
+  }
+
+  .watch-buy-dots button {
+    width: clamp(6px, 0.75vw, 8px);
+    height: clamp(6px, 0.75vw, 8px);
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(95, 16, 32, 0.35);
+    cursor: pointer;
+    transition: width 200ms ease, background 200ms ease;
+  }
+
+  .watch-buy-dots button.is-active {
+    width: clamp(16px, 1.8vw, 24px);
+    background: #5f1020;
+  }
+
+  .watch-buy-cta {
+    position: relative;
+    z-index: 10;
+    width: min(100% - 34px, 720px);
+    min-height: clamp(42px, 5vw, 64px);
+    margin: clamp(14px, 2.4vw, 26px) auto 0;
+    padding: clamp(8px, 1vw, 13px) clamp(20px, 3vw, 34px);
+    border: clamp(2px, 0.35vw, 4px) solid #151515;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(12px, 2vw, 26px);
+    background: #ffffff;
+    color: #151515;
+    text-decoration: none;
+    font-size: clamp(13px, 2vw, 28px);
+    line-height: 1;
+    font-weight: 950;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    box-shadow: 0 8px 0 rgba(95, 16, 32, 0.10);
+    white-space: nowrap;
+  }
+
+  .watch-buy-cta span {
+    font-size: 1.35em;
+    line-height: 0;
+  }
+
+  @media (min-width: 1200px) {
+    .watch-buy-card {
+      width: min(100% - 56px, 1680px);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .watch-buy-card {
+      width: min(100% - 8px, 980px);
+      min-height: clamp(390px, 105vw, 660px);
+      border-radius: clamp(18px, 6vw, 34px);
+    }
+
+    .watch-buy-stage {
+      height: clamp(260px, 82vw, 500px);
+    }
+
+    .watch-buy-slide {
+      width: clamp(188px, 58vw, 360px);
+      height: clamp(270px, 84vw, 520px);
+    }
+
+    .watch-buy-slide.is-prev {
+        transform: translate(calc(-50% - clamp(145px, 48vw, 330px)), -50%) scale(0.70) rotateY(22deg);
+    }
+
+    .watch-buy-slide.is-next {
+        transform: translate(calc(-50% + clamp(145px, 48vw, 330px)), -50%) scale(0.70) rotateY(-22deg);
+    }
+
+  }
+
+  @media (max-width: 480px) {
+    .watch-buy-card {
+      width: min(100% - 6px, 980px);
+      padding-top: 20px;
+      padding-bottom: 22px;
+    }
+
+    .watch-buy-head h2 {
+      font-size: clamp(30px, 11vw, 50px);
+    }
+
+    .watch-buy-head p {
+      font-size: 10px;
+    }
+
+    .watch-buy-nav {
+      width: 28px;
+      height: 28px;
+      font-size: 24px;
+      top: 53%;
+    }
+
+    .watch-buy-nav--prev {
+      left: 7px;
+    }
+
+    .watch-buy-nav--next {
+      right: 7px;
+    }
+
+    .watch-buy-cta {
+      width: min(100% - 28px, 430px);
+      min-height: 42px;
+      font-size: clamp(11px, 3.3vw, 15px);
+      gap: 10px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .watch-buy-card {
+      min-height: 372px;
+    }
+
+    .watch-buy-stage {
+      height: 250px;
+    }
+
+    .watch-buy-slide {
+      width: 178px;
+      height: 252px;
+    }
+
+    .watch-buy-views {
+      font-size: 14px;
+    }
+
+    .watch-buy-products {
+      font-size: 12px;
+      min-height: 28px;
+      padding: 7px 11px;
+    }
+
+    .watch-buy-cta {
+      font-size: 10px;
+    }
+  }
+
+  @media (max-width: 320px) {
+    .watch-buy-card {
+      width: min(100% - 4px, 980px);
+    }
+
+    .watch-buy-head p {
+      display: none;
+    }
+
+    .watch-buy-slide {
+      width: 166px;
+      height: 236px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .watch-buy-slide,
+    .watch-buy-nav,
+    .watch-buy-dots button {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    const sliders = document.querySelectorAll("[data-watch-buy-slider]");
+
+    sliders.forEach(function (slider) {
+      const slides = Array.from(slider.querySelectorAll("[data-watch-buy-slide]"));
+      const dots = Array.from(slider.querySelectorAll("[data-watch-buy-dot]"));
+      const prevBtn = slider.querySelector("[data-watch-buy-prev]");
+      const nextBtn = slider.querySelector("[data-watch-buy-next]");
+      const stage = slider.querySelector("[data-watch-buy-stage]") || slider;
+
+      if (slides.length <= 1) return;
+
+      let currentIndex = 0;
+      let timer = null;
+
+      let pointerStartX = 0;
+      let pointerStartY = 0;
+      let pointerCurrentX = 0;
+      let isDragging = false;
+      let activePointerId = null;
+      let dragStartedAt = 0;
+
+      const AUTO_DELAY = 4200;
+      const SWIPE_DISTANCE = 44;
+      const SWIPE_VELOCITY_DISTANCE = 28;
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      function getPosition(index) {
+        const total = slides.length;
+        let diff = index - currentIndex;
+
+        if (diff > total / 2) diff -= total;
+        if (diff < -total / 2) diff += total;
+
+        return diff;
+      }
+
+      function updateSlides(shouldRestart) {
+        slides.forEach(function (slide, index) {
+          const pos = getPosition(index);
+
+          slide.classList.remove("is-active", "is-prev", "is-next", "is-prev-2", "is-next-2");
+          slide.setAttribute("aria-hidden", "true");
+
+          if (pos === 0) {
+            slide.classList.add("is-active");
+            slide.setAttribute("aria-hidden", "false");
+          } else if (pos === -1) {
+            slide.classList.add("is-prev");
+          } else if (pos === 1) {
+            slide.classList.add("is-next");
+          } else if (pos === -2) {
+            slide.classList.add("is-prev-2");
+          } else if (pos === 2) {
+            slide.classList.add("is-next-2");
+          }
+        });
+
+        dots.forEach(function (dot, index) {
+          const isActive = index === currentIndex;
+          dot.classList.toggle("is-active", isActive);
+
+          if (isActive) {
+            dot.setAttribute("aria-current", "true");
+          } else {
+            dot.removeAttribute("aria-current");
+          }
+        });
+
+        if (shouldRestart) {
+          restartAutoSlide();
+        }
+      }
+
+      function goTo(index, shouldRestart) {
+        currentIndex = (index + slides.length) % slides.length;
+        updateSlides(shouldRestart);
+      }
+
+      function nextSlide(shouldRestart) {
+        goTo(currentIndex + 1, shouldRestart);
+      }
+
+      function prevSlide(shouldRestart) {
+        goTo(currentIndex - 1, shouldRestart);
+      }
+
+      function startAutoSlide() {
+        if (prefersReducedMotion) return;
+
+        stopAutoSlide();
+        timer = window.setInterval(function () {
+          nextSlide(false);
+        }, AUTO_DELAY);
+      }
+
+      function stopAutoSlide() {
+        if (timer) {
+          window.clearInterval(timer);
+          timer = null;
+        }
+      }
+
+      function restartAutoSlide() {
+        stopAutoSlide();
+        startAutoSlide();
+      }
+
+      function startDrag(event) {
+        if (event.button !== undefined && event.button !== 0) return;
+
+        const clickedControl = event.target.closest("button, .watch-buy-cta");
+        if (clickedControl) return;
+
+        isDragging = true;
+        activePointerId = event.pointerId;
+        pointerStartX = event.clientX;
+        pointerStartY = event.clientY;
+        pointerCurrentX = event.clientX;
+        dragStartedAt = Date.now();
+
+        slider.classList.add("is-dragging");
+        stopAutoSlide();
+
+        if (stage.setPointerCapture && activePointerId !== null) {
+          stage.setPointerCapture(activePointerId);
+        }
+      }
+
+      function moveDrag(event) {
+        if (!isDragging || event.pointerId !== activePointerId) return;
+
+        pointerCurrentX = event.clientX;
+
+        const diffX = pointerCurrentX - pointerStartX;
+        const diffY = event.clientY - pointerStartY;
+
+        if (Math.abs(diffX) > 10 && Math.abs(diffX) > Math.abs(diffY)) {
+          event.preventDefault();
+        }
+      }
+
+      function endDrag(event) {
+        if (!isDragging || event.pointerId !== activePointerId) return;
+
+        const diffX = event.clientX - pointerStartX;
+        const diffY = event.clientY - pointerStartY;
+        const elapsed = Math.max(Date.now() - dragStartedAt, 1);
+
+        isDragging = false;
+        activePointerId = null;
+        slider.classList.remove("is-dragging");
+
+        const isHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY);
+        const isDistanceSwipe = Math.abs(diffX) > SWIPE_DISTANCE;
+        const isFastSwipe = Math.abs(diffX) > SWIPE_VELOCITY_DISTANCE && elapsed < 260;
+
+        if (isHorizontalSwipe && (isDistanceSwipe || isFastSwipe)) {
+          if (diffX < 0) {
+            nextSlide(true);
+          } else {
+            prevSlide(true);
+          }
+        } else {
+          restartAutoSlide();
+        }
+      }
+
+      function cancelDrag() {
+        if (!isDragging) return;
+
+        isDragging = false;
+        activePointerId = null;
+        slider.classList.remove("is-dragging");
+        restartAutoSlide();
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener("click", function () {
+          nextSlide(true);
+        });
+      }
+
+      if (prevBtn) {
+        prevBtn.addEventListener("click", function () {
+          prevSlide(true);
+        });
+      }
+
+      dots.forEach(function (dot, index) {
+        dot.addEventListener("click", function () {
+          goTo(index, true);
+        });
+      });
+
+      slider.addEventListener("keydown", function (event) {
+        if (event.key === "ArrowRight") {
+          event.preventDefault();
+          nextSlide(true);
+        }
+
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          prevSlide(true);
+        }
+      });
+
+      stage.addEventListener("pointerdown", startDrag);
+      stage.addEventListener("pointermove", moveDrag);
+      stage.addEventListener("pointerup", endDrag);
+      stage.addEventListener("pointercancel", cancelDrag);
+      stage.addEventListener("lostpointercapture", cancelDrag);
+
+      slider.addEventListener("mouseenter", stopAutoSlide);
+      slider.addEventListener("mouseleave", function () {
+        cancelDrag();
+        startAutoSlide();
+      });
+
+      slider.addEventListener("focusin", stopAutoSlide);
+      slider.addEventListener("focusout", startAutoSlide);
+
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+          stopAutoSlide();
+        } else {
+          startAutoSlide();
+        }
+      });
+
+      updateSlides(false);
+      startAutoSlide();
+    });
+  })();
+</script>

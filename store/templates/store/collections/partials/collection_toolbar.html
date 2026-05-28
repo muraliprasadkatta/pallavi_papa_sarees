@@ -1,0 +1,342 @@
+<section class="collection-toolbar" aria-label="Collection tools">
+  <form class="collection-toolbar__form" method="get" action="{% url 'store:collections' %}">
+    <input type="hidden" name="category" value="{{ active_category|default:'all' }}">
+    <input type="hidden" name="sort" value="{{ active_sort|default:'newest' }}">
+
+    <div class="collection-toolbar__top">
+      <label class="toolbar-search">
+        <svg class="toolbar-search__icon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M10.8 18.1a7.3 7.3 0 1 1 0-14.6 7.3 7.3 0 0 1 0 14.6Zm0-2a5.3 5.3 0 1 0 0-10.6 5.3 5.3 0 0 0 0 10.6Z"/>
+          <path d="M16.2 16.2 21 21"/>
+        </svg>
+
+        <input
+          type="search"
+          name="q"
+          value="{{ search_query|default:'' }}"
+          placeholder="Search sarees..."
+          autocomplete="off"
+        >
+      </label>
+
+      <button class="toolbar-filter" type="submit" aria-label="Filter sarees">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h10"/>
+          <path d="M18 7h2"/>
+          <path d="M16 5v4"/>
+          <path d="M4 17h2"/>
+          <path d="M10 17h10"/>
+          <path d="M8 15v4"/>
+        </svg>
+        <span>Filter</span>
+      </button>
+    </div>
+
+    <div class="collection-toolbar__sortbar">
+      <span class="sort-label">Sort by</span>
+
+      <a
+        class="sort-chip {% if active_sort == 'newest' or not active_sort %}is-active{% endif %}"
+        href="{% url 'store:collections' %}?category={{ active_category|default:'all' }}&sort=newest{% if search_query %}&q={{ search_query|urlencode }}{% endif %}"
+      >
+        Newest
+      </a>
+
+      <a
+        class="sort-chip {% if active_sort == 'price-low' %}is-active{% endif %}"
+        href="{% url 'store:collections' %}?category={{ active_category|default:'all' }}&sort=price-low{% if search_query %}&q={{ search_query|urlencode }}{% endif %}"
+      >
+        Price: Low to High
+      </a>
+
+      <a
+        class="sort-chip {% if active_sort == 'price-high' %}is-active{% endif %}"
+        href="{% url 'store:collections' %}?category={{ active_category|default:'all' }}&sort=price-high{% if search_query %}&q={{ search_query|urlencode }}{% endif %}"
+      >
+        Price: High to Low
+      </a>
+
+      <a
+        class="sort-chip {% if active_sort == 'popular' %}is-active{% endif %}"
+        href="{% url 'store:collections' %}?category={{ active_category|default:'all' }}&sort=popular{% if search_query %}&q={{ search_query|urlencode }}{% endif %}"
+      >
+        Popular
+      </a>
+
+      <span class="toolbar-count">{{ products|length }} items found</span>
+    </div>
+
+    {% if search_query or active_sort != "newest" %}
+      <a class="toolbar-clear" href="{% url 'store:collections' %}?category={{ active_category|default:'all' }}">
+        Clear
+      </a>
+    {% endif %}
+  </form>
+</section>
+
+<style>
+  .collection-toolbar,
+  .collection-toolbar * {
+    box-sizing: border-box;
+  }
+
+  .collection-toolbar {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: clamp(14px, 3vw, 24px);
+    padding: 0 clamp(16px, 4vw, 28px);
+    background: #fffaf6;
+  }
+
+  .collection-toolbar__form {
+    width: min(100%, 1180px);
+    margin: 0 auto;
+    display: grid;
+    gap: 12px;
+  }
+
+  .collection-toolbar__top {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(10px, 2.4vw, 18px);
+  }
+
+  .toolbar-search {
+    min-width: 0;
+    height: clamp(48px, 8vw, 58px);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 clamp(15px, 3vw, 22px);
+    border-radius: 999px;
+    background: #fffdfb;
+    border: 1px solid rgba(95, 16, 32, 0.16);
+    box-shadow: 0 8px 20px rgba(70, 28, 35, 0.045);
+  }
+
+  .toolbar-search__icon {
+    flex: 0 0 auto;
+    width: clamp(18px, 4vw, 22px);
+    height: clamp(18px, 4vw, 22px);
+    fill: none;
+    stroke: #3b252b;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .toolbar-search input {
+    width: 100%;
+    min-width: 0;
+    height: 100%;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: #34262b;
+    font: inherit;
+    font-size: clamp(14px, 3.4vw, 17px);
+    font-weight: 600;
+  }
+
+  .toolbar-search input::placeholder {
+    color: #8b8284;
+    font-weight: 600;
+  }
+
+  .toolbar-search:focus-within {
+    border-color: rgba(143, 23, 49, 0.32);
+    box-shadow:
+      0 8px 20px rgba(70, 28, 35, 0.06),
+      0 0 0 4px rgba(143, 23, 49, 0.06);
+  }
+
+  .toolbar-filter {
+    height: clamp(48px, 8vw, 58px);
+    min-width: clamp(104px, 22vw, 138px);
+    padding: 0 clamp(16px, 3vw, 24px);
+    border-radius: 999px;
+    border: 1px solid rgba(95, 16, 32, 0.16);
+    background: #fffdfb;
+    color: #2d2025;
+    cursor: pointer;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    font: inherit;
+    font-size: clamp(14px, 3.2vw, 17px);
+    font-weight: 850;
+
+    box-shadow: 0 8px 20px rgba(70, 28, 35, 0.045);
+  }
+
+  .toolbar-filter svg {
+    width: clamp(18px, 4vw, 22px);
+    height: clamp(18px, 4vw, 22px);
+    fill: none;
+    stroke: #5f1020;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+
+  .collection-toolbar__sortbar {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: clamp(12px, 2.8vw, 22px);
+    padding: 0 2px 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-bottom: 1px solid rgba(95, 16, 32, 0.10);
+  }
+
+  .collection-toolbar__sortbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .sort-label {
+    flex: 0 0 auto;
+    color: #5d5054;
+    font-size: clamp(12px, 2.8vw, 14px);
+    font-weight: 650;
+    white-space: nowrap;
+  }
+
+  .sort-chip {
+    position: relative;
+    flex: 0 0 auto;
+    padding: 8px 0;
+    color: #423439;
+    text-decoration: none;
+    font-size: clamp(12px, 2.8vw, 14px);
+    font-weight: 650;
+    white-space: nowrap;
+  }
+
+  .sort-chip::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -9px;
+    height: 2px;
+    border-radius: 999px;
+    background: transparent;
+  }
+
+  .sort-chip.is-active {
+    color: #8f1731;
+    font-weight: 900;
+  }
+
+  .sort-chip.is-active::after {
+    background: #8f1731;
+  }
+
+  .toolbar-count {
+    flex: 0 0 auto;
+    margin-left: auto;
+    color: #8f1731;
+    font-size: clamp(12px, 2.8vw, 14px);
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .toolbar-clear {
+    justify-self: end;
+    width: max-content;
+    margin-top: -4px;
+    color: #8f1731;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 800;
+  }
+
+  @media (max-width: 767px) {
+    .collection-toolbar {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .collection-toolbar__form {
+      gap: 10px;
+    }
+
+    .toolbar-search,
+    .toolbar-filter {
+      height: 48px;
+    }
+
+    .toolbar-filter {
+      min-width: 104px;
+    }
+
+    .collection-toolbar__sortbar {
+      gap: 18px;
+      padding-bottom: 8px;
+    }
+
+    .toolbar-count {
+      display: none;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .collection-toolbar {
+      padding-left: 14px;
+      padding-right: 14px;
+    }
+
+    .collection-toolbar__top {
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .toolbar-search {
+      padding-left: 16px;
+      padding-right: 12px;
+    }
+
+    .toolbar-filter {
+      min-width: 94px;
+      padding-left: 14px;
+      padding-right: 14px;
+    }
+
+    .toolbar-filter span {
+      font-size: 14px;
+    }
+
+    .collection-toolbar__sortbar {
+      gap: 16px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .collection-toolbar {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    .toolbar-filter {
+      min-width: 86px;
+      gap: 6px;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    .toolbar-search input {
+      font-size: 13px;
+    }
+
+    .sort-chip,
+    .sort-label {
+      font-size: 12px;
+    }
+  }
+</style>

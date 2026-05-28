@@ -1,0 +1,689 @@
+{% load static %}
+<!-- E:\pallavi_papa_sarees\store\templates\store\owner\owner_product_form.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Add Products</title>
+
+  <style>
+    :root {
+      --bg: #fff7f0;
+      --card: #ffffff;
+      --text: #3f1d25;
+      --muted: #7d646a;
+      --primary: #8f1731;
+      --primary-dark: #681021;
+      --border: rgba(143, 23, 49, 0.14);
+      --shadow: 0 14px 42px rgba(70, 28, 35, 0.10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(244, 199, 107, 0.18), transparent 32%),
+        linear-gradient(135deg, #fffaf6 0%, var(--bg) 100%);
+    }
+
+    .owner-header {
+      min-height: 72px;
+      padding: 12px clamp(14px, 3vw, 34px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      background: rgba(255, 250, 246, 0.94);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      flex: 0 0 auto;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .brand span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+
+    .back-btn {
+      text-decoration: none;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .wrap {
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .form-card {
+      width: 100%;
+      background: var(--card);
+      border: 0;
+      border-bottom: 1px solid var(--border);
+      border-radius: 0;
+      padding: clamp(18px, 2.4vw, 30px);
+      box-shadow: var(--shadow);
+    }
+
+    .form-card h1 {
+      margin: 0;
+      font-size: clamp(24px, 3vw, 34px);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+
+    .form-card p {
+      margin: 8px 0 20px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .product-form {
+      width: 100%;
+      margin-top: 18px;
+    }
+
+    .product-details {
+      display: none;
+      margin-top: 20px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+
+    .product-details.is-open {
+      display: block;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .two-col {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .field {
+      width: 100%;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      outline: none;
+      background: #fff;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .field input,
+    .field select {
+      min-height: 48px;
+      padding: 0 14px;
+    }
+
+    .field textarea {
+      padding: 13px 14px;
+      resize: vertical;
+      min-height: 110px;
+      line-height: 1.5;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus {
+      border-color: rgba(143, 23, 49, 0.52);
+      box-shadow: 0 0 0 4px rgba(143, 23, 49, 0.08);
+    }
+
+    .field small {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.4;
+    }
+
+    .upload-section {
+      display: grid;
+      grid-template-columns: minmax(260px, 360px) 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+      align-items: start;
+    }
+
+    .catalog-upload,
+    .sub-upload {
+      cursor: pointer;
+      border: 1px dashed rgba(143, 23, 49, 0.32);
+      background: #fffaf6;
+      overflow: hidden;
+    }
+
+    .catalog-upload input,
+    .sub-upload input {
+      display: none;
+    }
+
+    .catalog-upload {
+      width: 100%;
+      aspect-ratio: 1 / 1.12;
+      min-height: 320px;
+      border-radius: 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-align: center;
+    }
+
+    .upload-plus {
+      width: 46px;
+      height: 46px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(143, 23, 49, 0.10);
+      color: var(--primary);
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .catalog-upload strong {
+      font-size: 15px;
+      color: var(--text);
+    }
+
+    .catalog-upload small {
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+
+    .sub-upload-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .sub-upload {
+      aspect-ratio: 1 / 1.12;
+      min-height: 130px;
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      text-align: center;
+    }
+
+    .sub-upload span {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(143, 23, 49, 0.10);
+      color: var(--primary);
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .sub-upload small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .check-field {
+      min-height: 46px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fffaf6;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .check-field input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+    }
+
+    .error-box {
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      color: #7a1025;
+      background: rgba(143, 23, 49, 0.08);
+      border: 1px solid rgba(143, 23, 49, 0.16);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .form-actions {
+      margin-top: 18px;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .save-btn {
+      min-height: 44px;
+      padding: 0 22px;
+      border: 0;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(143, 23, 49, 0.18);
+    }
+
+
+    .catalog-upload,
+.sub-upload {
+  position: relative;
+}
+
+.upload-preview-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+.upload-preview-layer {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 10px;
+  z-index: 2;
+
+  padding: 8px 10px;
+  border-radius: 12px;
+
+  color: #fff;
+  background: rgba(63, 29, 37, 0.70);
+  backdrop-filter: blur(8px);
+
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.25;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.catalog-upload.has-preview .upload-plus,
+.catalog-upload.has-preview strong,
+.catalog-upload.has-preview small,
+.sub-upload.has-preview span,
+.sub-upload.has-preview small {
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+    @media (max-width: 900px) {
+      .upload-section {
+        grid-template-columns: 1fr;
+      }
+
+      .catalog-upload {
+        min-height: 280px;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .owner-header {
+        min-height: 66px;
+        padding: 11px 14px;
+      }
+
+      .brand span {
+        display: none;
+      }
+
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+
+      .sub-upload-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .catalog-upload {
+        min-height: 240px;
+        border-radius: 18px;
+      }
+
+      .sub-upload {
+        min-height: 98px;
+        border-radius: 14px;
+      }
+
+      .form-actions {
+        justify-content: stretch;
+      }
+
+      .save-btn {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .sub-upload-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sub-upload {
+        min-height: 88px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="owner-header">
+    <div class="brand">
+      <div class="brand-logo">PP</div>
+      <div>
+        <strong>Add Products</strong>
+        <span>Pallavi Papa Sarees Collections</span>
+      </div>
+    </div>
+
+    <a class="back-btn" href="{% url 'store_owner:owner_dashboard' %}">
+      Dashboard
+    </a>
+  </header>
+
+  <main class="wrap">
+    <section class="form-card">
+      <h1>Add Products</h1>
+      <p>Select category first. Then upload product images, price, material, and description.</p>
+
+      <form class="product-form" method="post" enctype="multipart/form-data" action="{% url 'store_owner:owner_product_add' %}">
+        {% csrf_token %}
+
+        {% if form.errors %}
+          <div class="error-box">
+            Please check the form details and try again.
+          </div>
+        {% endif %}
+
+        <div class="field">
+          <label for="category">Product Category *</label>
+          <select id="category" name="category" required>
+            <option value="">Select category</option>
+            <option value="pattu" {% if request.POST.category == "pattu" %}selected{% endif %}>Pattu Sarees</option>
+            <option value="cotton" {% if request.POST.category == "cotton" %}selected{% endif %}>Cotton Sarees</option>
+            <option value="silk" {% if request.POST.category == "silk" %}selected{% endif %}>Silk Sarees</option>
+            <option value="designer" {% if request.POST.category == "designer" %}selected{% endif %}>Designer Sarees</option>
+            <option value="wedding" {% if request.POST.category == "wedding" %}selected{% endif %}>Wedding Sarees</option>
+            <option value="daily" {% if request.POST.category == "daily" %}selected{% endif %}>Daily Wear Sarees</option>
+          </select>
+          <small>This product will automatically appear in All Sarees.</small>
+          {{ form.category.errors }}
+        </div>
+
+        <div class="product-details" id="productDetails">
+          <div class="upload-section">
+            <div class="field">
+              <label>Main Catalog Image *</label>
+
+              <label class="catalog-upload" for="mainImage">
+                <input type="file" id="mainImage" name="main_image" accept="image/*" required>
+                <span class="upload-plus">+</span>
+                <strong>Upload catalog image</strong>
+                <small>Best size: 400 × 448 WebP/JPG/PNG</small>
+              </label>
+              {{ form.main_image.errors }}
+            </div>
+
+            <div class="field">
+              <label>Sub Images</label>
+
+              <div class="sub-upload-grid">
+                <label class="sub-upload" for="subImage1">
+                  <input type="file" id="subImage1" name="sub_image_1" accept="image/*">
+                  <span>+</span>
+                  <small>Sub image 1</small>
+                </label>
+
+                <label class="sub-upload" for="subImage2">
+                  <input type="file" id="subImage2" name="sub_image_2" accept="image/*">
+                  <span>+</span>
+                  <small>Sub image 2</small>
+                </label>
+
+                <label class="sub-upload" for="subImage3">
+                  <input type="file" id="subImage3" name="sub_image_3" accept="image/*">
+                  <span>+</span>
+                  <small>Sub image 3</small>
+                </label>
+              </div>
+
+              {{ form.sub_image_1.errors }}
+              {{ form.sub_image_2.errors }}
+              {{ form.sub_image_3.errors }}
+            </div>
+          </div>
+
+          <div class="form-grid two-col">
+            <div class="field">
+              <label for="productName">Product Name *</label>
+              <input
+                type="text"
+                id="productName"
+                name="name"
+                value="{{ request.POST.name|default:'' }}"
+                placeholder="Example: Soft Silk Saree"
+                required
+              >
+              {{ form.name.errors }}
+            </div>
+
+            <div class="field">
+              <label for="material">Material</label>
+              <input
+                type="text"
+                id="material"
+                name="material"
+                value="{{ request.POST.material|default:'' }}"
+                placeholder="Example: Silk cotton"
+              >
+              {{ form.material.errors }}
+            </div>
+
+            <div class="field">
+              <label for="actualPrice">Actual Price *</label>
+              <input
+                type="number"
+                id="actualPrice"
+                name="actual_price"
+                value="{{ request.POST.actual_price|default:'' }}"
+                placeholder="Example: 2499"
+                min="0"
+                step="0.01"
+                required
+              >
+              {{ form.actual_price.errors }}
+            </div>
+
+            <div class="field">
+              <label for="offerPrice">Offer Price</label>
+              <input
+                type="number"
+                id="offerPrice"
+                name="offer_price"
+                value="{{ request.POST.offer_price|default:'' }}"
+                placeholder="Example: 1999"
+                min="0"
+                step="0.01"
+              >
+              {{ form.offer_price.errors }}
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              rows="4"
+              placeholder="Write product details, fabric feel, border design, and occasion."
+            >{{ request.POST.description|default:'' }}</textarea>
+            {{ form.description.errors }}
+          </div>
+
+          <div class="form-grid two-col">
+            <label class="check-field">
+              <input type="checkbox" name="is_available" checked>
+              <span>Available</span>
+            </label>
+
+            <label class="check-field">
+              <input type="checkbox" name="is_new_arrival" {% if request.POST.is_new_arrival %}checked{% endif %}>
+              <span>Show in New Arrivals</span>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="save-btn">
+              Save Product
+            </button>
+          </div>
+        </div>
+      </form>
+    </section>
+  </main>
+
+<script>
+  const categorySelect = document.getElementById("category");
+  const productDetails = document.getElementById("productDetails");
+
+  function toggleProductDetails() {
+    if (categorySelect.value) {
+      productDetails.classList.add("is-open");
+    } else {
+      productDetails.classList.remove("is-open");
+    }
+  }
+
+  categorySelect.addEventListener("change", toggleProductDetails);
+  toggleProductDetails();
+
+  function setupImagePreview(inputId) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    const box = input.closest(".catalog-upload, .sub-upload");
+    if (!box) return;
+
+    input.addEventListener("change", function () {
+      const file = this.files && this.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith("image/")) {
+        alert("Please select an image file only.");
+        this.value = "";
+        return;
+      }
+
+      let previewImg = box.querySelector(".upload-preview-img");
+      if (!previewImg) {
+        previewImg = document.createElement("img");
+        previewImg.className = "upload-preview-img";
+        previewImg.alt = "Selected image preview";
+        box.appendChild(previewImg);
+      }
+
+      let fileName = box.querySelector(".upload-preview-layer");
+      if (!fileName) {
+        fileName = document.createElement("div");
+        fileName.className = "upload-preview-layer";
+        box.appendChild(fileName);
+      }
+
+      previewImg.src = URL.createObjectURL(file);
+      fileName.textContent = file.name;
+      box.classList.add("has-preview");
+    });
+  }
+
+  setupImagePreview("mainImage");
+  setupImagePreview("subImage1");
+  setupImagePreview("subImage2");
+  setupImagePreview("subImage3");
+</script>
+
+
+</body>
+</html>

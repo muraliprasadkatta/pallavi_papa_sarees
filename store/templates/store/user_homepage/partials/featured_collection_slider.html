@@ -1,0 +1,893 @@
+{% load static %}
+
+<section class="featured-collection-section" aria-label="Featured saree collections">
+  <div class="featured-collection-card" data-featured-slider tabindex="0">
+
+    <div class="featured-collection-track" data-featured-track aria-live="polite">
+
+      <!-- Slide 1 -->
+      <article class="featured-collection-slide featured-collection-slide--wedding is-active" data-featured-slide>
+        <div class="featured-collection-content">
+          <p class="featured-eyebrow">Premium Collection</p>
+          <h2>Wedding &amp; Festive Picks</h2>
+          <p>Special sarees for function and celebration looks.</p>
+
+          <a class="featured-btn" href="#">
+            Explore Collection <span>›</span>
+          </a>
+        </div>
+
+        <div class="featured-collection-art" aria-hidden="true">
+          <div class="featured-flower featured-flower--one"></div>
+          <div class="featured-flower featured-flower--two"></div>
+          <div class="featured-saree featured-saree--one">
+            <span></span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Slide 2 -->
+      <article class="featured-collection-slide featured-collection-slide--daily" data-featured-slide aria-hidden="true">
+        <div class="featured-collection-content">
+          <p class="featured-eyebrow">Fresh Arrivals</p>
+          <h2>Daily Elegant Sarees</h2>
+          <p>Soft, simple and graceful picks for everyday occasions.</p>
+
+          <a class="featured-btn" href="#">
+            Shop New Arrivals <span>›</span>
+          </a>
+        </div>
+
+        <div class="featured-collection-art" aria-hidden="true">
+          <div class="featured-flower featured-flower--one"></div>
+          <div class="featured-flower featured-flower--two"></div>
+          <div class="featured-saree featured-saree--two">
+            <span></span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Slide 3 -->
+      <article class="featured-collection-slide featured-collection-slide--premium" data-featured-slide aria-hidden="true">
+        <div class="featured-collection-content">
+          <p class="featured-eyebrow">Handpicked Style</p>
+          <h2>Premium Pattu Collection</h2>
+          <p>Rich fabric, beautiful borders and classic festive feel.</p>
+
+          <a class="featured-btn" href="#">
+            View Sarees <span>›</span>
+          </a>
+        </div>
+
+        <div class="featured-collection-art" aria-hidden="true">
+          <div class="featured-flower featured-flower--one"></div>
+          <div class="featured-flower featured-flower--two"></div>
+          <div class="featured-saree featured-saree--three">
+            <span></span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <button
+      class="featured-nav featured-nav--prev"
+      type="button"
+      aria-label="Previous collection"
+      data-featured-prev
+    >
+      ‹
+    </button>
+
+    <button
+      class="featured-nav featured-nav--next"
+      type="button"
+      aria-label="Next collection"
+      data-featured-next
+    >
+      ›
+    </button>
+
+    <div class="featured-dots" aria-label="Slider controls">
+      <button type="button" class="is-active" aria-label="Show first collection" aria-current="true" data-featured-dot></button>
+      <button type="button" aria-label="Show second collection" data-featured-dot></button>
+      <button type="button" aria-label="Show third collection" data-featured-dot></button>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .featured-collection-section {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(199, 146, 67, 0.06), transparent 24%),
+      linear-gradient(180deg, #fffaf6 0%, #fff7f1 100%);
+    padding: 0 0 clamp(10px, 2.4vw, 20px);
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .featured-collection-card {
+    position: relative;
+    width: min(100% - clamp(6px, 2.2vw, 56px), 1680px);
+    margin-inline: auto;
+    border-radius: clamp(12px, 2.4vw, 22px);
+    overflow: hidden;
+    box-shadow: 0 10px 28px rgba(80, 36, 40, 0.10);
+    background: #7c1831;
+    box-sizing: border-box;
+    isolation: isolate;
+    outline: none;
+    touch-action: pan-y;
+  }
+
+  .featured-collection-card:focus-visible {
+    box-shadow:
+      0 10px 28px rgba(80, 36, 40, 0.10),
+      0 0 0 3px rgba(199, 146, 67, 0.34);
+  }
+
+  .featured-collection-track {
+    display: flex;
+    width: 100%;
+    transform: translate3d(0, 0, 0);
+    transition: transform 520ms cubic-bezier(.2, .8, .2, 1);
+    will-change: transform;
+  }
+
+  .featured-collection-track.is-jumping {
+    transition: none;
+  }
+
+  .featured-collection-slide {
+    position: relative;
+    flex: 0 0 100%;
+    min-width: 100%;
+    min-height: clamp(76px, 14vw, 170px);
+    padding:
+      clamp(10px, 2.2vw, 26px)
+      clamp(12px, 3vw, 40px);
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(120px, 1.05fr);
+    align-items: center;
+    gap: clamp(8px, 2vw, 24px);
+    isolation: isolate;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .featured-collection-slide::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    background:
+      radial-gradient(circle at 76% 40%, rgba(255, 231, 170, 0.28), transparent 24%),
+      linear-gradient(110deg, #7c0524 0%, #8f1731 43%, #bd6e38 100%);
+  }
+
+  .featured-collection-slide::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(90deg, rgba(45, 0, 18, 0.30), transparent 58%),
+      repeating-linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.08) 0 2px,
+        transparent 2px 16px
+      );
+    pointer-events: none;
+  }
+
+  .featured-collection-slide--daily::before {
+    background:
+      radial-gradient(circle at 76% 40%, rgba(255, 255, 255, 0.25), transparent 24%),
+      linear-gradient(110deg, #5f1020 0%, #a43b56 48%, #dba84e 100%);
+  }
+
+  .featured-collection-slide--premium::before {
+    background:
+      radial-gradient(circle at 76% 40%, rgba(248, 215, 122, 0.30), transparent 24%),
+      linear-gradient(110deg, #45102d 0%, #763064 48%, #c79243 100%);
+  }
+
+  .featured-collection-content {
+    min-width: 0;
+    color: #ffffff;
+    position: relative;
+    z-index: 2;
+  }
+
+  .featured-eyebrow {
+    margin: 0 0 clamp(2px, 0.7vw, 5px);
+    color: rgba(255, 225, 164, 0.95);
+    font-size: clamp(7px, 0.85vw, 12px);
+    line-height: 1;
+    font-weight: 850;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .featured-collection-content h2 {
+    margin: 0;
+    max-width: 520px;
+    color: #fff8ef;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(14px, 2.3vw, 32px);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+  }
+
+  .featured-collection-content p:not(.featured-eyebrow) {
+    margin: clamp(3px, 0.8vw, 8px) 0 0;
+    max-width: 420px;
+    color: rgba(255, 245, 235, 0.86);
+    font-size: clamp(8px, 1.05vw, 15px);
+    line-height: 1.24;
+  }
+
+  .featured-btn {
+    width: fit-content;
+    margin-top: clamp(6px, 1.2vw, 14px);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(4px, 0.8vw, 8px);
+    min-height: clamp(22px, 2.7vw, 38px);
+    padding:
+      clamp(5px, 0.9vw, 10px)
+      clamp(10px, 1.7vw, 20px);
+    border-radius: 999px;
+    background: linear-gradient(135deg, #d7a34d, #b77b2e);
+    color: #fff8ef;
+    text-decoration: none;
+    font-size: clamp(8px, 0.95vw, 13px);
+    line-height: 1;
+    font-weight: 900;
+    box-shadow: 0 8px 18px rgba(42, 12, 16, 0.18);
+    white-space: nowrap;
+  }
+
+  .featured-btn span {
+    font-size: clamp(12px, 1.35vw, 18px);
+    line-height: 0;
+    transform: translateY(-1px);
+  }
+
+  .featured-collection-art {
+    position: relative;
+    width: 100%;
+    height: clamp(68px, 13vw, 160px);
+    min-width: 0;
+    z-index: 1;
+  }
+
+  .featured-saree {
+    position: absolute;
+    right: clamp(-18px, -1vw, -8px);
+    top: 50%;
+    width: clamp(130px, 28vw, 390px);
+    height: clamp(64px, 12vw, 150px);
+    border-radius: clamp(8px, 2vw, 18px);
+    transform: translateY(-50%) rotate(4deg);
+    overflow: hidden;
+    box-shadow: 0 14px 26px rgba(28, 4, 14, 0.22);
+  }
+
+  .featured-saree::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.13) 0 2px,
+        transparent 2px 14px
+      );
+  }
+
+  .featured-saree::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 28%;
+    background:
+      linear-gradient(90deg, rgba(255, 227, 153, 0.55), transparent 45%, rgba(255, 227, 153, 0.40));
+  }
+
+  .featured-saree span {
+    position: absolute;
+    inset: 18% 12% auto auto;
+    width: 46%;
+    height: 56%;
+    border: 2px solid rgba(255, 222, 150, 0.55);
+    border-radius: 50%;
+    transform: rotate(-14deg);
+  }
+
+  .featured-saree--one {
+    background:
+      radial-gradient(circle at 42% 42%, rgba(255, 231, 170, 0.42), transparent 18%),
+      linear-gradient(135deg, #ef7190, #cb2d6f 55%, #f4c76b);
+  }
+
+  .featured-saree--two {
+    background:
+      radial-gradient(circle at 46% 38%, rgba(255, 255, 255, 0.42), transparent 18%),
+      linear-gradient(135deg, #f5d8d4, #c75d73 55%, #f3c66d);
+  }
+
+  .featured-saree--three {
+    background:
+      radial-gradient(circle at 46% 38%, rgba(244, 199, 107, 0.50), transparent 18%),
+      linear-gradient(135deg, #6b4da2, #7f2f6d 55%, #c79243);
+  }
+
+  .featured-flower {
+    position: absolute;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle, #f4c76b 0 20%, #7c1028 22% 48%, #3d0716 52% 100%);
+    opacity: 0.82;
+    filter: drop-shadow(0 8px 10px rgba(23, 0, 9, 0.20));
+  }
+
+  .featured-flower--one {
+    width: clamp(28px, 5vw, 70px);
+    height: clamp(28px, 5vw, 70px);
+    left: clamp(5px, 4vw, 60px);
+    top: clamp(4px, 1vw, 12px);
+  }
+
+  .featured-flower--two {
+    width: clamp(20px, 3.6vw, 48px);
+    height: clamp(20px, 3.6vw, 48px);
+    left: clamp(38px, 8vw, 125px);
+    bottom: clamp(4px, 1vw, 14px);
+    opacity: 0.72;
+  }
+
+  .featured-nav {
+    position: absolute;
+    top: 50%;
+    z-index: 8;
+    width: clamp(24px, 3.2vw, 38px);
+    height: clamp(24px, 3.2vw, 38px);
+    transform: translateY(-50%);
+    border: 0;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    color: #fff8ef;
+    background: rgba(95, 16, 32, 0.36);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.16),
+      0 8px 18px rgba(24, 4, 12, 0.18);
+    backdrop-filter: blur(8px);
+    font-size: clamp(22px, 3vw, 34px);
+    line-height: 1;
+    transition:
+      background 180ms ease,
+      transform 180ms ease,
+      opacity 180ms ease;
+  }
+
+  .featured-nav:hover {
+    background: rgba(95, 16, 32, 0.58);
+  }
+
+  .featured-nav:active {
+    transform: translateY(-50%) scale(0.94);
+  }
+
+  .featured-nav--prev {
+    left: clamp(6px, 1.2vw, 14px);
+  }
+
+  .featured-nav--next {
+    right: clamp(6px, 1.2vw, 14px);
+  }
+
+  .featured-dots {
+    position: absolute;
+    left: 50%;
+    bottom: clamp(5px, 1vw, 10px);
+    transform: translateX(-50%);
+    z-index: 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(4px, 0.8vw, 7px);
+  }
+
+  .featured-dots button {
+    width: clamp(5px, 0.65vw, 7px);
+    height: clamp(5px, 0.65vw, 7px);
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.62);
+    cursor: pointer;
+    transition:
+      width 220ms ease,
+      background 220ms ease,
+      opacity 220ms ease;
+  }
+
+  .featured-dots button.is-active {
+    width: clamp(13px, 1.4vw, 20px);
+    background: #fff8ef;
+  }
+
+  @media (min-width: 1200px) {
+    .featured-collection-card {
+      width: min(100% - 56px, 1680px);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .featured-collection-card {
+      width: min(100% - 8px, 980px);
+      border-radius: clamp(10px, 3vw, 16px);
+    }
+
+    .featured-collection-slide {
+      min-height: clamp(72px, 22vw, 132px);
+      grid-template-columns: minmax(0, 1fr) minmax(96px, 0.9fr);
+      padding:
+        clamp(9px, 2.8vw, 14px)
+        clamp(10px, 3.2vw, 18px);
+      gap: clamp(6px, 2vw, 12px);
+    }
+
+    .featured-collection-art {
+      height: clamp(62px, 19vw, 116px);
+    }
+
+    .featured-saree {
+      width: clamp(118px, 38vw, 240px);
+      height: clamp(58px, 18vw, 110px);
+    }
+
+    .featured-nav {
+      width: 24px;
+      height: 24px;
+      font-size: 22px;
+      opacity: 0.88;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .featured-collection-card {
+      width: min(100% - 6px, 980px);
+    }
+
+    .featured-collection-slide {
+      min-height: clamp(70px, 24vw, 112px);
+      padding: 9px 10px;
+      grid-template-columns: minmax(0, 1.02fr) minmax(86px, 0.78fr);
+    }
+
+    .featured-eyebrow {
+      font-size: 6.5px;
+    }
+
+    .featured-collection-content h2 {
+      font-size: clamp(13px, 4vw, 18px);
+      max-width: 210px;
+    }
+
+    .featured-collection-content p:not(.featured-eyebrow) {
+      font-size: clamp(7.2px, 2.25vw, 10px);
+      max-width: 190px;
+    }
+
+    .featured-btn {
+      min-height: 21px;
+      margin-top: 5px;
+      padding: 5px 9px;
+      font-size: 7.2px;
+    }
+
+    .featured-collection-art {
+      height: clamp(60px, 20vw, 94px);
+    }
+
+    .featured-saree {
+      right: -22px;
+      width: clamp(112px, 42vw, 190px);
+      height: clamp(54px, 19vw, 86px);
+      border-radius: 9px;
+    }
+
+    .featured-flower--one {
+      width: 28px;
+      height: 28px;
+      left: 0;
+      top: 7px;
+    }
+
+    .featured-flower--two {
+      width: 20px;
+      height: 20px;
+      left: 28px;
+      bottom: 8px;
+    }
+
+    .featured-nav {
+      width: 22px;
+      height: 22px;
+      font-size: 20px;
+    }
+
+    .featured-nav--prev {
+      left: 5px;
+    }
+
+    .featured-nav--next {
+      right: 5px;
+    }
+
+    .featured-dots {
+      bottom: 4px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .featured-collection-slide {
+      min-height: 70px;
+      padding: 8px 8px;
+      grid-template-columns: minmax(0, 1fr) 82px;
+      gap: 5px;
+    }
+
+    .featured-eyebrow {
+      display: none;
+    }
+
+    .featured-collection-content h2 {
+      font-size: 12.5px;
+      line-height: 1.02;
+    }
+
+    .featured-collection-content p:not(.featured-eyebrow) {
+      font-size: 6.8px;
+      line-height: 1.12;
+      max-width: 150px;
+    }
+
+    .featured-btn {
+      min-height: 19px;
+      padding: 4px 8px;
+      font-size: 6.8px;
+    }
+
+    .featured-collection-art {
+      height: 58px;
+    }
+
+    .featured-saree {
+      right: -28px;
+      width: 122px;
+      height: 56px;
+    }
+
+    .featured-flower--one {
+      width: 22px;
+      height: 22px;
+      left: -2px;
+      top: 9px;
+    }
+
+    .featured-flower--two {
+      width: 16px;
+      height: 16px;
+      left: 18px;
+      bottom: 10px;
+    }
+
+    .featured-nav {
+      width: 20px;
+      height: 20px;
+      font-size: 18px;
+      background: rgba(95, 16, 32, 0.30);
+    }
+  }
+
+  @media (max-width: 320px) {
+    .featured-collection-card {
+      width: min(100% - 4px, 980px);
+      border-radius: 10px;
+    }
+
+    .featured-collection-slide {
+      min-height: 66px;
+      padding: 7px 7px;
+      grid-template-columns: minmax(0, 1fr) 70px;
+    }
+
+    .featured-collection-content h2 {
+      font-size: 11.5px;
+    }
+
+    .featured-collection-content p:not(.featured-eyebrow) {
+      font-size: 6.2px;
+      max-width: 132px;
+    }
+
+    .featured-btn {
+      min-height: 18px;
+      padding: 4px 7px;
+      font-size: 6.3px;
+    }
+
+    .featured-collection-art {
+      height: 52px;
+    }
+
+    .featured-saree {
+      right: -34px;
+      width: 112px;
+      height: 50px;
+      border-radius: 8px;
+    }
+
+    .featured-flower--one {
+      width: 19px;
+      height: 19px;
+    }
+
+    .featured-flower--two {
+      display: none;
+    }
+
+    .featured-nav {
+      width: 18px;
+      height: 18px;
+      font-size: 16px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .featured-collection-track,
+    .featured-nav,
+    .featured-dots button {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  (function () {
+    const sliders = document.querySelectorAll("[data-featured-slider]");
+
+    sliders.forEach(function (slider) {
+      const track = slider.querySelector("[data-featured-track]");
+      const realSlides = Array.from(slider.querySelectorAll("[data-featured-slide]"));
+      const dots = Array.from(slider.querySelectorAll("[data-featured-dot]"));
+      const prevBtn = slider.querySelector("[data-featured-prev]");
+      const nextBtn = slider.querySelector("[data-featured-next]");
+
+      if (!track || realSlides.length <= 1) return;
+
+      const firstClone = realSlides[0].cloneNode(true);
+      const lastClone = realSlides[realSlides.length - 1].cloneNode(true);
+
+      firstClone.setAttribute("data-featured-clone", "first");
+      lastClone.setAttribute("data-featured-clone", "last");
+      firstClone.setAttribute("aria-hidden", "true");
+      lastClone.setAttribute("aria-hidden", "true");
+
+      track.insertBefore(lastClone, realSlides[0]);
+      track.appendChild(firstClone);
+
+      const allSlides = Array.from(track.children);
+
+      let realIndex = 0;
+      let trackIndex = 1;
+      let timer = null;
+      let isLocked = false;
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let isTouching = false;
+
+      const AUTO_DELAY = 4200;
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      function moveTo(index, animate) {
+        if (!animate) {
+          track.classList.add("is-jumping");
+        } else {
+          track.classList.remove("is-jumping");
+        }
+
+        track.style.transform = "translate3d(-" + (index * 100) + "%, 0, 0)";
+
+        if (!animate) {
+          track.offsetHeight;
+          requestAnimationFrame(function () {
+            track.classList.remove("is-jumping");
+          });
+        }
+      }
+
+      function updateUI() {
+        realIndex = (trackIndex - 1 + realSlides.length) % realSlides.length;
+
+        allSlides.forEach(function (slide, index) {
+          const isCurrentTrackSlide = index === trackIndex;
+          slide.classList.toggle("is-active", isCurrentTrackSlide);
+          slide.setAttribute("aria-hidden", isCurrentTrackSlide ? "false" : "true");
+        });
+
+        dots.forEach(function (dot, index) {
+          const isActive = index === realIndex;
+          dot.classList.toggle("is-active", isActive);
+
+          if (isActive) {
+            dot.setAttribute("aria-current", "true");
+          } else {
+            dot.removeAttribute("aria-current");
+          }
+        });
+      }
+
+      function goToTrackIndex(nextTrackIndex, shouldRestart) {
+        if (isLocked) return;
+
+        isLocked = true;
+        trackIndex = nextTrackIndex;
+
+        moveTo(trackIndex, true);
+        updateUI();
+
+        window.setTimeout(function () {
+          isLocked = false;
+        }, 560);
+
+        if (shouldRestart) {
+          restartAutoSlide();
+        }
+      }
+
+      function nextSlide(shouldRestart) {
+        goToTrackIndex(trackIndex + 1, shouldRestart);
+      }
+
+      function prevSlide(shouldRestart) {
+        goToTrackIndex(trackIndex - 1, shouldRestart);
+      }
+
+      track.addEventListener("transitionend", function (event) {
+        if (event.target !== track) return;
+
+        if (trackIndex === allSlides.length - 1) {
+          trackIndex = 1;
+          moveTo(trackIndex, false);
+          updateUI();
+        }
+
+        if (trackIndex === 0) {
+          trackIndex = realSlides.length;
+          moveTo(trackIndex, false);
+          updateUI();
+        }
+
+        isLocked = false;
+      });
+
+      function startAutoSlide() {
+        if (prefersReducedMotion) return;
+
+        stopAutoSlide();
+        timer = window.setInterval(function () {
+          nextSlide(false);
+        }, AUTO_DELAY);
+      }
+
+      function stopAutoSlide() {
+        if (timer) {
+          window.clearInterval(timer);
+          timer = null;
+        }
+      }
+
+      function restartAutoSlide() {
+        stopAutoSlide();
+        startAutoSlide();
+      }
+
+      if (nextBtn) {
+        nextBtn.addEventListener("click", function () {
+          nextSlide(true);
+        });
+      }
+
+      if (prevBtn) {
+        prevBtn.addEventListener("click", function () {
+          prevSlide(true);
+        });
+      }
+
+      dots.forEach(function (dot, index) {
+        dot.addEventListener("click", function () {
+          trackIndex = index + 1;
+          moveTo(trackIndex, true);
+          updateUI();
+          restartAutoSlide();
+        });
+      });
+
+      slider.addEventListener("mouseenter", stopAutoSlide);
+      slider.addEventListener("mouseleave", startAutoSlide);
+
+      slider.addEventListener("focusin", stopAutoSlide);
+      slider.addEventListener("focusout", startAutoSlide);
+
+      slider.addEventListener("keydown", function (event) {
+        if (event.key === "ArrowRight") {
+          event.preventDefault();
+          nextSlide(true);
+        }
+
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          prevSlide(true);
+        }
+      });
+
+      slider.addEventListener("touchstart", function (event) {
+        if (!event.touches || event.touches.length !== 1) return;
+
+        isTouching = true;
+        touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
+        stopAutoSlide();
+      }, { passive: true });
+
+      slider.addEventListener("touchend", function (event) {
+        if (!isTouching || !event.changedTouches || event.changedTouches.length !== 1) {
+          restartAutoSlide();
+          return;
+        }
+
+        const touchEndX = event.changedTouches[0].clientX;
+        const touchEndY = event.changedTouches[0].clientY;
+
+        const diffX = touchEndX - touchStartX;
+        const diffY = touchEndY - touchStartY;
+
+        isTouching = false;
+
+        if (Math.abs(diffX) > 38 && Math.abs(diffX) > Math.abs(diffY)) {
+          if (diffX < 0) {
+            nextSlide(true);
+          } else {
+            prevSlide(true);
+          }
+        } else {
+          restartAutoSlide();
+        }
+      }, { passive: true });
+
+      document.addEventListener("visibilitychange", function () {
+        if (document.hidden) {
+          stopAutoSlide();
+        } else {
+          startAutoSlide();
+        }
+      });
+
+      moveTo(trackIndex, false);
+      updateUI();
+      startAutoSlide();
+    });
+  })();
+</script>

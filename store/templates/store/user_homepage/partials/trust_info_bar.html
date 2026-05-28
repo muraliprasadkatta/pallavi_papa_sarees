@@ -1,0 +1,338 @@
+{% load static %}
+
+<section class="trust-info-section" aria-label="Store service highlights">
+  <div class="trust-info-bar">
+
+    <!-- WhatsApp -->
+    <a
+      class="trust-info-item trust-info-item--whatsapp"
+      href="https://wa.me/919123456789"
+      target="_blank"
+      rel="noopener"
+      aria-label="Chat on WhatsApp"
+    >
+      <span class="trust-info-icon trust-info-icon--whatsapp" aria-hidden="true">
+        <svg viewBox="0 0 16 16">
+          <path
+            fill="currentColor"
+            d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93a7.9 7.9 0 0 0-2.327-5.607M7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.501c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.588-6.592 6.588m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.331.065-.133.034-.247-.015-.346-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.474.205.842.327 1.13.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"
+          />
+        </svg>
+      </span>
+
+      <span class="trust-info-copy">
+        <strong>WhatsApp</strong>
+        <small>+91 91234 56789</small>
+      </span>
+    </a>
+
+    <!-- Shipping -->
+    <div class="trust-info-item">
+      <span class="trust-info-icon" aria-hidden="true">
+        <svg viewBox="0 0 64 64">
+          <path d="M8 18h30v28H8V18Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M38 28h10l8 9v9H38V28Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
+          <circle cx="20" cy="49" r="5" fill="none" stroke="currentColor" stroke-width="4"/>
+          <circle cx="48" cy="49" r="5" fill="none" stroke="currentColor" stroke-width="4"/>
+          <path d="M14 26h14M14 34h10" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </span>
+
+      <span class="trust-info-copy">
+        <strong>Shipping Across</strong>
+        <small>India</small>
+      </span>
+    </div>
+
+    <!-- Packaging -->
+    <div class="trust-info-item">
+      <span class="trust-info-icon" aria-hidden="true">
+        <svg viewBox="0 0 64 64">
+          <path d="M32 7l21 8v16c0 13-8 22-21 27C19 53 11 44 11 31V15l21-8Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M22 32l7 7 14-17" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+
+      <span class="trust-info-copy">
+        <strong>Secure Packaging</strong>
+        <small>Assured</small>
+      </span>
+    </div>
+
+    <!-- Support -->
+    <div class="trust-info-item">
+      <span class="trust-info-icon" aria-hidden="true">
+        <svg viewBox="0 0 64 64">
+          <path d="M14 36v-5c0-10 8-18 18-18s18 8 18 18v5" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          <path d="M14 34h8v16h-8c-3 0-5-2-5-5v-6c0-3 2-5 5-5ZM50 34h-8v16h8c3 0 5-2 5-5v-6c0-3-2-5-5-5Z" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>
+          <path d="M42 50c0 4-4 7-10 7h-5" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+        </svg>
+      </span>
+
+      <span class="trust-info-copy">
+        <strong>Customer Support</strong>
+        <small>10AM - 8PM</small>
+      </span>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .trust-info-section {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    background:
+      linear-gradient(180deg, #fff7f1 0%, #fffaf6 100%);
+    padding: 0 0 clamp(10px, 2vw, 18px);
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .trust-info-bar {
+    width: min(100% - clamp(6px, 2.2vw, 56px), 1680px);
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: stretch;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(244, 199, 107, 0.12), transparent 24%),
+      linear-gradient(135deg, #6c061f 0%, #8f1731 46%, #5f1020 100%);
+    border: 1px solid rgba(255, 229, 170, 0.12);
+    border-radius: clamp(10px, 2vw, 18px);
+    box-shadow: 0 10px 28px rgba(80, 36, 40, 0.12);
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .trust-info-item {
+    min-width: 0;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(8px, 1.4vw, 16px);
+    padding:
+      clamp(10px, 1.7vw, 18px)
+      clamp(8px, 1.8vw, 22px);
+    color: #fff8ef;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  .trust-info-item:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 22%;
+    bottom: 22%;
+    width: 1px;
+    background: rgba(255, 236, 196, 0.22);
+  }
+
+  .trust-info-icon {
+    width: clamp(30px, 4vw, 52px);
+    height: clamp(30px, 4vw, 52px);
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    color: #c79243;
+  }
+
+  .trust-info-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .trust-info-icon--whatsapp {
+    width: clamp(32px, 4.2vw, 54px);
+    height: clamp(32px, 4.2vw, 54px);
+    border-radius: 999px;
+    background: #25d366;
+    color: #ffffff;
+    box-shadow: 0 8px 18px rgba(37, 211, 102, 0.22);
+  }
+
+  .trust-info-icon--whatsapp svg {
+    width: 62%;
+    height: 62%;
+  }
+
+  .trust-info-copy {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2px, 0.4vw, 4px);
+    line-height: 1.1;
+  }
+
+  .trust-info-copy strong {
+    color: #fff8ef;
+    font-size: clamp(10px, 1.2vw, 16px);
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .trust-info-copy small {
+    color: rgba(255, 245, 235, 0.88);
+    font-size: clamp(9px, 1.05vw, 14px);
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .trust-info-item--whatsapp {
+    transition: background 180ms ease;
+  }
+
+  .trust-info-item--whatsapp:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  @media (min-width: 1200px) {
+    .trust-info-bar {
+      width: min(100% - 56px, 1680px);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .trust-info-bar {
+      width: min(100% - 8px, 980px);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border-radius: clamp(10px, 3vw, 16px);
+    }
+
+    .trust-info-item {
+      justify-content: flex-start;
+      padding:
+        clamp(10px, 3vw, 14px)
+        clamp(10px, 3.2vw, 16px);
+    }
+
+    .trust-info-item:not(:last-child)::after {
+      display: none;
+    }
+
+    .trust-info-item:nth-child(odd)::after {
+      content: "";
+      display: block;
+      position: absolute;
+      right: 0;
+      top: 22%;
+      bottom: 22%;
+      width: 1px;
+      background: rgba(255, 236, 196, 0.18);
+    }
+
+    .trust-info-item:nth-child(1),
+    .trust-info-item:nth-child(2) {
+      border-bottom: 1px solid rgba(255, 236, 196, 0.16);
+    }
+
+    .trust-info-icon {
+      width: 34px;
+      height: 34px;
+    }
+
+    .trust-info-icon--whatsapp {
+      width: 35px;
+      height: 35px;
+    }
+
+    .trust-info-copy strong {
+      font-size: clamp(10px, 3vw, 13px);
+    }
+
+    .trust-info-copy small {
+      font-size: clamp(9px, 2.6vw, 12px);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .trust-info-bar {
+      width: min(100% - 6px, 980px);
+    }
+
+    .trust-info-item {
+      gap: 8px;
+      padding: 10px 9px;
+    }
+
+    .trust-info-icon {
+      width: 29px;
+      height: 29px;
+    }
+
+    .trust-info-icon--whatsapp {
+      width: 31px;
+      height: 31px;
+    }
+
+    .trust-info-copy strong {
+      font-size: 10.5px;
+    }
+
+    .trust-info-copy small {
+      font-size: 9px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .trust-info-bar {
+      width: min(100% - 4px, 980px);
+    }
+
+    .trust-info-item {
+      gap: 6px;
+      padding: 9px 7px;
+    }
+
+    .trust-info-icon {
+      width: 25px;
+      height: 25px;
+    }
+
+    .trust-info-icon--whatsapp {
+      width: 27px;
+      height: 27px;
+    }
+
+    .trust-info-copy strong {
+      font-size: 9.4px;
+    }
+
+    .trust-info-copy small {
+      font-size: 8.2px;
+    }
+  }
+
+  @media (max-width: 320px) {
+    .trust-info-item {
+      padding: 8px 6px;
+    }
+
+    .trust-info-icon {
+      width: 23px;
+      height: 23px;
+    }
+
+    .trust-info-icon--whatsapp {
+      width: 25px;
+      height: 25px;
+    }
+
+    .trust-info-copy strong {
+      font-size: 8.8px;
+    }
+
+    .trust-info-copy small {
+      font-size: 7.8px;
+    }
+  }
+</style>

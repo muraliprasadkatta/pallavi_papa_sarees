@@ -1,0 +1,440 @@
+{% load static %}
+
+<footer class="site-footer" aria-label="Pallavi Papa footer">
+  <div class="site-footer__inner">
+
+    <!-- Brand -->
+    <div class="site-footer__brand">
+      <a href="{% url 'store:user_home' %}" class="footer-brand-link" aria-label="Pallavi Papa home">
+        <span class="footer-logo">PP</span>
+
+        <span class="footer-brand-text">
+          <strong>Pallavi Papa</strong>
+          <small>Sarees Collections</small>
+        </span>
+      </a>
+
+      <p>
+        Bringing you the finest sarees for every occasion.
+      </p>
+    </div>
+
+    <!-- Quick Links -->
+    <nav class="site-footer__col" aria-label="Quick links">
+      <h3>Quick Links</h3>
+
+      <ul>
+        <li><a href="{% url 'store:user_home' %}">Home</a></li>
+        <li><a href="#">Collections</a></li>
+        <li><a href="#">New Arrivals</a></li>
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Contact Us</a></li>
+      </ul>
+    </nav>
+
+    <!-- Customer Care -->
+    <nav class="site-footer__col" aria-label="Customer care">
+      <h3>Customer Care</h3>
+
+      <ul>
+        <li><a href="#">How to Order</a></li>
+        <li><a href="#">Shipping &amp; Delivery</a></li>
+        <li><a href="#">Return Policy</a></li>
+        <li><a href="#">Size Guide</a></li>
+        <li><a href="#">FAQ</a></li>
+      </ul>
+    </nav>
+
+    <!-- Follow Us -->
+    <div class="site-footer__social">
+      <h3>Follow Us</h3>
+
+      <div class="footer-social-icons" aria-label="Social media links">
+        <a class="footer-social footer-social--instagram" href="#" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="currentColor"
+              d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4c0 3.2-2.6 5.8-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8C2 4.6 4.6 2 7.8 2Zm-.2 2A3.6 3.6 0 0 0 4 7.6v8.8A3.6 3.6 0 0 0 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6A3.6 3.6 0 0 0 16.4 4H7.6Zm9.65 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6Z"
+            />
+          </svg>
+        </a>
+
+        <a
+          class="footer-social footer-social--whatsapp"
+          href="https://wa.me/919123456789"
+          target="_blank"
+          rel="noopener"
+          aria-label="WhatsApp"
+        >
+          <svg viewBox="0 0 16 16" aria-hidden="true">
+            <path
+              fill="currentColor"
+              d="M13.601 2.326A7.85 7.85 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93a7.9 7.9 0 0 0-2.327-5.607M7.994 14.521a6.6 6.6 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.501c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.56 6.56 0 0 1 1.928 4.66c-.004 3.639-2.961 6.588-6.592 6.588m3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.331.065-.133.034-.247-.015-.346-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.73.73 0 0 0-.529.247c-.182.198-.691.677-.691 1.654s.71 1.916.81 2.049c.098.133 1.394 2.132 3.383 2.992.474.205.842.327 1.13.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232"
+            />
+          </svg>
+        </a>
+
+        <a class="footer-social footer-social--facebook" href="#" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              fill="currentColor"
+              d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.23.2 2.23.2v2.45h-1.25c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12Z"
+            />
+          </svg>
+        </a>
+      </div>
+
+      <p class="footer-copy">
+        © 2025 Pallavi Papa Sarees Collections<br>
+        All rights reserved.
+      </p>
+    </div>
+
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(199, 146, 67, 0.08), transparent 24%),
+      linear-gradient(180deg, #fff7f1 0%, #f8eadf 100%);
+    padding: 0 0 clamp(10px, 2vw, 18px);
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .site-footer__inner {
+    width: min(100% - clamp(6px, 2.2vw, 56px), 1680px);
+    margin-inline: auto;
+    display: grid;
+    grid-template-columns:
+      minmax(220px, 1.35fr)
+      minmax(130px, 0.85fr)
+      minmax(150px, 0.95fr)
+      minmax(190px, 1.05fr);
+    gap: 0;
+    background:
+      linear-gradient(145deg, rgba(255, 250, 245, 0.96), rgba(248, 234, 223, 0.92));
+    border: 1px solid rgba(143, 23, 49, 0.08);
+    border-radius: clamp(12px, 2.2vw, 22px);
+    box-shadow: 0 10px 28px rgba(80, 36, 40, 0.07);
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+
+  .site-footer__brand,
+  .site-footer__col,
+  .site-footer__social {
+    min-width: 0;
+    padding:
+      clamp(16px, 2.3vw, 28px)
+      clamp(16px, 2.5vw, 34px);
+    box-sizing: border-box;
+  }
+
+  .site-footer__brand,
+  .site-footer__col {
+    border-right: 1px solid rgba(143, 23, 49, 0.08);
+  }
+
+  .footer-brand-link {
+    display: flex;
+    align-items: center;
+    gap: clamp(10px, 1.4vw, 16px);
+    color: inherit;
+    text-decoration: none;
+    min-width: 0;
+  }
+
+  .footer-logo {
+    width: clamp(42px, 5vw, 64px);
+    height: clamp(42px, 5vw, 64px);
+    flex: 0 0 auto;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, #9b1c31, #721324);
+    color: #ffffff;
+    font-weight: 900;
+    font-size: clamp(15px, 1.7vw, 23px);
+    letter-spacing: -0.03em;
+    box-shadow: 0 9px 20px rgba(95, 16, 32, 0.18);
+  }
+
+  .footer-brand-text {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.05;
+  }
+
+  .footer-brand-text strong {
+    color: #8f1731;
+    font-size: clamp(17px, 1.9vw, 28px);
+    font-weight: 900;
+    letter-spacing: -0.035em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .footer-brand-text small {
+    margin-top: 4px;
+    color: #6f666b;
+    font-size: clamp(11px, 1.15vw, 16px);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .site-footer__brand p {
+    max-width: 280px;
+    margin: clamp(12px, 1.6vw, 18px) 0 0;
+    color: #63585c;
+    font-size: clamp(11px, 1.1vw, 15px);
+    line-height: 1.45;
+  }
+
+  .site-footer h3 {
+    margin: 0 0 clamp(8px, 1vw, 12px);
+    color: #5f1020;
+    font-size: clamp(12px, 1.25vw, 17px);
+    line-height: 1.15;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+  }
+
+  .site-footer ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: clamp(5px, 0.75vw, 8px);
+  }
+
+  .site-footer li {
+    min-width: 0;
+  }
+
+  .site-footer a {
+    color: inherit;
+  }
+
+  .site-footer__col a {
+    color: #665b5f;
+    font-size: clamp(10.5px, 1.05vw, 14px);
+    line-height: 1.2;
+    text-decoration: none;
+    font-weight: 560;
+    transition: color 160ms ease, transform 160ms ease;
+    display: inline-block;
+  }
+
+  .site-footer__col a:hover {
+    color: #8f1731;
+    transform: translateX(2px);
+  }
+
+  .footer-social-icons {
+    display: flex;
+    align-items: center;
+    gap: clamp(8px, 1vw, 12px);
+    flex-wrap: wrap;
+  }
+
+  .footer-social {
+    width: clamp(30px, 3vw, 42px);
+    height: clamp(30px, 3vw, 42px);
+    flex: 0 0 auto;
+    border-radius: 999px;
+    display: grid;
+    place-items: center;
+    color: #ffffff;
+    text-decoration: none;
+    box-shadow: 0 8px 18px rgba(80, 36, 40, 0.10);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+  }
+
+  .footer-social:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(80, 36, 40, 0.14);
+  }
+
+  .footer-social svg {
+    width: 58%;
+    height: 58%;
+    display: block;
+  }
+
+  .footer-social--instagram {
+    background:
+      radial-gradient(circle at 30% 105%, #feda75 0 18%, transparent 19%),
+      linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+  }
+
+  .footer-social--whatsapp {
+    background: #25d366;
+  }
+
+  .footer-social--facebook {
+    background: #1877f2;
+  }
+
+  .footer-copy {
+    margin: clamp(12px, 1.6vw, 18px) 0 0;
+    color: #6f666b;
+    font-size: clamp(10.5px, 1.05vw, 14px);
+    line-height: 1.45;
+    font-weight: 550;
+  }
+
+  @media (min-width: 1200px) {
+    .site-footer__inner {
+      width: min(100% - 56px, 1680px);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .site-footer__inner {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .site-footer__brand,
+    .site-footer__col,
+    .site-footer__social {
+      border-right: 0;
+    }
+
+    .site-footer__brand,
+    .site-footer__col:nth-of-type(1) {
+      border-bottom: 1px solid rgba(143, 23, 49, 0.08);
+    }
+
+    .site-footer__brand,
+    .site-footer__col {
+      border-right: 1px solid rgba(143, 23, 49, 0.08);
+    }
+
+    .site-footer__col:nth-of-type(2) {
+      border-right: 0;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .site-footer__inner {
+      width: min(100% - 8px, 980px);
+    }
+
+    .site-footer__brand,
+    .site-footer__col,
+    .site-footer__social {
+      padding:
+        clamp(13px, 3.5vw, 18px)
+        clamp(12px, 3.8vw, 18px);
+    }
+  }
+
+  @media (max-width: 560px) {
+    .site-footer__inner {
+      grid-template-columns: 1fr;
+    }
+
+    .site-footer__brand,
+    .site-footer__col,
+    .site-footer__social {
+      border-right: 0 !important;
+      border-bottom: 1px solid rgba(143, 23, 49, 0.08);
+    }
+
+    .site-footer__social {
+      border-bottom: 0;
+    }
+
+    .site-footer__brand {
+      text-align: left;
+    }
+
+    .site-footer__brand p {
+      max-width: 100%;
+    }
+
+    .site-footer ul {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px 12px;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .site-footer__inner {
+      width: min(100% - 6px, 980px);
+      border-radius: 12px;
+    }
+
+    .footer-logo {
+      width: 40px;
+      height: 40px;
+      font-size: 14px;
+    }
+
+    .footer-brand-text strong {
+      font-size: 16px;
+    }
+
+    .footer-brand-text small {
+      font-size: 10.5px;
+    }
+
+    .site-footer__brand,
+    .site-footer__col,
+    .site-footer__social {
+      padding: 12px 11px;
+    }
+
+    .site-footer ul {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .footer-social {
+      width: 30px;
+      height: 30px;
+    }
+  }
+
+  @media (max-width: 320px) {
+    .site-footer__inner {
+      width: min(100% - 4px, 980px);
+    }
+
+    .footer-brand-link {
+      gap: 8px;
+    }
+
+    .footer-logo {
+      width: 36px;
+      height: 36px;
+      font-size: 13px;
+    }
+
+    .footer-brand-text strong {
+      font-size: 15px;
+    }
+
+    .footer-brand-text small {
+      font-size: 10px;
+    }
+
+    .site-footer__brand p,
+    .site-footer__col a,
+    .footer-copy {
+      font-size: 10px;
+    }
+
+    .site-footer h3 {
+      font-size: 11.5px;
+    }
+  }
+</style>

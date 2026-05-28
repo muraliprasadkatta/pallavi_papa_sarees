@@ -1,0 +1,38 @@
+<article class="product-card">
+  <div class="product-media">
+    {% if p.main_image %}
+      <img
+        src="{{ p.main_image.url }}"
+        alt="{{ p.name }}"
+        loading="lazy"
+      >
+    {% endif %}
+
+    {% if p.offer_price %}
+      <span class="product-offer">Offer</span>
+    {% elif p.is_new_arrival %}
+      <span class="product-offer">New</span>
+    {% endif %}
+
+    <button class="product-heart" type="button" aria-label="Add to wishlist">
+      ♥
+    </button>
+  </div>
+
+  <div class="product-info">
+    <h3>{{ p.name }}</h3>
+
+    <p class="product-category">
+      {{ p.get_category_display }}
+    </p>
+
+    <div class="product-price">
+      {% if p.offer_price %}
+        <strong>₹{{ p.offer_price|floatformat:0 }}</strong>
+        <del>₹{{ p.actual_price|floatformat:0 }}</del>
+      {% else %}
+        <strong>₹{{ p.actual_price|floatformat:0 }}</strong>
+      {% endif %}
+    </div>
+  </div>
+</article>
