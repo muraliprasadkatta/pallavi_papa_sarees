@@ -136,6 +136,8 @@ CLOUDINARY_STORAGE = {
     "API_SECRET": config("CLOUDINARY_API_SECRET", default=""),
 }
 
+CLOUDINARY_UPLOAD_FOLDER = config("CLOUDINARY_UPLOAD_FOLDER", default="local")
+
 
 STORAGES = {
     "default": {

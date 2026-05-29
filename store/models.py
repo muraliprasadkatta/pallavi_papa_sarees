@@ -1,7 +1,21 @@
-from django.db import models
+from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.db import models
 
 from store.services.product_image_service import convert_product_image_to_webp
+
+
+def _product_image_path(folder, filename):
+    upload_folder = getattr(settings, "CLOUDINARY_UPLOAD_FOLDER", "local")
+    return f"pallavi_papa_sarees/{upload_folder}/products/{folder}/{filename}"
+
+
+def product_main_image_upload_to(instance, filename):
+    return _product_image_path("main", filename)
+
+
+def product_sub_image_upload_to(instance, filename):
+    return _product_image_path("sub", filename)
 
 
 class Product(models.Model):
@@ -30,10 +44,10 @@ class Product(models.Model):
     actual_price = models.DecimalField(max_digits=10, decimal_places=2)
     offer_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
-    main_image = models.ImageField(upload_to="products/main/")
-    sub_image_1 = models.ImageField(upload_to="products/sub/", blank=True, null=True)
-    sub_image_2 = models.ImageField(upload_to="products/sub/", blank=True, null=True)
-    sub_image_3 = models.ImageField(upload_to="products/sub/", blank=True, null=True)
+    main_image = models.ImageField(upload_to=product_main_image_upload_to)
+    sub_image_1 = models.ImageField(upload_to=product_sub_image_upload_to, blank=True, null=True)
+    sub_image_2 = models.ImageField(upload_to=product_sub_image_upload_to, blank=True, null=True)
+    sub_image_3 = models.ImageField(upload_to=product_sub_image_upload_to, blank=True, null=True)
 
     is_available = models.BooleanField(default=True)
     is_new_arrival = models.BooleanField(default=False)

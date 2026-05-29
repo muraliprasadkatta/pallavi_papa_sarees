@@ -8,7 +8,6 @@ from django.utils.text import slugify
 from PIL import Image, ImageOps
 
 
-
 TARGET_WIDTH = 1600
 TARGET_HEIGHT = 2000
 WEBP_QUALITY = 82
@@ -24,14 +23,14 @@ def _center_crop_to_ratio(img, target_width=TARGET_WIDTH, target_height=TARGET_H
     current_ratio = width / height
 
     if current_ratio > target_ratio:
-        # image too wide, crop left/right
+        # Image too wide, crop left/right.
         new_width = int(height * target_ratio)
         left = (width - new_width) // 2
         right = left + new_width
         return img.crop((left, 0, right, height))
 
     if current_ratio < target_ratio:
-        # image too tall, crop top/bottom
+        # Image too tall, crop top/bottom.
         new_height = int(width / target_ratio)
         top = (height - new_height) // 2
         bottom = top + new_height
@@ -43,7 +42,7 @@ def _center_crop_to_ratio(img, target_width=TARGET_WIDTH, target_height=TARGET_H
 def _to_rgb(img):
     """
     WebP works with RGB/RGBA, but for product images RGB is safer.
-    Transparent images get white background.
+    Transparent images get a white background.
     """
     if img.mode in ("RGBA", "LA"):
         bg = Image.new("RGB", img.size, (255, 255, 255))
@@ -63,12 +62,16 @@ def convert_product_image_to_webp(uploaded_file, base_name="product"):
     - 1600x2000 px
     - WebP format
     - optimized quality
+
+    Folder path is handled by Product model upload_to.
+    This service only returns a clean WebP filename.
     """
     if not uploaded_file:
         return None
 
     try:
         uploaded_file.seek(0)
+
         img = Image.open(uploaded_file)
         img = ImageOps.exif_transpose(img)
         img = _to_rgb(img)
@@ -91,4 +94,7 @@ def convert_product_image_to_webp(uploaded_file, base_name="product"):
         return ContentFile(output.getvalue(), name=file_name)
 
     except Exception as exc:
-        raise ValidationError(f"Invalid product image. Please upload a clear JPG/PNG/WebP image. Error: {exc}")
+        raise ValidationError(
+            "Invalid product image. Please upload a clear JPG/PNG/WebP image. "
+            f"Error: {exc}"
+        )
