@@ -8,6 +8,18 @@
 
   <title>{% block title %}Pallavi Papa Sarees Collections{% endblock %}</title>
 
+  {% block meta %}
+    <meta name="description" content="Pallavi Papa Sarees Collections offers beautiful pattu sarees, silk sarees, cotton sarees and designer saree collections.">
+    <meta name="robots" content="index, follow">
+
+    <meta property="og:title" content="Pallavi Papa Sarees Collections">
+    <meta property="og:description" content="Explore elegant pattu, silk, cotton and designer saree collections.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pallavipapacollections.online/">
+
+    <link rel="canonical" href="https://pallavipapacollections.online/">
+  {% endblock %}
+
   <link rel="stylesheet" href="{% static 'store/css/base.css' %}">
 
   {% block extra_css %}{% endblock %}
