@@ -9,10 +9,17 @@
         <p>Browse popular saree styles</p>
       </div>
 
-      <div class="collection-deco" aria-hidden="true">
-        <span></span>
-        <i>✦</i>
+      <div class="collection-head-actions">
+        <a class="collection-view-all" href="{% url 'store:collections' %}?category=all&focus=shop">
+          View All <span>›</span>
+        </a>
+
+        <div class="collection-deco" aria-hidden="true">
+          <span></span>
+          <i>✦</i>
+        </div>
       </div>
+
     </div>
 
     <div class="collection-grid">
@@ -87,7 +94,6 @@
   </div>
 
 </section>
-
 <style>
   :root {
     --pp-bg: #fff7f1;
@@ -156,36 +162,81 @@
   }
 
   .collection-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
     gap: 10px;
     padding: 10px 10px 0;
     margin-bottom: 9px;
+  }
+
+  .collection-head > div:first-child {
+    min-width: 0;
   }
 
   .collection-head h2 {
     margin: 0;
     color: var(--pp-maroon-dark);
     font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(18px, 4.8vw, 26px);
+    font-size: clamp(17px, 4.5vw, 25px);
     line-height: 1.08;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.018em;
+    font-weight: 640;
   }
 
   .collection-head p {
     margin: 4px 0 0;
     color: var(--pp-muted);
-    font-size: clamp(12px, 3.2vw, 15px);
+    font-size: clamp(11.5px, 3vw, 14px);
     line-height: 1.3;
+    font-weight: 400;
+  }
+
+  .collection-head-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex: 0 0 auto;
+    padding-top: 3px;
+    min-width: max-content;
+  }
+
+  .collection-view-all {
+    min-height: 24px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: var(--pp-maroon);
+    background: transparent;
+    box-shadow: none;
+    text-decoration: none;
+    font-size: clamp(10px, 2.6vw, 12px);
+    font-weight: 680;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .collection-view-all span {
+    color: var(--pp-gold);
+    font-size: 14px;
+    line-height: 1;
+    transform: translateY(-1px);
+  }
+
+  .collection-view-all:hover {
+    color: var(--pp-maroon-dark);
   }
 
   .collection-deco {
     display: flex;
     align-items: center;
     gap: 8px;
-    min-width: 74px;
-    padding-top: 10px;
+    min-width: 54px;
     color: var(--pp-gold);
   }
 
@@ -198,11 +249,10 @@
 
   .collection-deco i {
     font-style: normal;
-    font-size: 15px;
+    font-size: 13px;
     line-height: 1;
   }
 
-  /* MOBILE FIRST: 3-CARD CATALOG STYLE */
   .collection-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -210,7 +260,6 @@
     padding: 0 8px 12px;
   }
 
-  /* MOBILE FIRST: 3-CARD CATALOG STYLE */
   .collection-tile {
     min-width: 0;
     min-height: clamp(128px, 39vw, 158px);
@@ -322,6 +371,20 @@
       linear-gradient(135deg, #fff1ef, #f4b8bd 60%, #ffe8d7);
   }
 
+  .saree-thumb--image {
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.10)),
+      var(--thumb-img);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .saree-thumb--image::before,
+  .saree-thumb--image::after {
+    display: none;
+  }
+
   .collection-copy {
     width: 100%;
     min-width: 0;
@@ -339,10 +402,10 @@
     display: block;
     color: var(--pp-maroon-dark);
     font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(10.8px, 3.1vw, 12.5px);
+    font-size: clamp(10.6px, 3vw, 12.2px);
     line-height: 1;
-    letter-spacing: -0.01em;
-    font-weight: 800;
+    letter-spacing: -0.008em;
+    font-weight: 650;
 
     white-space: nowrap;
     overflow: hidden;
@@ -359,21 +422,6 @@
     line-height: 1;
   }
 
-  .saree-thumb--image {
-    background:
-      linear-gradient(180deg, rgba(0,0,0,0.02), rgba(0,0,0,0.10)),
-      var(--thumb-img);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-  }
-
-  .saree-thumb--image::before,
-  .saree-thumb--image::after {
-    display: none;
-  }
-
-  /* TABLET + DESKTOP: premium horizontal cards */
   @media (min-width: 768px) {
     .collection-discovery {
       --collection-overlap: 72px;
@@ -387,6 +435,25 @@
     .collection-head {
       padding: 18px 20px 0;
       margin-bottom: 14px;
+      align-items: center;
+    }
+
+    .collection-head h2 {
+      font-size: clamp(22px, 2vw, 30px);
+      font-weight: 650;
+    }
+
+    .collection-head p {
+      font-size: clamp(13px, 1.05vw, 15px);
+    }
+
+    .collection-view-all {
+      font-size: 12.5px;
+      font-weight: 680;
+    }
+
+    .collection-view-all span {
+      font-size: 15px;
     }
 
     .collection-grid {
@@ -419,8 +486,9 @@
     }
 
     .collection-copy strong {
-      font-size: clamp(15px, 1.2vw, 19px);
+      font-size: clamp(14px, 1.1vw, 18px);
       line-height: 1.1;
+      font-weight: 650;
     }
 
     .tile-arrow {
@@ -432,6 +500,42 @@
   }
 
   @media (max-width: 480px) {
+    .collection-head {
+      gap: 8px;
+      padding: 10px 9px 0;
+    }
+
+    .collection-head h2 {
+      font-size: clamp(17px, 5.2vw, 22px);
+      font-weight: 620;
+      line-height: 1.08;
+    }
+
+    .collection-head p {
+      margin-top: 3px;
+      font-size: clamp(11px, 3.1vw, 13px);
+    }
+
+    .collection-head-actions {
+      gap: 0;
+      padding-top: 4px;
+    }
+
+    .collection-deco {
+      display: none;
+    }
+
+    .collection-view-all {
+      min-height: 22px;
+      font-size: clamp(9.6px, 2.7vw, 10.8px);
+      font-weight: 680;
+      gap: 3px;
+    }
+
+    .collection-view-all span {
+      font-size: 13px;
+    }
+
     .collection-grid {
       gap: 7px;
       padding: 0 7px 11px;
@@ -455,7 +559,8 @@
     }
 
     .collection-copy strong {
-      font-size: clamp(10.3px, 3vw, 12px);
+      font-size: clamp(10px, 2.9vw, 11.8px);
+      font-weight: 650;
     }
 
     .tile-arrow {
@@ -475,7 +580,26 @@
     }
 
     .collection-head {
-      padding: 9px 9px 0;
+      padding: 9px 8px 0;
+      gap: 6px;
+    }
+
+    .collection-head h2 {
+      font-size: clamp(16px, 5.1vw, 20px);
+      font-weight: 610;
+    }
+
+    .collection-head p {
+      font-size: 11px;
+    }
+
+    .collection-view-all {
+      font-size: 9.4px;
+      font-weight: 670;
+    }
+
+    .collection-view-all span {
+      font-size: 12px;
     }
 
     .collection-grid {
@@ -503,6 +627,7 @@
     .collection-copy strong {
       font-size: 9.8px;
       line-height: 1;
+      font-weight: 640;
     }
 
     .tile-arrow {
@@ -510,47 +635,58 @@
       bottom: 6px;
       font-size: 10.5px;
     }
+  }
 
-    .collection-deco {
-      display: none;
+  @media (max-width: 340px) {
+    .collection-head {
+      padding: 8px 7px 0;
+    }
+
+    .collection-head h2 {
+      font-size: 15.5px;
+    }
+
+    .collection-head p {
+      font-size: 10.5px;
+    }
+
+    .collection-view-all {
+      font-size: 8.8px;
+    }
+
+    .collection-grid {
+      gap: 5px;
+      padding-left: 5px;
+      padding-right: 5px;
+    }
+
+    .collection-tile {
+      min-height: 112px;
+      padding: 4px 4px 3px;
+      gap: 3px;
+    }
+
+    .saree-thumb {
+      height: 80px;
+      border-radius: 9px;
+    }
+
+    .collection-copy {
+      min-height: 17px;
+      padding-right: 7px;
+    }
+
+    .collection-copy strong {
+      font-size: 9.2px;
+      line-height: 1;
+    }
+
+    .tile-arrow {
+      right: 4px;
+      bottom: 5px;
+      font-size: 10px;
     }
   }
-
-/* EXTRA SMALL PHONES */
-@media (max-width: 340px) {
-  .collection-grid {
-    gap: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
-  }
-
-  .collection-tile {
-    min-height: 112px;
-    padding: 4px 4px 3px;
-    gap: 3px;
-  }
-
-  .saree-thumb {
-    height: 80px;
-    border-radius: 9px;
-  }
-
-  .collection-copy {
-    min-height: 17px;
-    padding-right: 7px;
-  }
-
-  .collection-copy strong {
-    font-size: 9.2px;
-    line-height: 1;
-  }
-
-  .tile-arrow {
-    right: 4px;
-    bottom: 5px;
-    font-size: 10px;
-  }
-}
 
   @media (min-width: 1200px) {
     .collection-card {

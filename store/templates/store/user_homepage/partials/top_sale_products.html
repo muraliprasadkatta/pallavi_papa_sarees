@@ -1,16 +1,15 @@
 {% load static %}
 
-<section class="trend-showcase" aria-label="Popular sarees section">
+<section class="trend-showcase" aria-label="Popular products section">
   <div class="trend-card">
 
     <div class="trend-head">
       <div>
         <span class="trend-kicker">Customer Picks</span>
         <h2>Shop What Everyone Loves</h2>
-        <p>Top selling, most liked, and most carted sarees in one stylish view.</p>
       </div>
 
-      <a href="#" class="trend-view-all">
+      <a href="{% url 'store:collections' %}" class="trend-view-all">
         View All <span>›</span>
       </a>
     </div>
@@ -18,200 +17,106 @@
     <div class="trend-tabs" role="tablist" aria-label="Popular product filters">
       <button class="trend-tab is-active" type="button" data-trend-tab="selling">
         <span>♛</span>
-        Top Selling
+        Best Picks
       </button>
 
       <button class="trend-tab" type="button" data-trend-tab="liked">
         <span>♥</span>
-        Most Liked
+        Most Loved
       </button>
 
       <button class="trend-tab" type="button" data-trend-tab="carted">
         <span>🛍</span>
-        Most Carted
+        Popular Picks
       </button>
     </div>
 
     <div class="trend-stage">
-
-      <button class="trend-nav trend-nav--prev" type="button" aria-label="Previous products">
-        ‹
-      </button>
-
       <div class="trend-track" id="trendTrack">
 
-        <article class="trend-product trend-product--side" data-trend-type="selling" data-carousel-pos="0">
-          <div class="trend-badge">Top Seller</div>
+        <article class="trend-product" data-trend-type="selling" data-carousel-pos="3">
+          <div class="trend-badge">Best Pick</div>
           <button class="trend-heart" type="button" aria-label="Add to wishlist">♥</button>
 
-          <div class="trend-art trend-art--wine"></div>
-
-          <div class="trend-info">
-            <h3>Pathani Silk Saree</h3>
-            <div class="trend-price">
-              <strong>₹2,499</strong>
-              <del>₹3,299</del>
-            </div>
-            <p>4.6 ★ · 201 sold</p>
-            <a class="trend-whatsapp" href="https://wa.me/919999999999" target="_blank" rel="noopener">
-              WhatsApp
-            </a>
+          <div class="trend-art trend-art--image">
+            <img
+              src="{% static 'store/user_home/top_sale_products/semi_uppada_1299.webp' %}"
+              alt="Semi Uppada Saree"
+              loading="lazy"
+            >
           </div>
-        </article>
-
-        <article class="trend-product trend-product--side" data-trend-type="liked" data-carousel-pos="1">
-          <div class="trend-badge trend-badge--pink">Most Liked</div>
-          <button class="trend-heart" type="button" aria-label="Add to wishlist">♥</button>
-
-          <div class="trend-art trend-art--teal"></div>
 
           <div class="trend-info">
-            <h3>Kanchipuram Silk Saree</h3>
-            <div class="trend-price">
-              <strong>₹1,899</strong>
-              <del>₹2,499</del>
-            </div>
-            <p>4.7 ★ · 312 likes</p>
-            <a class="trend-whatsapp" href="https://wa.me/919999999999" target="_blank" rel="noopener">
-              WhatsApp
-            </a>
-          </div>
-        </article>
-
-        <article class="trend-product trend-product--main" data-trend-type="selling" data-carousel-pos="2">
-          <div class="trend-badge trend-badge--gold">Best Seller</div>
-          <button class="trend-heart" type="button" aria-label="Add to wishlist">♥</button>
-
-          <div class="trend-art trend-art--red"></div>
-
-          <div class="trend-info">
-            <h3>Banarasi Silk Saree</h3>
-            <div class="trend-price">
-              <strong>₹2,299</strong>
-              <del>₹2,999</del>
-              <span>23% OFF</span>
-            </div>
-            <p>4.8 ★ · 459 sold</p>
-            <a class="trend-whatsapp trend-whatsapp--solid" href="https://wa.me/919999999999" target="_blank" rel="noopener">
-              WhatsApp
-            </a>
-          </div>
-        </article>
-
-        <article class="trend-product trend-product--side" data-trend-type="carted" data-carousel-pos="3">
-          <div class="trend-badge trend-badge--purple">Most Carted</div>
-          <button class="trend-heart" type="button" aria-label="Add to wishlist">♥</button>
-
-          <div class="trend-art trend-art--purple"></div>
-
-          <div class="trend-info">
-            <h3>Soft Silk Saree</h3>
+            <h3>Semi Uppada Saree</h3>
             <div class="trend-price">
               <strong>₹1,299</strong>
               <del>₹1,799</del>
             </div>
-            <p>4.6 ★ · 278 carted</p>
-            <a class="trend-whatsapp" href="https://wa.me/919999999999" target="_blank" rel="noopener">
+            <p>Owner selected pick</p>
+            <a class="trend-whatsapp trend-whatsapp--solid" href="https://wa.me/918333895789" target="_blank" rel="noopener">
               WhatsApp
             </a>
           </div>
         </article>
 
-
-
-        <article class="trend-product trend-product--side" data-trend-type="selling" data-carousel-pos="4">
-          <div class="trend-badge">Top Seller</div>
+        <article class="trend-product" data-trend-type="liked" data-carousel-pos="4">
+          <div class="trend-badge trend-badge--pink">Most Loved</div>
           <button class="trend-heart" type="button" aria-label="Add to wishlist">♥</button>
 
-          <div class="trend-art trend-art--mustard"></div>
+          <div class="trend-art trend-art--image">
+            <img
+              src="{% static 'store/user_home/top_sale_products/co_ordsets_650.webp' %}"
+              alt="Co-ord Sets"
+              loading="lazy"
+            >
+          </div>
 
           <div class="trend-info">
-            <h3>Cotton Silk Saree</h3>
+            <h3>Co-ord Sets</h3>
             <div class="trend-price">
-              <strong>₹899</strong>
-              <del>₹1,299</del>
+              <strong>₹650</strong>
+              <del>₹999</del>
             </div>
-            <p>4.5 ★ · 186 sold</p>
-            <a class="trend-whatsapp" href="https://wa.me/919999999999" target="_blank" rel="noopener">
+            <p>Customer favourite</p>
+            <a class="trend-whatsapp" href="https://wa.me/918333895789" target="_blank" rel="noopener">
               WhatsApp
             </a>
           </div>
         </article>
 
-        <article class="trend-product trend-product--side" data-trend-type="liked" data-carousel-pos="6">
-            <div class="trend-badge trend-badge--pink">Most Liked</div>
-            <button class="trend-heart" type="button" aria-label="Add to wishlist">♥</button>
+        <article class="trend-product" data-trend-type="carted" data-carousel-pos="2">
+          <div class="trend-badge trend-badge--gold">Popular</div>
+          <button class="trend-heart" type="button" aria-label="Add to wishlist">♥</button>
 
-            <div class="trend-art trend-art--rose"></div>
+          <div class="trend-art trend-art--image">
+            <img
+              src="{% static 'store/user_home/top_sale_products/top_sale_399.webp' %}"
+              alt="Top Sale Pick"
+              loading="lazy"
+            >
+          </div>
 
-            <div class="trend-info">
-                <h3>Organza Fancy Saree</h3>
-                <div class="trend-price">
-                <strong>₹1,599</strong>
-                <del>₹2,199</del>
-                </div>
-                <p>4.7 ★ · 238 likes</p>
-                <a class="trend-whatsapp" href="https://wa.me/919999999999" target="_blank" rel="noopener">
-                WhatsApp
-                </a>
+          <div class="trend-info">
+            <h3>Top Sale Pick</h3>
+            <div class="trend-price">
+              <strong>₹399</strong>
+              <del>₹699</del>
+              <span>43% OFF</span>
             </div>
-            </article>
-
-            <article class="trend-product trend-product--side" data-trend-type="carted" data-carousel-pos="0">
-            <div class="trend-badge trend-badge--purple">Most Carted</div>
-            <button class="trend-heart" type="button" aria-label="Add to wishlist">♥</button>
-
-            <div class="trend-art trend-art--navy"></div>
-
-            <div class="trend-info">
-                <h3>Designer Party Saree</h3>
-                <div class="trend-price">
-                <strong>₹1,749</strong>
-                <del>₹2,399</del>
-                </div>
-                <p>4.6 ★ · 190 carted</p>
-                <a class="trend-whatsapp" href="https://wa.me/919999999999" target="_blank" rel="noopener">
-                WhatsApp
-                </a>
-            </div>
+            <p>Budget favourite</p>
+            <a class="trend-whatsapp" href="https://wa.me/918333895789" target="_blank" rel="noopener">
+              WhatsApp
+            </a>
+          </div>
         </article>
 
-
-
       </div>
-
-      <button class="trend-nav trend-nav--next" type="button" aria-label="Next products">
-        ›
-      </button>
-
     </div>
 
     <div class="trend-dots" aria-hidden="true">
-      <span></span>
-      <span></span>
       <span class="is-active"></span>
       <span></span>
       <span></span>
-    </div>
-
-    <div class="trend-benefits">
-      <div>
-        <span>盾</span>
-        <strong>100% Trusted Store</strong>
-        <small>Quality assured</small>
-      </div>
-
-      <div>
-        <span>🚚</span>
-        <strong>Free Shipping</strong>
-        <small>On orders above ₹999</small>
-      </div>
-
-      <div>
-        <span>↩</span>
-        <strong>Easy Returns</strong>
-        <small>Hassle free support</small>
-      </div>
     </div>
 
   </div>
@@ -232,8 +137,7 @@
 
     width: 100%;
     max-width: 100%;
-    margin-left: 0;
-    margin-right: 0;
+    margin: 0;
     padding: clamp(12px, 2.4vw, 22px) 0 clamp(20px, 4vw, 36px);
     overflow-x: hidden;
 
@@ -244,8 +148,7 @@
   }
 
   .trend-card {
-    width: min(100% - clamp(8px, 1.4vw, 18px), 1600px);
-    max-width: none;
+    width: min(100% - clamp(8px, 1.4vw, 18px), 1380px);
     margin-inline: auto;
     border-radius: clamp(18px, 4vw, 32px);
     border: 1px solid rgba(143, 23, 49, 0.10);
@@ -254,13 +157,13 @@
       linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 247, 241, 0.95));
     box-shadow: 0 18px 44px rgba(70, 28, 35, 0.12);
     overflow: hidden;
-    padding: clamp(13px, 2.2vw, 24px);
+    padding: clamp(14px, 2.2vw, 26px);
   }
 
   .trend-head {
     position: relative;
     text-align: center;
-    margin-bottom: clamp(13px, 2vw, 20px);
+    margin-bottom: clamp(14px, 2vw, 24px);
     padding-inline: clamp(8px, 2vw, 18px);
   }
 
@@ -297,15 +200,6 @@
     transform: translateY(-2px);
   }
 
-  .trend-head p {
-    max-width: 560px;
-    margin: 8px auto 0;
-    color: var(--trend-muted);
-    font-size: clamp(12px, 2vw, 15px);
-    line-height: 1.45;
-    font-weight: 450;
-  }
-
   .trend-view-all {
     position: absolute;
     top: 4px;
@@ -330,264 +224,44 @@
   }
 
   .trend-tabs {
-    width: min(100%, 820px);
-    margin: 0 auto clamp(16px, 2.6vw, 24px);
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 7px;
-    padding: 7px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.78);
-    border: 1px solid rgba(143, 23, 49, 0.10);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.95),
-      0 10px 24px rgba(70, 28, 35, 0.06);
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
+    display: none;
   }
-
-.trend-tabs::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  top: 7px;
-  bottom: 7px;
-  left: var(--trend-active-tab-x, 7px);
-  width: var(--trend-active-tab-w, 33.333%);
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--trend-maroon), #651020);
-  box-shadow:
-    0 12px 24px rgba(143, 23, 49, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
-  transition:
-    left 260ms cubic-bezier(.22, 1, .36, 1),
-    width 260ms cubic-bezier(.22, 1, .36, 1);
-}
-
-.trend-tabs::after {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  top: 13px;
-  bottom: 13px;
-  left: calc(var(--trend-active-tab-x, 7px) + var(--trend-active-tab-w, 33.333%) - 32px);
-  width: 24px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.24);
-  opacity: 0.9;
-  transition:
-    left 280ms cubic-bezier(.22, 1, .36, 1),
-    opacity 180ms ease;
-}
-
-.trend-tabs.is-caterpillar-walking::before {
-  transition:
-    left 300ms cubic-bezier(.2, .9, .2, 1),
-    width 300ms cubic-bezier(.2, .9, .2, 1);
-}
-
-.trend-tabs.is-caterpillar-walking::after {
-  opacity: 1;
-}
-
-  .trend-tab {
-    border: 0;
-    min-width: 0;
-    min-height: clamp(38px, 6vw, 52px);
-    border-radius: 999px;
-    background: transparent;
-    color: #6f3b45;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
-    font: inherit;
-    font-size: clamp(11px, 2vw, 15px);
-    font-weight: 760;
-    white-space: nowrap;
-    position: relative;
-    z-index: 1;
-    transition:
-        color 220ms ease,
-        transform 260ms ease;
-  }
-
-  .trend-tab span {
-    font-size: clamp(13px, 2.6vw, 18px);
-    line-height: 1;
-  }
-
-    .trend-tab.is-active {
-    color: #fff;
-    background: transparent;
-    box-shadow: none;
-    transform: translateY(-1px);
-    }
-
-    .trend-tab.is-active span {
-    animation: trendTabWalk 520ms ease both;
-    }
-
-    @keyframes trendTabWalk {
-    0% {
-        transform: translateX(-3px) scale(0.92);
-    }
-    45% {
-        transform: translateX(2px) scale(1.12);
-    }
-    100% {
-        transform: translateX(0) scale(1);
-    }
-    }
 
   .trend-stage {
-    position: relative;
-    border-radius: clamp(18px, 4vw, 28px);
-    background:
-      radial-gradient(circle at 50% 14%, rgba(199, 146, 67, 0.13), transparent 34%),
-      radial-gradient(circle at 12% 70%, rgba(143, 23, 49, 0.055), transparent 32%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 246, 241, 0.88));
-    border: 1px solid rgba(143, 23, 49, 0.08);
-    padding: clamp(22px, 2.4vw, 34px) clamp(34px, 4vw, 66px);
-    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    background: transparent;
   }
 
   .trend-track {
-    --trend-card-w: clamp(160px, 13.4vw, 224px);
-    --trend-gap: clamp(22px, 1.9vw, 34px);
-
-    --near-x: calc((var(--trend-card-w) * 1.02) + var(--trend-gap));
-    --outer-x: calc((var(--trend-card-w) * 1.94) + (var(--trend-gap) * 2));
-    --buffer-x: calc((var(--trend-card-w) * 2.84) + (var(--trend-gap) * 3));
-
-    width: min(100%, 1380px);
-    height: clamp(330px, 28vw, 440px);
+    width: min(100%, 920px);
     margin-inline: auto;
-    position: relative;
-    perspective: 1200px;
-    transform-style: preserve-3d;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(12px, 2vw, 22px);
+    align-items: stretch;
   }
 
   .trend-product {
-    width: var(--trend-card-w);
-    height: clamp(300px, 24.5vw, 365px);
-    position: absolute;
-    top: 50%;
-    left: 50%;
+    position: relative;
     min-width: 0;
     display: flex;
     flex-direction: column;
-    border-radius: clamp(14px, 1.8vw, 20px);
+    border-radius: clamp(15px, 1.8vw, 22px);
     background: rgba(255, 255, 255, 0.96);
     border: 1px solid rgba(143, 23, 49, 0.12);
     box-shadow: 0 12px 24px rgba(68, 31, 38, 0.10);
     overflow: hidden;
-    transform-style: preserve-3d;
     transition:
-      transform 420ms cubic-bezier(.2, .8, .2, 1),
-      opacity 260ms ease,
-      filter 260ms ease,
-      box-shadow 320ms ease,
-      border-color 320ms ease;
-    will-change: transform, opacity;
+      transform 220ms ease,
+      box-shadow 220ms ease,
+      border-color 220ms ease;
   }
 
-  .trend-product[data-carousel-pos="0"] {
-    z-index: 0;
-    opacity: 0;
-    pointer-events: none;
-    filter: saturate(0.9);
-    transform:
-      translate(calc(-50% - var(--buffer-x)), -44%)
-      perspective(1200px)
-      rotateY(-24deg)
-      scale(0.78);
-  }
-
-  .trend-product[data-carousel-pos="1"] {
-    z-index: 1;
-    opacity: 0.92;
-    pointer-events: auto;
-    filter: saturate(0.94);
-    transform:
-      translate(calc(-50% - var(--outer-x)), -46%)
-      perspective(1200px)
-      rotateY(-20deg)
-      scale(0.84);
-  }
-
-  .trend-product[data-carousel-pos="2"] {
-    z-index: 2;
-    opacity: 0.98;
-    pointer-events: auto;
-    filter: saturate(0.98);
-    transform:
-      translate(calc(-50% - var(--near-x)), -49%)
-      perspective(1200px)
-      rotateY(-10deg)
-      scale(0.95);
-  }
-
-  .trend-product[data-carousel-pos="3"] {
-    z-index: 5;
-    opacity: 1;
-    pointer-events: auto;
-    filter: saturate(1);
-    border-color: rgba(199, 146, 67, 0.52);
-    box-shadow:
-      0 0 0 1px rgba(199, 146, 67, 0.22),
-      0 20px 44px rgba(91, 40, 33, 0.20);
-    transform:
-      translate(-50%, -52%)
-      perspective(1200px)
-      rotateY(0deg)
-      scale(1.065);
-  }
-
-  .trend-product[data-carousel-pos="4"] {
-    z-index: 2;
-    opacity: 0.98;
-    pointer-events: auto;
-    filter: saturate(0.98);
-    transform:
-      translate(calc(-50% + var(--near-x)), -49%)
-      perspective(1200px)
-      rotateY(10deg)
-      scale(0.95);
-  }
-
-  .trend-product[data-carousel-pos="5"] {
-    z-index: 1;
-    opacity: 0.92;
-    pointer-events: auto;
-    filter: saturate(0.94);
-    transform:
-      translate(calc(-50% + var(--outer-x)), -46%)
-      perspective(1200px)
-      rotateY(20deg)
-      scale(0.84);
-  }
-
-  .trend-product[data-carousel-pos="6"] {
-    z-index: 0;
-    opacity: 0;
-    pointer-events: none;
-    filter: saturate(0.9);
-    transform:
-      translate(calc(-50% + var(--buffer-x)), -44%)
-      perspective(1200px)
-      rotateY(24deg)
-      scale(0.78);
-  }
-
-  .trend-product[data-carousel-pos]:hover {
-    z-index: 8;
-    opacity: 1;
+  .trend-product:hover {
+    transform: translateY(-4px);
     border-color: rgba(143, 23, 49, 0.22);
-    box-shadow: 0 18px 36px rgba(68, 31, 38, 0.16);
-    filter: saturate(1);
+    box-shadow: 0 18px 36px rgba(68, 31, 38, 0.15);
   }
 
   .trend-badge {
@@ -595,7 +269,7 @@
     z-index: 3;
     top: 10px;
     left: 10px;
-    max-width: 80px;
+    max-width: 82px;
     padding: 6px 8px;
     border-radius: 11px;
     color: #fff;
@@ -616,166 +290,112 @@
     background: linear-gradient(135deg, #c79243, #8f5d1e);
   }
 
-  .trend-badge--purple {
-    background: linear-gradient(135deg, #8f4bb5, #5f2a82);
-  }
-
   .trend-heart {
     position: absolute;
     z-index: 3;
-    top: 10px;
-    right: 10px;
-    width: clamp(28px, 2.3vw, 34px);
-    height: clamp(28px, 2.3vw, 34px);
+    top: 8px;
+    right: 8px;
+    width: clamp(24px, 2vw, 30px);
+    height: clamp(24px, 2vw, 30px);
     border: 0;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.91);
+    background: rgba(255, 255, 255, 0.92);
     color: var(--trend-maroon);
-    font-size: clamp(12px, 1.1vw, 14px);
+    font-size: clamp(10px, 0.95vw, 12px);
     display: grid;
     place-items: center;
-    box-shadow: 0 8px 18px rgba(68, 31, 38, 0.12);
+    box-shadow: 0 7px 15px rgba(68, 31, 38, 0.11);
     cursor: pointer;
+    line-height: 1;
   }
 
   .trend-art {
-    flex: 0 0 clamp(165px, 14.5vw, 225px);
-    height: auto;
+    flex: 0 0 clamp(190px, 21vw, 270px);
     position: relative;
     overflow: hidden;
-    background: #ddd;
+    background: #f7ece6;
   }
 
-  .trend-product[data-carousel-pos="3"] .trend-art {
-    flex-basis: clamp(180px, 15.8vw, 250px);
-    height: auto;
+  .trend-art img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center top;
   }
-
-  .trend-art::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(circle at 28% 26%, rgba(255, 255, 255, 0.42), transparent 12%),
-      linear-gradient(115deg, rgba(255,255,255,0.18), transparent 38%),
-      repeating-linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.10) 0 2px,
-        transparent 2px 18px
-      );
-    opacity: 0.86;
-  }
-
-  .trend-art::after {
-    content: "";
-    position: absolute;
-    left: 12%;
-    right: 10%;
-    bottom: -18%;
-    height: 78%;
-    border-radius: 52% 48% 0 0;
-    transform: rotate(-4deg);
-    background:
-      radial-gradient(circle at 45% 18%, rgba(255, 255, 255, 0.30), transparent 15%),
-      repeating-linear-gradient(
-        0deg,
-        rgba(199, 146, 67, 0.0) 0 15px,
-        rgba(199, 146, 67, 0.54) 15px 18px
-      ),
-      linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.08));
-    box-shadow:
-      inset 0 0 0 1px rgba(255, 255, 255, 0.22),
-      0 -20px 40px rgba(0, 0, 0, 0.08);
-  }
-
-  .trend-art--wine { background: linear-gradient(135deg, #8f1731, #5f1020 55%, #c79243); }
-  .trend-art--teal { background: linear-gradient(135deg, #047074, #064b55 55%, #d4a143); }
-  .trend-art--red { background: linear-gradient(135deg, #c92f35, #861226 58%, #d9a84d); }
-  .trend-art--purple { background: linear-gradient(135deg, #8d3aa4, #551f74 58%, #c79243); }
-  .trend-art--mustard { background: linear-gradient(135deg, #d4972e, #b46a1d 56%, #fff0bd); }
-  .trend-art--rose { background: linear-gradient(135deg, #d86b83, #9b1c31 55%, #f0c27b); }
-  .trend-art--navy { background: linear-gradient(135deg, #1f3767, #111d3d 58%, #c79243); }
 
   .trend-info {
     position: relative;
     flex: 1;
     min-height: 0;
-    padding: clamp(9px, 0.95vw, 12px);
+    padding: clamp(9px, 1vw, 13px);
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    gap: 0;
   }
 
   .trend-info h3 {
-    margin: 0 0 6px;
-    padding-right: 38px;
-    min-height: 2.35em;
+    margin: 0 0 3px;
+    padding-right: 30px;
+    min-height: 1.15em;
     color: var(--trend-text);
-    font-size: clamp(12px, 1.05vw, 15px);
-    line-height: 1.16;
-    font-weight: 680;
-    letter-spacing: -0.012em;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    font-size: clamp(12px, 1.1vw, 15px);
+    line-height: 1.12;
+    font-weight: 620;
+    letter-spacing: -0.01em;
+    display: block;
+    white-space: nowrap;
     overflow: hidden;
-  }
-
-  .trend-product[data-carousel-pos="3"] .trend-info h3 {
-    font-size: clamp(14px, 1.4vw, 19px);
-    font-weight: 760;
+    text-overflow: ellipsis;
   }
 
   .trend-price {
-    min-height: 28px;
+    min-height: 20px;
     display: flex;
-    align-items: center;
-    gap: 6px;
+    align-items: baseline;
+    gap: 4px;
     flex-wrap: wrap;
-    margin-bottom: 5px;
+    margin: 0 0 2px;
   }
 
   .trend-price strong {
     color: var(--trend-maroon-dark);
-    font-size: clamp(15px, 1.45vw, 21px);
-    font-weight: 720;
+    font-size: clamp(16px, 1.55vw, 23px);
+    font-weight: 680;
     letter-spacing: -0.02em;
-  }
-
-  .trend-product[data-carousel-pos="3"] .trend-price strong {
-    font-size: clamp(18px, 1.9vw, 27px);
-    font-weight: 800;
   }
 
   .trend-price del {
     color: #9a8b90;
-    font-size: clamp(10px, 0.85vw, 12px);
-    font-weight: 520;
+    font-size: clamp(8px, 0.78vw, 11px);
+    font-weight: 480;
   }
 
   .trend-price span {
-    padding: 4px 7px;
+    padding: 2px 5px;
     border-radius: 999px;
     color: #9b5c10;
     background: rgba(199, 146, 67, 0.18);
-    font-size: 10px;
+    font-size: 8px;
     font-weight: 700;
   }
 
   .trend-info p {
     margin: 0;
-    padding-right: 40px;
+    padding-right: 34px;
     color: var(--trend-muted);
-    font-size: clamp(10px, 0.85vw, 11.5px);
-    font-weight: 500;
+    font-size: clamp(9px, 0.8vw, 10.5px);
+    line-height: 1.15;
+    font-weight: 480;
   }
 
   .trend-whatsapp {
     position: absolute;
-    right: 10px;
-    bottom: 10px;
-    width: clamp(31px, 2.8vw, 37px);
-    height: clamp(31px, 2.8vw, 37px);
+    right: 8px;
+    bottom: 8px;
+    width: clamp(27px, 2.35vw, 33px);
+    height: clamp(27px, 2.35vw, 33px);
     border-radius: 50%;
     border: 1px solid rgba(143, 23, 49, 0.28);
     display: grid;
@@ -789,13 +409,12 @@
   .trend-whatsapp::before {
     content: "☎";
     color: var(--trend-maroon);
-    font-size: clamp(14px, 1.25vw, 17px);
+    font-size: clamp(12px, 1.05vw, 15px);
     font-weight: 800;
+    line-height: 1;
   }
 
   .trend-whatsapp--solid {
-    width: clamp(35px, 3.1vw, 42px);
-    height: clamp(35px, 3.1vw, 42px);
     background: linear-gradient(135deg, var(--trend-maroon), #651020);
     border-color: transparent;
     box-shadow: 0 12px 22px rgba(143, 23, 49, 0.20);
@@ -805,200 +424,15 @@
     color: #fff;
   }
 
-  .trend-nav {
-    position: absolute;
-    z-index: 10;
-    top: 50%;
-    transform: translateY(-50%);
-    width: clamp(38px, 4vw, 52px);
-    height: clamp(38px, 4vw, 52px);
-    border: 1px solid rgba(255, 255, 255, 0.7);
-    border-radius: 50%;
-    color: #fff;
-    background: linear-gradient(135deg, var(--trend-maroon), #651020);
-    box-shadow: 0 12px 28px rgba(95, 16, 32, 0.25);
-    font-size: clamp(25px, 3.6vw, 34px);
-    line-height: 1;
-    cursor: pointer;
-    
-  }
-
-  .trend-nav--prev { left: clamp(8px, 1.2vw, 16px); }
-  .trend-nav--next { right: clamp(8px, 1.2vw, 16px); }
-
   .trend-dots {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 7px;
-    padding: 14px 0 4px;
+    display: none;
   }
-
-  .trend-dots span {
-    width: 9px;
-    height: 9px;
-    border-radius: 99px;
-    background: rgba(143, 23, 49, 0.18);
-    transition: width 220ms ease, background 220ms ease;
-  }
-
-  .trend-dots span.is-active {
-    width: 34px;
-    background: var(--trend-maroon);
-  }
-
-  .trend-benefits {
-    margin: clamp(16px, 3vw, 24px) auto 0;
-    width: min(100%, 1180px);
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    border-radius: clamp(14px, 3vw, 22px);
-    background: rgba(255, 242, 236, 0.86);
-    border: 1px solid rgba(143, 23, 49, 0.08);
-    overflow: hidden;
-  }
-
-  .trend-benefits div {
-    min-width: 0;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    column-gap: 10px;
-    row-gap: 2px;
-    padding: clamp(12px, 2.4vw, 18px);
-    color: var(--trend-text);
-  }
-
-  .trend-benefits div + div {
-    border-left: 1px solid rgba(143, 23, 49, 0.10);
-  }
-
-  .trend-benefits span {
-    grid-row: span 2;
-    color: var(--trend-maroon);
-    font-size: 23px;
-    line-height: 1;
-  }
-
-  .trend-benefits strong {
-    font-size: clamp(12px, 1.2vw, 14px);
-    line-height: 1.1;
-    font-weight: 720;
-  }
-
-  .trend-benefits small {
-    color: var(--trend-muted);
-    font-size: 12px;
-  }
-
-
-.trend-product.is-mobile-extra-hidden,
-.trend-product.is-mobile-extra-hidden:hover {
-  z-index: 0 !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
-  filter: none !important;
-  transform: translate3d(-50%, -50%, 0) scale(0.72) !important;
-}
-  
-  @media (max-width: 1100px) {
-    .trend-card {
-      width: min(100% - 10px, 1100px);
-      padding: 16px 10px;
-    }
-
-    .trend-stage {
-      padding: 22px 28px 24px;
-    }
-
-    .trend-track {
-      --trend-card-w: clamp(136px, 15vw, 188px);
-      --trend-gap: 18px;
-      height: clamp(300px, 29vw, 380px);
-    }
-
-    .trend-product {
-      height: clamp(270px, 28vw, 330px);
-    }
-
-    .trend-art {
-      flex-basis: clamp(145px, 15vw, 190px);
-    }
-
-    .trend-product[data-carousel-pos="3"] .trend-art {
-      flex-basis: clamp(155px, 16vw, 205px);
-    }
-
-    .trend-product[data-carousel-pos="1"] {
-      transform:
-        translate(calc(-50% - var(--outer-x)), -46%)
-        perspective(1100px)
-        rotateY(-18deg)
-        scale(0.82);
-    }
-
-    .trend-product[data-carousel-pos="2"] {
-      transform:
-        translate(calc(-50% - var(--near-x)), -49%)
-        perspective(1100px)
-        rotateY(-9deg)
-        scale(0.93);
-    }
-
-    .trend-product[data-carousel-pos="3"] {
-      transform:
-        translate(-50%, -52%)
-        perspective(1100px)
-        rotateY(0deg)
-        scale(1.05);
-    }
-
-    .trend-product[data-carousel-pos="4"] {
-      transform:
-        translate(calc(-50% + var(--near-x)), -49%)
-        perspective(1100px)
-        rotateY(9deg)
-        scale(0.93);
-    }
-
-    .trend-product[data-carousel-pos="5"] {
-      transform:
-        translate(calc(-50% + var(--outer-x)), -46%)
-        perspective(1100px)
-        rotateY(18deg)
-        scale(0.82);
-    }
-  }
-
-  /* =========================
-     MOBILE FIX
-     3 visible cards only: left, center, right
-     This removes reverse/overlap feeling.
-  ========================= */
-  /* =========================
-     MOBILE FIX - CLEAN 3 CARD STACK
-     No reverse / no backside effect
-  ========================= */
 
   @media (max-width: 767px) {
-
-    .trend-tabs::before {
-        top: 5px;
-        bottom: 5px;
-    }
-
-  .trend-tabs::after {
-    top: 10px;
-    bottom: 10px;
-    left: calc(var(--trend-active-tab-x, 5px) + var(--trend-active-tab-w, 33.333%) - 14px);
-    width: 18px;
-  }
-
-
     .trend-showcase {
-        width: 100%;
-        max-width: 100%;
-        margin-left: 0;
-        margin-right: 0;
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
       padding: 10px 0 22px;
       overflow-x: hidden;
     }
@@ -1027,55 +461,109 @@
       line-height: 1.05;
     }
 
-    .trend-head p {
-      max-width: 320px;
-      margin: 7px auto 0;
-      font-size: clamp(11px, 3.2vw, 13px);
-    }
-
     .trend-view-all {
       display: none;
     }
 
     .trend-tabs {
       width: min(100%, 520px);
+      margin: 0 auto 9px;
+      display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 4px;
-      padding: 5px;
       border-radius: 999px;
-      margin-bottom: 12px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(143, 23, 49, 0.10);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.95),
+        0 10px 24px rgba(70, 28, 35, 0.06);
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      padding: 4px;
+      gap: 3px;
+    }
+
+    .trend-tabs::before {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      top: 4px;
+      bottom: 4px;
+      left: var(--trend-active-tab-x, 4px);
+      width: var(--trend-active-tab-w, 33.333%);
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--trend-maroon), #651020);
+      box-shadow:
+        0 12px 24px rgba(143, 23, 49, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
+      transition:
+        left 260ms cubic-bezier(.22, 1, .36, 1),
+        width 260ms cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .trend-tabs::after {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      top: 9px;
+      bottom: 9px;
+      left: calc(var(--trend-active-tab-x, 4px) + var(--trend-active-tab-w, 33.333%) - 14px);
+      width: 15px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.24);
+      opacity: 0.9;
+      transition: left 280ms cubic-bezier(.22, 1, .36, 1);
     }
 
     .trend-tab {
+      border: 0;
+      min-width: 0;
+      min-height: 28px;
+      padding-inline: 4px;
+      border-radius: 999px;
+      background: transparent;
+      color: #6f3b45;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
       justify-content: center;
-      min-height: clamp(30px, 8.5vw, 38px);
-      padding-inline: 3px;
-      gap: 4px;
-      font-size: clamp(8.2px, 2.55vw, 11.5px);
-      font-weight: 760;
+      gap: 3px;
+      font: inherit;
+      font-size: clamp(7.6px, 2.25vw, 9.8px);
+      font-weight: 720;
+      white-space: nowrap;
+      position: relative;
+      z-index: 1;
+      transition: color 220ms ease, transform 260ms ease;
     }
 
     .trend-tab span {
-      font-size: clamp(10px, 3vw, 13px);
+      font-size: clamp(8.5px, 2.55vw, 11px);
+      line-height: 1;
+    }
+
+    .trend-tab.is-active {
+      color: #fff;
+      transform: translateY(-1px);
     }
 
     .trend-stage {
-      padding: 10px 6px 12px;
-      border-radius: 20px;
-      overflow: hidden;
+      margin: 0;
+      padding: 0;
+      background: transparent;
     }
 
     .trend-track {
-        --trend-card-w: clamp(122px, 42vw, 166px);
-        --trend-gap: clamp(5px, 1.8vw, 9px);
+      --trend-card-w: clamp(122px, 42vw, 166px);
+      --trend-gap: clamp(5px, 1.8vw, 9px);
+      --near-x: calc((var(--trend-card-w) * 0.78) + var(--trend-gap));
+      --hide-x: calc((var(--trend-card-w) * 1.75) + (var(--trend-gap) * 2));
 
-        --near-x: calc((var(--trend-card-w) * 0.78) + var(--trend-gap));
-        --hide-x: calc((var(--trend-card-w) * 1.75) + (var(--trend-gap) * 2));
-
-        height: clamp(245px, 80vw, 340px);
+      height: clamp(210px, 66vw, 270px);
       width: 100%;
       margin-inline: auto;
       position: relative;
+      display: block;
       overflow: visible;
       perspective: none;
       transform-style: flat;
@@ -1084,48 +572,54 @@
 
     .trend-product,
     .trend-product[data-carousel-pos] {
-    width: var(--trend-card-w);
-    height: clamp(225px, 70vw, 305px);
-    position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    display: flex !important;
-    flex-direction: column;
-    min-width: 0;
-    min-height: 0;
-    transform-origin: center center;
-    transform-style: flat;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    filter: none;
-    transition:
+      width: var(--trend-card-w);
+      height: clamp(200px, 62vw, 255px);
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      transform-origin: center center;
+      transform-style: flat;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      filter: none;
+      transition:
         transform 360ms cubic-bezier(.2, .8, .2, 1),
         opacity 240ms ease,
         box-shadow 260ms ease,
         border-color 260ms ease;
     }
 
-
     .trend-product[data-carousel-pos="0"],
-    .trend-product[data-carousel-pos="0"]:hover,
     .trend-product[data-carousel-pos="1"],
-    .trend-product[data-carousel-pos="1"]:hover {
+    .trend-product[data-carousel-pos="5"],
+    .trend-product[data-carousel-pos="6"] {
       z-index: 0;
       opacity: 0;
       pointer-events: none;
+    }
+
+    .trend-product[data-carousel-pos="0"],
+    .trend-product[data-carousel-pos="1"] {
       transform: translate3d(calc(-50% - var(--hide-x)), -50%, 0) scale(0.72);
     }
 
-    .trend-product[data-carousel-pos="2"],
-    .trend-product[data-carousel-pos="2"]:hover {
+    .trend-product[data-carousel-pos="5"],
+    .trend-product[data-carousel-pos="6"] {
+      transform: translate3d(calc(-50% + var(--hide-x)), -50%, 0) scale(0.72);
+    }
+
+    .trend-product[data-carousel-pos="2"] {
       z-index: 2;
       opacity: 0.96;
       pointer-events: auto;
       transform: translate3d(calc(-50% - var(--near-x)), -50%, 0) scale(0.84);
     }
 
-    .trend-product[data-carousel-pos="3"],
-    .trend-product[data-carousel-pos="3"]:hover {
+    .trend-product[data-carousel-pos="3"] {
       z-index: 6;
       opacity: 1;
       pointer-events: auto;
@@ -1136,22 +630,11 @@
       transform: translate3d(-50%, -50%, 0) scale(1.03);
     }
 
-    .trend-product[data-carousel-pos="4"],
-    .trend-product[data-carousel-pos="4"]:hover {
+    .trend-product[data-carousel-pos="4"] {
       z-index: 2;
       opacity: 0.96;
       pointer-events: auto;
       transform: translate3d(calc(-50% + var(--near-x)), -50%, 0) scale(0.84);
-    }
-
-    .trend-product[data-carousel-pos="5"],
-    .trend-product[data-carousel-pos="5"]:hover,
-    .trend-product[data-carousel-pos="6"],
-    .trend-product[data-carousel-pos="6"]:hover {
-      z-index: 0;
-      opacity: 0;
-      pointer-events: none;
-      transform: translate3d(calc(-50% + var(--hide-x)), -50%, 0) scale(0.72);
     }
 
     .trend-art,
@@ -1175,51 +658,41 @@
     }
 
     .trend-heart {
-      top: 7px;
-      right: 7px;
-      width: clamp(22px, 6.8vw, 29px);
-      height: clamp(22px, 6.8vw, 29px);
-      font-size: clamp(9px, 2.8vw, 12px);
+      top: 6px;
+      right: 6px;
+      width: clamp(19px, 5.2vw, 23px);
+      height: clamp(19px, 5.2vw, 23px);
+      font-size: clamp(8px, 2.2vw, 10px);
     }
 
     .trend-info {
       flex: 1;
       min-height: 0;
-      padding: clamp(6px, 2vw, 9px);
-      display: flex !important;
-      flex-direction: column;
+      padding: 5px 6px;
     }
 
     .trend-info h3 {
-      min-height: 2.35em;
-      margin-bottom: 4px;
-      padding-right: 26px;
-      font-size: clamp(9.5px, 2.85vw, 12.5px);
-      line-height: 1.16;
-      font-weight: 680;
-    }
-
-    .trend-product[data-carousel-pos="3"] .trend-info h3 {
-      font-size: clamp(10.5px, 3.15vw, 14px);
-      font-weight: 760;
+      margin: 0 0 2px;
+      padding-right: 23px;
+      min-height: 1.12em;
+      font-size: clamp(8.8px, 2.45vw, 11.5px);
+      line-height: 1.1;
+      font-weight: 610;
     }
 
     .trend-price {
-      min-height: 22px;
-      gap: 4px;
-      margin-bottom: 3px;
+      min-height: 17px;
+      gap: 3px;
+      margin: 0 0 1px;
     }
 
     .trend-price strong {
-      font-size: clamp(12px, 3.7vw, 16px);
-    }
-
-    .trend-product[data-carousel-pos="3"] .trend-price strong {
-      font-size: clamp(15px, 4.8vw, 22px);
+      font-size: clamp(13px, 3.65vw, 17px);
+      font-weight: 680;
     }
 
     .trend-price del {
-      font-size: clamp(8px, 2.35vw, 10px);
+      font-size: clamp(7px, 1.95vw, 8.5px);
     }
 
     .trend-price span {
@@ -1227,46 +700,26 @@
     }
 
     .trend-info p {
-      padding-right: 28px;
-      font-size: clamp(8.5px, 2.45vw, 10.5px);
-      line-height: 1.25;
+      padding-right: 24px;
+      font-size: clamp(7.4px, 2.05vw, 9px);
+      line-height: 1.12;
     }
 
     .trend-whatsapp {
-      right: 7px;
-      bottom: 7px;
-      width: clamp(25px, 7vw, 31px);
-      height: clamp(25px, 7vw, 31px);
+      right: 6px;
+      bottom: 6px;
+      width: clamp(22px, 6vw, 26px);
+      height: clamp(22px, 6vw, 26px);
     }
 
     .trend-whatsapp::before {
-      font-size: clamp(11px, 3.1vw, 14px);
-    }
-
-    .trend-whatsapp--solid {
-      width: clamp(27px, 7.5vw, 34px);
-      height: clamp(27px, 7.5vw, 34px);
-    }
-
-    .trend-nav {
-      z-index: 20;
-      width: clamp(32px, 9.2vw, 40px);
-      height: clamp(32px, 9.2vw, 40px);
-      font-size: clamp(22px, 7vw, 28px);
-      box-shadow: 0 10px 22px rgba(95, 16, 32, 0.24);
-        display: none !important;
-
-    }
-
-    .trend-nav--prev {
-      left: 2px;
-    }
-
-    .trend-nav--next {
-      right: 2px;
+      font-size: clamp(9.5px, 2.7vw, 12px);
     }
 
     .trend-dots {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       gap: 6px;
       padding: 10px 0 2px;
     }
@@ -1274,54 +727,70 @@
     .trend-dots span {
       width: 7px;
       height: 7px;
+      border-radius: 99px;
+      background: rgba(143, 23, 49, 0.18);
+      transition: width 220ms ease, background 220ms ease;
     }
 
     .trend-dots span.is-active {
       width: 26px;
-    }
-
-    .trend-benefits {
-      margin-top: 14px;
-      grid-template-columns: 1fr;
-      border-radius: 16px;
-    }
-
-    .trend-benefits div {
-      padding: 11px 12px;
-    }
-
-    .trend-benefits div + div {
-      border-left: 0;
-      border-top: 1px solid rgba(143, 23, 49, 0.10);
+      background: var(--trend-maroon);
     }
   }
 
-    @media (max-width: 480px) {
+  @media (max-width: 480px) {
     .trend-track {
-        --trend-card-w: clamp(112px, 40vw, 154px);
-        --near-x: calc((var(--trend-card-w) * 0.74) + var(--trend-gap));
-        height: clamp(235px, 78vw, 318px);
+      --trend-card-w: clamp(112px, 40vw, 154px);
+      --near-x: calc((var(--trend-card-w) * 0.74) + var(--trend-gap));
+      height: clamp(205px, 64vw, 250px);
     }
 
     .trend-product,
     .trend-product[data-carousel-pos] {
-        height: clamp(218px, 69vw, 290px);
-    }
+      height: clamp(195px, 60vw, 240px);
     }
 
-    @media (max-width: 360px) {
+    .trend-tabs {
+      padding: 3px;
+      gap: 3px;
+      margin-bottom: 8px;
+    }
+
+    .trend-tab {
+      min-height: 26px;
+      padding-inline: 3px;
+      gap: 3px;
+      font-size: clamp(7.2px, 2.15vw, 9.2px);
+    }
+  }
+
+  @media (max-width: 360px) {
     .trend-track {
-        --trend-card-w: clamp(102px, 38vw, 136px);
-        --near-x: calc((var(--trend-card-w) * 0.70) + 5px);
+      --trend-card-w: clamp(102px, 38vw, 136px);
+      --near-x: calc((var(--trend-card-w) * 0.70) + 5px);
+      height: clamp(195px, 62vw, 232px);
     }
 
-    .trend-stage {
-        padding-inline: 0;
+    .trend-product,
+    .trend-product[data-carousel-pos] {
+      height: clamp(185px, 58vw, 222px);
     }
+
+    .trend-tabs {
+      padding: 3px;
+      gap: 2px;
+      margin-bottom: 7px;
     }
+
+    .trend-tab {
+      min-height: 25px;
+      padding-inline: 2px;
+      gap: 2px;
+      font-size: clamp(6.8px, 2.05vw, 8.4px);
+      font-weight: 700;
+    }
+  }
 </style>
-
-
 
 <script>
   (() => {
@@ -1337,8 +806,6 @@
     const cards = Array.from(root.querySelectorAll(".trend-product"));
     const tabs = Array.from(root.querySelectorAll(".trend-tab"));
     const tabWrap = root.querySelector(".trend-tabs");
-    const prev = root.querySelector(".trend-nav--prev");
-    const next = root.querySelector(".trend-nav--next");
     const dots = Array.from(root.querySelectorAll(".trend-dots span"));
     const stage = root.querySelector(".trend-stage");
 
@@ -1378,38 +845,8 @@
     }
 
     function findPreferredCardIndex(type) {
-      const matches = cards
-        .map((card, index) => ({ card, index }))
-        .filter((item) => item.card.dataset.trendType === type);
-
-      if (!matches.length) return 0;
-
-      if (type === "selling") {
-        const bestSeller = matches.find((item) => {
-          const badgeText =
-            item.card.querySelector(".trend-badge")?.textContent || "";
-
-          return badgeText.trim().toLowerCase().includes("best");
-        });
-
-        if (bestSeller) return bestSeller.index;
-      }
-
-      return matches[0].index;
-    }
-
-    function getMobileOrderedCards() {
-      const selected = [];
-
-      orderedTypes.forEach((type) => {
-        const card = cards[findPreferredCardIndex(type)];
-
-        if (card && !selected.includes(card)) {
-          selected.push(card);
-        }
-      });
-
-      return selected;
+      const matchIndex = cards.findIndex((card) => card.dataset.trendType === type);
+      return matchIndex >= 0 ? matchIndex : 0;
     }
 
     let walkerReady = false;
@@ -1419,65 +856,55 @@
     let walkerTimerTwo = null;
 
     function setWalkerPosition(x, w) {
-    if (!tabWrap) return;
+      if (!tabWrap) return;
 
-    tabWrap.style.setProperty("--trend-active-tab-x", `${x}px`);
-    tabWrap.style.setProperty("--trend-active-tab-w", `${w}px`);
+      tabWrap.style.setProperty("--trend-active-tab-x", `${x}px`);
+      tabWrap.style.setProperty("--trend-active-tab-w", `${w}px`);
 
-    walkerX = x;
-    walkerW = w;
+      walkerX = x;
+      walkerW = w;
     }
 
     function updateTabWalker() {
-    const activeTab =
+      if (!isMobileCarousel()) return;
+
+      const activeTab =
         tabs.find((tab) => tab.classList.contains("is-active")) || tabs[0];
 
-    if (!tabWrap || !activeTab) return;
+      if (!tabWrap || !activeTab) return;
 
-    const newX = activeTab.offsetLeft;
-    const newW = activeTab.offsetWidth;
+      const newX = activeTab.offsetLeft;
+      const newW = activeTab.offsetWidth;
 
-    if (!walkerReady) {
+      if (!walkerReady) {
         walkerReady = true;
         setWalkerPosition(newX, newW);
         return;
-    }
+      }
 
-    const oldX = walkerX;
-    const oldW = walkerW;
-    const oldRight = oldX + oldW;
-    const newRight = newX + newW;
+      const oldX = walkerX;
+      const oldW = walkerW;
+      const oldRight = oldX + oldW;
+      const newRight = newX + newW;
 
-    clearTimeout(walkerTimerOne);
-    clearTimeout(walkerTimerTwo);
+      clearTimeout(walkerTimerOne);
+      clearTimeout(walkerTimerTwo);
 
-    tabWrap.classList.add("is-caterpillar-walking");
+      tabWrap.classList.add("is-caterpillar-walking");
 
-    if (newX > oldX) {
-        // moving right:
-        // head stretches first, tail stays old
+      if (newX > oldX) {
         setWalkerPosition(oldX, newRight - oldX);
-
-        walkerTimerOne = setTimeout(() => {
-        // tail releases, body becomes normal on new tab
-        setWalkerPosition(newX, newW);
-        }, 210);
-    } else if (newX < oldX) {
-        // moving left:
-        // head stretches left first, right tail stays old
+        walkerTimerOne = setTimeout(() => setWalkerPosition(newX, newW), 210);
+      } else if (newX < oldX) {
         setWalkerPosition(newX, oldRight - newX);
-
-        walkerTimerOne = setTimeout(() => {
-        // right tail releases
+        walkerTimerOne = setTimeout(() => setWalkerPosition(newX, newW), 210);
+      } else {
         setWalkerPosition(newX, newW);
-        }, 210);
-    } else {
-        setWalkerPosition(newX, newW);
-    }
+      }
 
-    walkerTimerTwo = setTimeout(() => {
+      walkerTimerTwo = setTimeout(() => {
         tabWrap.classList.remove("is-caterpillar-walking");
-    }, 520);
+      }, 520);
     }
 
     const initialType =
@@ -1487,51 +914,25 @@
     let activeType = initialType;
     let activeIndex = findPreferredCardIndex(activeType);
 
-    function renderDesktopCarousel() {
-      activeIndex = findPreferredCardIndex(activeType);
+    function renderMobileCarousel() {
+      activeIndex = normalizeIndex(activeIndex, cards.length);
+      activeType = cards[activeIndex]?.dataset.trendType || activeType;
 
       cards.forEach((card, index) => {
-        card.classList.remove("is-mobile-extra-hidden");
-
         const offset = getCircularOffset(index, activeIndex, cards.length);
         const pos = getPositionFromOffset(offset);
 
         card.dataset.carouselPos = String(pos);
         card.classList.toggle("trend-product--main", pos === 3);
         card.classList.toggle("trend-product--side", pos !== 3);
-        card.setAttribute("aria-hidden", "false");
+        card.setAttribute("aria-hidden", Math.abs(offset) <= 1 ? "false" : "true");
       });
     }
 
-    function renderMobileCarousel() {
-      const mobileCards = getMobileOrderedCards();
-      const total = mobileCards.length;
-
-      const activeSlot = Math.max(
-        0,
-        mobileCards.findIndex((card) => card.dataset.trendType === activeType)
-      );
-
-      cards.forEach((card) => {
-        const isMobileVisible = mobileCards.includes(card);
-
-        card.classList.toggle("is-mobile-extra-hidden", !isMobileVisible);
-        card.setAttribute("aria-hidden", isMobileVisible ? "false" : "true");
-
-        if (!isMobileVisible) {
-          card.dataset.carouselPos = "0";
-          card.classList.remove("trend-product--main");
-          card.classList.add("trend-product--side");
-        }
-      });
-
-      mobileCards.forEach((card, index) => {
-        const offset = getCircularOffset(index, activeSlot, total);
-        const pos = getPositionFromOffset(offset);
-
-        card.dataset.carouselPos = String(pos);
-        card.classList.toggle("trend-product--main", pos === 3);
-        card.classList.toggle("trend-product--side", pos !== 3);
+    function renderDots() {
+      dots.forEach((dot, index) => {
+        dot.style.display = index < cards.length ? "" : "none";
+        dot.classList.toggle("is-active", index === activeIndex);
       });
     }
 
@@ -1539,48 +940,25 @@
       if (isMobileCarousel()) {
         renderMobileCarousel();
       } else {
-        renderDesktopCarousel();
+        cards.forEach((card) => {
+          card.removeAttribute("data-carousel-pos");
+          card.setAttribute("aria-hidden", "false");
+        });
       }
 
       tabs.forEach((tab) => {
         tab.classList.toggle("is-active", tab.dataset.trendTab === activeType);
       });
 
-      dots.forEach((dot, index) => {
-        dot.style.display = index < orderedTypes.length ? "" : "none";
-        dot.classList.toggle(
-          "is-active",
-          index === orderedTypes.indexOf(activeType)
-        );
-      });
-
+      renderDots();
       updateTabWalker();
     }
 
     function moveCarousel(direction) {
-      const currentTypeIndex = orderedTypes.indexOf(activeType);
-      const safeIndex = currentTypeIndex >= 0 ? currentTypeIndex : 0;
-
-      const nextTypeIndex = normalizeIndex(
-        safeIndex + direction,
-        orderedTypes.length
-      );
-
-      activeType = orderedTypes[nextTypeIndex];
-      activeIndex = findPreferredCardIndex(activeType);
-
+      activeIndex = normalizeIndex(activeIndex + direction, cards.length);
+      activeType = cards[activeIndex]?.dataset.trendType || activeType;
       renderCarousel();
     }
-
-    prev?.addEventListener("click", (event) => {
-      event.preventDefault();
-      moveCarousel(-1);
-    });
-
-    next?.addEventListener("click", (event) => {
-      event.preventDefault();
-      moveCarousel(1);
-    });
 
     let touchStartX = 0;
     let touchStartY = 0;
@@ -1622,11 +1000,7 @@
     tabs.forEach((tab) => {
       tab.addEventListener("click", () => {
         const type = tab.dataset.trendTab;
-
-        if (!type || type === activeType) {
-          updateTabWalker();
-          return;
-        }
+        if (!type) return;
 
         activeType = type;
         activeIndex = findPreferredCardIndex(activeType);
@@ -1637,10 +1011,16 @@
 
     window.addEventListener("resize", () => {
       renderCarousel();
-      requestAnimationFrame(updateTabWalker);
+
+      if (isMobileCarousel()) {
+        requestAnimationFrame(updateTabWalker);
+      }
     });
 
     renderCarousel();
-    requestAnimationFrame(updateTabWalker);
+
+    if (isMobileCarousel()) {
+      requestAnimationFrame(updateTabWalker);
+    }
   })();
 </script>

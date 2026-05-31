@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Add Category</title>
+
+  <style>
+    :root {
+      --bg: #fff7f0;
+      --card: #ffffff;
+      --text: #3f1d25;
+      --muted: #7d646a;
+      --primary: #8f1731;
+      --primary-dark: #681021;
+      --border: rgba(143, 23, 49, 0.14);
+      --shadow: 0 14px 42px rgba(70, 28, 35, 0.10);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(244, 199, 107, 0.18), transparent 32%),
+        linear-gradient(135deg, #fffaf6 0%, var(--bg) 100%);
+    }
+
+    .owner-header {
+      min-height: 72px;
+      padding: 12px clamp(14px, 3vw, 34px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      background: rgba(255, 250, 246, 0.94);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      flex: 0 0 auto;
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .brand span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+
+    .back-btn {
+      text-decoration: none;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      padding: 10px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .wrap {
+      width: min(100% - 24px, 720px);
+      margin: 28px auto;
+    }
+
+    .form-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: clamp(18px, 3vw, 30px);
+      box-shadow: var(--shadow);
+    }
+
+    .form-card h1 {
+      margin: 0;
+      font-size: clamp(24px, 3vw, 34px);
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+
+    .form-card p {
+      margin: 8px 0 20px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .field input {
+      width: 100%;
+      min-height: 48px;
+      padding: 0 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      outline: none;
+      background: #fff;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .field input[type="file"] {
+      padding: 12px 14px;
+      height: auto;
+      min-height: 52px;
+      cursor: pointer;
+      background: #fffaf6;
+    }
+
+    .field input:focus {
+      border-color: rgba(143, 23, 49, 0.52);
+      box-shadow: 0 0 0 4px rgba(143, 23, 49, 0.08);
+    }
+
+    .field small {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.4;
+    }
+
+    .category-image-preview {
+      display: none;
+      width: 100%;
+      margin-top: 10px;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #fffaf6;
+    }
+
+    .category-image-preview img {
+      width: 100%;
+      height: 180px;
+      display: block;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .check-field {
+      min-height: 46px;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: #fffaf6;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .check-field input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+    }
+
+    .error-box {
+      margin-bottom: 16px;
+      padding: 12px 14px;
+      border-radius: 14px;
+      color: #7a1025;
+      background: rgba(143, 23, 49, 0.08);
+      border: 1px solid rgba(143, 23, 49, 0.16);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .form-actions {
+      margin-top: 18px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .save-btn {
+      min-height: 44px;
+      padding: 0 22px;
+      border: 0;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(143, 23, 49, 0.18);
+    }
+
+    @media (max-width: 767px) {
+      .owner-header {
+        min-height: 66px;
+        padding: 11px 14px;
+      }
+
+      .brand span {
+        display: none;
+      }
+
+      .wrap {
+        width: min(100% - 20px, 720px);
+        margin: 18px auto;
+      }
+
+      .category-image-preview img {
+        height: 150px;
+      }
+
+      .form-actions {
+        justify-content: stretch;
+      }
+
+      .save-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="owner-header">
+    <div class="brand">
+      <div class="brand-logo">PP</div>
+      <div>
+        <strong>Add Category</strong>
+        <span>Pallavi Papa Sarees Collections</span>
+      </div>
+    </div>
+
+    <a class="back-btn" href="{% url 'store_owner:owner_dashboard' %}">
+      Dashboard
+    </a>
+  </header>
+
+  <main class="wrap">
+    <section class="form-card">
+      <h1>Add Category</h1>
+      <p>Create a category with image. It will appear in Add Product dropdown and Collections tabs.</p>
+
+      <form method="post" enctype="multipart/form-data" action="{% url 'store_owner:owner_category_add' %}">
+        {% csrf_token %}
+
+        {% if form.errors %}
+          <div class="error-box">
+            Please check the category details and try again.
+          </div>
+        {% endif %}
+
+        <div class="field">
+          <label for="id_name">Category Name *</label>
+          {{ form.name }}
+          <small>Example: Womens Dresses, Lehengas, Kids Wear.</small>
+          {{ form.name.errors }}
+        </div>
+
+        <div class="field">
+          <label for="id_image">Category Image</label>
+          {{ form.image }}
+          <small>Optional, but recommended. This image will show in Collections category tabs.</small>
+          {{ form.image.errors }}
+
+          <div class="category-image-preview" id="categoryImagePreview">
+            <img src="" alt="Category image preview">
+          </div>
+        </div>
+
+        <label class="check-field">
+          {{ form.is_active }}
+          <span>Active category</span>
+        </label>
+        {{ form.is_active.errors }}
+
+        <div class="form-actions">
+          <button type="submit" class="save-btn">
+            Save Category
+          </button>
+        </div>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const imageInput = document.getElementById("id_image");
+      const previewBox = document.getElementById("categoryImagePreview");
+      const previewImg = previewBox ? previewBox.querySelector("img") : null;
+
+      if (!imageInput || !previewBox || !previewImg) return;
+
+      imageInput.addEventListener("change", function () {
+        const file = this.files && this.files[0];
+
+        if (!file) {
+          previewBox.style.display = "none";
+          previewImg.src = "";
+          return;
+        }
+
+        if (!file.type.startsWith("image/")) {
+          alert("Please select an image file only.");
+          this.value = "";
+          previewBox.style.display = "none";
+          previewImg.src = "";
+          return;
+        }
+
+        previewImg.src = URL.createObjectURL(file);
+        previewBox.style.display = "block";
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<span class="pd-kicker">{{ product.get_category_display }}</span>
+
+<h1 class="pd-title">{{ product.name }}</h1>
+
+<div class="pd-review-line">
+  <span class="pd-stars">★★★★★</span>
+  <span>Premium pick</span>
+  <span class="pd-divider-dot"></span>
+  <span>Available on WhatsApp</span>
+</div>
+
+<div class="pd-price">
+  {% if product.offer_price %}
+    <strong id="productPrice">₹{{ product.offer_price|floatformat:0 }}</strong>
+    <del id="productOldPrice">₹{{ product.actual_price|floatformat:0 }}</del>
+    <span class="pd-offer-tag">Offer</span>
+  {% else %}
+    <strong id="productPrice">₹{{ product.actual_price|floatformat:0 }}</strong>
+    <del id="productOldPrice" hidden></del>
+  {% endif %}
+</div>
+
+<p class="pd-tax">Inclusive of all taxes</p>
+
+<div class="pd-color-title">
+  Color:
+  <span id="selectedColorText">
+    {{ product.color_name|default:"Base color" }}
+  </span>
+</div>
+
+<div class="pd-variants">
+  <button
+    class="pd-variant is-active"
+    type="button"
+    title="{{ product.color_name|default:'Base Color' }}"
+    data-color="{{ product.color_name|default:'Base color' }}"
+    data-image="{% if product.main_image %}{{ product.main_image.url }}{% endif %}"
+    data-price="{% if product.offer_price %}₹{{ product.offer_price|floatformat:0 }}{% else %}₹{{ product.actual_price|floatformat:0 }}{% endif %}"
+    data-old-price="{% if product.offer_price %}₹{{ product.actual_price|floatformat:0 }}{% endif %}"
+  >
+    <span class="pd-color-dot" style="--dot: {{ product.color_code|default:'#8f1731' }}"></span>
+  </button>
+
+  {% for v in variants %}
+    <button
+      class="pd-variant"
+      type="button"
+      title="{{ v.color_name|default:'Variant' }}"
+      data-color="{{ v.color_name|default:'Variant' }}"
+      data-image="{% if v.variant_image %}{{ v.variant_image.url }}{% elif product.main_image %}{{ product.main_image.url }}{% endif %}"
+      data-price="{% if v.offer_price %}₹{{ v.offer_price|floatformat:0 }}{% elif v.actual_price %}₹{{ v.actual_price|floatformat:0 }}{% elif product.offer_price %}₹{{ product.offer_price|floatformat:0 }}{% else %}₹{{ product.actual_price|floatformat:0 }}{% endif %}"
+      data-old-price="{% if v.offer_price and v.actual_price %}₹{{ v.actual_price|floatformat:0 }}{% elif product.offer_price %}₹{{ product.actual_price|floatformat:0 }}{% endif %}"
+    >
+      <span class="pd-color-dot" style="--dot: {{ v.color_code|default:'#8f1731' }}"></span>
+    </button>
+  {% endfor %}
+</div>

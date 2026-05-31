@@ -1,0 +1,60 @@
+<div class="pd-highlights">
+  <h2>Highlights</h2>
+
+  <div class="pd-highlight-grid">
+    <div class="pd-highlight-item">
+      <span class="pd-highlight-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M7 8h10l2 4-2 7H7l-2-7 2-4Z"></path>
+          <path d="M9 8V6a3 3 0 0 1 6 0v2"></path>
+        </svg>
+      </span>
+      <p><strong>Fabric:</strong> {{ product.material|default:"Premium Saree Fabric" }}</p>
+    </div>
+
+    <div class="pd-highlight-item">
+      <span class="pd-highlight-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M5 9h14v11H5V9Z"></path>
+          <path d="M8 9V6h8v3"></path>
+          <path d="M9 14l2 2 4-5"></path>
+        </svg>
+      </span>
+      <p><strong>Occasion:</strong> {{ product.occasion|default:"Daily Wear / Office Wear" }}</p>
+    </div>
+
+    <div class="pd-highlight-item">
+      <span class="pd-highlight-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M6 7h12l-2 12H8L6 7Z"></path>
+          <path d="M9 7V5h6v2"></path>
+          <path d="M9 12h6"></path>
+        </svg>
+      </span>
+      <p><strong>Blouse:</strong> {{ product.blouse|default:"Running Blouse (Unstitched)" }}</p>
+    </div>
+
+    <div class="pd-highlight-item">
+      <span class="pd-highlight-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M8 20h8"></path>
+          <path d="M10 20l1-10h2l1 10"></path>
+          <path d="M6 10h12l-2-5H8l-2 5Z"></path>
+        </svg>
+      </span>
+      <p><strong>Care:</strong> {{ product.care|default:"Hand Wash / Mild Wash" }}</p>
+    </div>
+
+    <div class="pd-highlight-item">
+      <span class="pd-highlight-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M4 15h16"></path>
+          <path d="M6 12l-2 3 2 3"></path>
+          <path d="M18 12l2 3-2 3"></path>
+          <path d="M7 9h10"></path>
+        </svg>
+      </span>
+      <p><strong>Saree Length:</strong> {{ product.saree_length|default:"5.5 Meter" }}</p>
+    </div>
+  </div>
+</div>

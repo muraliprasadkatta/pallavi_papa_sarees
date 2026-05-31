@@ -138,6 +138,14 @@
       display: block;
     }
 
+    .arrival-card-field {
+      display: none;
+    }
+
+    .arrival-card-field.is-visible {
+      display: block;
+    }
+
     .form-grid {
       display: grid;
       gap: 16px;
@@ -145,6 +153,10 @@
 
     .two-col {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .three-col {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .field {
@@ -158,6 +170,40 @@
       font-size: 13px;
       font-weight: 800;
     }
+
+    .category-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .category-title-row label {
+      margin-bottom: 0;
+    }
+
+    .add-category-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 32px;
+      padding: 0 12px;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      box-shadow: 0 8px 18px rgba(143, 23, 49, 0.15);
+      font-size: 12px;
+      font-weight: 900;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .add-category-link:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(143, 23, 49, 0.20);
+    }
+
 
     .field input,
     .field select,
@@ -175,6 +221,12 @@
     .field select {
       min-height: 48px;
       padding: 0 14px;
+    }
+
+    .field input[type="color"] {
+      min-height: 48px;
+      padding: 6px;
+      cursor: pointer;
     }
 
     .field textarea {
@@ -208,15 +260,20 @@
     }
 
     .catalog-upload,
-    .sub-upload {
+    .arrival-upload,
+    .sub-upload,
+    .variant-upload {
       cursor: pointer;
       border: 1px dashed rgba(143, 23, 49, 0.32);
       background: #fffaf6;
       overflow: hidden;
+      position: relative;
     }
 
     .catalog-upload input,
-    .sub-upload input {
+    .arrival-upload input,
+    .sub-upload input,
+    .variant-upload input {
       display: none;
     }
 
@@ -255,6 +312,41 @@
       font-size: 12.5px;
     }
 
+    .arrival-upload {
+      width: 100%;
+      aspect-ratio: 1 / 1.12;
+      min-height: 170px;
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      text-align: center;
+    }
+
+    .arrival-upload span {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: rgba(143, 23, 49, 0.10);
+      color: var(--primary);
+      font-size: 22px;
+      font-weight: 900;
+    }
+
+    .arrival-upload strong {
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .arrival-upload small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
     .sub-upload-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -273,7 +365,8 @@
       text-align: center;
     }
 
-    .sub-upload span {
+    .sub-upload span,
+    .variant-upload span {
       width: 34px;
       height: 34px;
       border-radius: 999px;
@@ -285,7 +378,8 @@
       font-weight: 900;
     }
 
-    .sub-upload small {
+    .sub-upload small,
+    .variant-upload small {
       color: var(--muted);
       font-size: 12px;
     }
@@ -340,54 +434,165 @@
       box-shadow: 0 10px 24px rgba(143, 23, 49, 0.18);
     }
 
+    .upload-preview-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: inherit;
+      z-index: 1;
+    }
 
-    .catalog-upload,
-.sub-upload {
-  position: relative;
-}
+    .upload-preview-layer {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      z-index: 2;
+      padding: 8px 10px;
+      border-radius: 12px;
+      color: #fff;
+      background: rgba(63, 29, 37, 0.70);
+      backdrop-filter: blur(8px);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.25;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 
-.upload-preview-img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: inherit;
-  z-index: 1;
-}
+    .catalog-upload.has-preview .upload-plus,
+    .catalog-upload.has-preview strong,
+    .catalog-upload.has-preview small,
+    .arrival-upload.has-preview span,
+    .arrival-upload.has-preview strong,
+    .arrival-upload.has-preview small,
+    .sub-upload.has-preview span,
+    .sub-upload.has-preview small,
+    .variant-upload.has-preview span,
+    .variant-upload.has-preview small {
+      opacity: 0;
+      pointer-events: none;
+    }
 
-.upload-preview-layer {
-  position: absolute;
-  left: 10px;
-  right: 10px;
-  bottom: 10px;
-  z-index: 2;
+    .section-panel {
+      margin-top: 18px;
+      padding: clamp(14px, 2.4vw, 22px);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 96% 12%, rgba(244, 199, 107, 0.16), transparent 24%),
+        #fffaf6;
+    }
 
-  padding: 8px 10px;
-  border-radius: 12px;
+    .section-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
 
-  color: #fff;
-  background: rgba(63, 29, 37, 0.70);
-  backdrop-filter: blur(8px);
+    .section-head h2 {
+      margin: 0;
+      color: var(--text);
+      font-size: clamp(18px, 2.4vw, 24px);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
 
-  font-size: 12px;
-  font-weight: 800;
-  line-height: 1.25;
+    .section-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
 
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+    .add-variant-btn,
+    .remove-variant-btn {
+      border: 0;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 900;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
 
-.catalog-upload.has-preview .upload-plus,
-.catalog-upload.has-preview strong,
-.catalog-upload.has-preview small,
-.sub-upload.has-preview span,
-.sub-upload.has-preview small {
-  opacity: 0;
-  pointer-events: none;
-}
+    .add-variant-btn {
+      min-height: 40px;
+      padding: 0 16px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      box-shadow: 0 10px 22px rgba(143, 23, 49, 0.16);
+    }
 
+    .remove-variant-btn {
+      min-height: 34px;
+      padding: 0 12px;
+      color: #8f1731;
+      background: rgba(143, 23, 49, 0.08);
+      border: 1px solid rgba(143, 23, 49, 0.12);
+    }
+
+    .variants-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .variant-card {
+      padding: 14px;
+      border: 1px solid rgba(143, 23, 49, 0.12);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 8px 22px rgba(70, 28, 35, 0.045);
+    }
+
+    .variant-card__top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .variant-card__title {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .variant-grid {
+      display: grid;
+      grid-template-columns: minmax(140px, 190px) 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .variant-upload {
+      aspect-ratio: 1 / 1.12;
+      min-height: 150px;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 7px;
+    }
+
+    .variant-fields {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .color-row {
+      display: grid;
+      grid-template-columns: 1fr 90px;
+      gap: 10px;
+    }
 
     @media (max-width: 900px) {
       .upload-section {
@@ -396,6 +601,14 @@
 
       .catalog-upload {
         min-height: 280px;
+      }
+
+      .variant-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .variant-upload {
+        max-width: 240px;
       }
     }
 
@@ -409,8 +622,20 @@
         display: none;
       }
 
-      .two-col {
+      .two-col,
+      .three-col,
+      .variant-fields {
         grid-template-columns: 1fr;
+      }
+
+      .category-title-row {
+        align-items: flex-start;
+      }
+
+      .add-category-link {
+        min-height: 30px;
+        padding: 0 10px;
+        font-size: 11.5px;
       }
 
       .sub-upload-grid {
@@ -423,9 +648,22 @@
         border-radius: 18px;
       }
 
+      .arrival-upload {
+        min-height: 150px;
+        border-radius: 16px;
+      }
+
       .sub-upload {
         min-height: 98px;
         border-radius: 14px;
+      }
+
+      .section-head {
+        flex-direction: column;
+      }
+
+      .add-variant-btn {
+        width: 100%;
       }
 
       .form-actions {
@@ -442,8 +680,27 @@
         grid-template-columns: 1fr;
       }
 
+      .arrival-upload,
       .sub-upload {
         min-height: 88px;
+      }
+
+      .color-row {
+        grid-template-columns: 1fr;
+      }
+
+      .category-title-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+
+      .add-category-link {
+        width: 100%;
+      }
+
+      .variant-upload {
+        max-width: none;
       }
     }
   </style>
@@ -467,7 +724,7 @@
   <main class="wrap">
     <section class="form-card">
       <h1>Add Products</h1>
-      <p>Select category first. Then upload product images, price, material, and description.</p>
+      <p>Select category first. Then upload product images, color, price, material, and optional variants.</p>
 
       <form class="product-form" method="post" enctype="multipart/form-data" action="{% url 'store_owner:owner_product_add' %}">
         {% csrf_token %}
@@ -478,18 +735,35 @@
           </div>
         {% endif %}
 
-        <div class="field">
-          <label for="category">Product Category *</label>
+        <div class="field category-field">
+          <div class="category-title-row">
+            <label for="category">Product Category *</label>
+
+            <a class="add-category-link" href="{% url 'store_owner:owner_category_add' %}">
+              + Add new category
+            </a>
+          </div>
+
           <select id="category" name="category" required>
             <option value="">Select category</option>
-            <option value="pattu" {% if request.POST.category == "pattu" %}selected{% endif %}>Pattu Sarees</option>
-            <option value="cotton" {% if request.POST.category == "cotton" %}selected{% endif %}>Cotton Sarees</option>
-            <option value="silk" {% if request.POST.category == "silk" %}selected{% endif %}>Silk Sarees</option>
-            <option value="designer" {% if request.POST.category == "designer" %}selected{% endif %}>Designer Sarees</option>
-            <option value="wedding" {% if request.POST.category == "wedding" %}selected{% endif %}>Wedding Sarees</option>
-            <option value="daily" {% if request.POST.category == "daily" %}selected{% endif %}>Daily Wear Sarees</option>
+
+            {% for category in form.fields.category.queryset %}
+              <option
+                value="{{ category.id }}"
+                {% if form.category.value|stringformat:"s" == category.id|stringformat:"s" %}selected{% endif %}
+              >
+                {{ category.name }}
+              </option>
+            {% empty %}
+              <option value="" disabled>No categories found. Add category first.</option>
+            {% endfor %}
           </select>
-          <small>This product will automatically appear in All Sarees.</small>
+
+          <small>
+            This product will automatically appear in All Products.
+            New categories added by owner will show here.
+          </small>
+
           {{ form.category.errors }}
         </div>
 
@@ -502,9 +776,22 @@
                 <input type="file" id="mainImage" name="main_image" accept="image/*" required>
                 <span class="upload-plus">+</span>
                 <strong>Upload catalog image</strong>
-                <small>Best size: 400 × 448 WebP/JPG/PNG</small>
+                <small>Best upload: 1600 × 2000 WebP/JPG/PNG</small>
               </label>
               {{ form.main_image.errors }}
+            </div>
+
+            <div class="field arrival-card-field" id="arrivalCardField">
+              <label>New Arrival Card Image</label>
+
+              <label class="arrival-upload" for="arrivalCardImage">
+                <input type="file" id="arrivalCardImage" name="arrival_card_image" accept="image/*">
+                <span>+</span>
+                <strong>Upload card image</strong>
+                <small>Only for products marked as New Arrival.</small>
+              </label>
+
+              {{ form.arrival_card_image.errors }}
             </div>
 
             <div class="field">
@@ -563,6 +850,40 @@
             </div>
 
             <div class="field">
+              <label for="colorName">Color Name</label>
+              <input
+                type="text"
+                id="colorName"
+                name="color_name"
+                value="{{ request.POST.color_name|default:'' }}"
+                placeholder="Example: Bottle Green"
+              >
+              <small>Main/base product color.</small>
+              {{ form.color_name.errors }}
+            </div>
+
+            <div class="field">
+              <label for="colorCode">Color Code</label>
+              <div class="color-row">
+                <input
+                  type="text"
+                  id="colorCodeText"
+                  name="color_code"
+                  value="{{ request.POST.color_code|default:'#8f1731' }}"
+                  placeholder="Example: #2f6b45"
+                >
+                <input
+                  type="color"
+                  id="colorCode"
+                  value="{{ request.POST.color_code|default:'#8f1731' }}"
+                  aria-label="Pick product color"
+                >
+              </div>
+              <small>Optional. Helps later for color dots/swatches.</small>
+              {{ form.color_code.errors }}
+            </div>
+
+            <div class="field">
               <label for="actualPrice">Actual Price *</label>
               <input
                 type="number"
@@ -610,9 +931,32 @@
             </label>
 
             <label class="check-field">
-              <input type="checkbox" name="is_new_arrival" {% if request.POST.is_new_arrival %}checked{% endif %}>
+              <input
+                type="checkbox"
+                id="isNewArrivalCheckbox"
+                name="is_new_arrival"
+                {% if request.POST.is_new_arrival %}checked{% endif %}
+              >
               <span>Show in New Arrivals</span>
             </label>
+          </div>
+
+          <div class="section-panel variants-panel">
+            <div class="section-head">
+              <div>
+                <h2>Colors / Variants</h2>
+                <p>
+                  Same saree design ki different colors unte ikkada add cheyyi.
+                  Backend save logic next step lo connect cheddam.
+                </p>
+              </div>
+
+              <button type="button" class="add-variant-btn" id="addVariantBtn">
+                + Add more variant
+              </button>
+            </div>
+
+            <div class="variants-list" id="variantsList"></div>
           </div>
 
           <div class="form-actions">
@@ -644,7 +988,7 @@
     const input = document.getElementById(inputId);
     if (!input) return;
 
-    const box = input.closest(".catalog-upload, .sub-upload");
+    const box = input.closest(".catalog-upload, .arrival-upload, .sub-upload, .variant-upload");
     if (!box) return;
 
     input.addEventListener("change", function () {
@@ -679,11 +1023,207 @@
   }
 
   setupImagePreview("mainImage");
+  setupImagePreview("arrivalCardImage");
   setupImagePreview("subImage1");
   setupImagePreview("subImage2");
   setupImagePreview("subImage3");
-</script>
 
+  const isNewArrivalCheckbox = document.getElementById("isNewArrivalCheckbox");
+  const arrivalCardField = document.getElementById("arrivalCardField");
+  const arrivalCardInput = document.getElementById("arrivalCardImage");
+
+  function clearArrivalCardPreview() {
+    if (!arrivalCardInput) return;
+
+    const box = arrivalCardInput.closest(".arrival-upload");
+    if (!box) return;
+
+    arrivalCardInput.value = "";
+
+    const previewImg = box.querySelector(".upload-preview-img");
+    const fileName = box.querySelector(".upload-preview-layer");
+
+    if (previewImg) {
+      previewImg.remove();
+    }
+
+    if (fileName) {
+      fileName.remove();
+    }
+
+    box.classList.remove("has-preview");
+  }
+
+  function toggleArrivalCardField() {
+    if (!isNewArrivalCheckbox || !arrivalCardField) return;
+
+    if (isNewArrivalCheckbox.checked) {
+      arrivalCardField.classList.add("is-visible");
+    } else {
+      arrivalCardField.classList.remove("is-visible");
+      clearArrivalCardPreview();
+    }
+  }
+
+  if (isNewArrivalCheckbox) {
+    isNewArrivalCheckbox.addEventListener("change", toggleArrivalCardField);
+  }
+
+  toggleArrivalCardField();
+
+  const colorPicker = document.getElementById("colorCode");
+  const colorText = document.getElementById("colorCodeText");
+
+  if (colorPicker && colorText) {
+    colorPicker.addEventListener("input", function () {
+      colorText.value = this.value;
+    });
+
+    colorText.addEventListener("input", function () {
+      if (/^#[0-9A-Fa-f]{6}$/.test(this.value.trim())) {
+        colorPicker.value = this.value.trim();
+      }
+    });
+  }
+
+  const addVariantBtn = document.getElementById("addVariantBtn");
+  const variantsList = document.getElementById("variantsList");
+  let variantCount = 0;
+
+  function createVariantCard() {
+    variantCount += 1;
+
+    const card = document.createElement("div");
+    card.className = "variant-card";
+    card.dataset.variantIndex = String(variantCount);
+
+    const variantImageId = `variantImage${variantCount}`;
+    const variantColorPickerId = `variantColorCode${variantCount}`;
+    const variantColorTextId = `variantColorText${variantCount}`;
+
+    card.innerHTML = `
+      <div class="variant-card__top">
+        <div class="variant-card__title">Variant ${variantCount}</div>
+
+        <button type="button" class="remove-variant-btn">
+          Remove
+        </button>
+      </div>
+
+      <div class="variant-grid">
+        <div class="field">
+          <label for="${variantImageId}">Variant Image</label>
+
+          <label class="variant-upload" for="${variantImageId}">
+            <input
+              type="file"
+              id="${variantImageId}"
+              name="variant_images"
+              accept="image/*"
+            >
+            <span>+</span>
+            <small>Upload variant image</small>
+          </label>
+        </div>
+
+        <div class="variant-fields">
+          <div class="field">
+            <label>Variant Color Name</label>
+            <input
+              type="text"
+              name="variant_color_names"
+              placeholder="Example: Pink"
+            >
+          </div>
+
+          <div class="field">
+            <label>Variant Color Code</label>
+            <div class="color-row">
+              <input
+                type="text"
+                id="${variantColorTextId}"
+                name="variant_color_codes"
+                value="#8f1731"
+                placeholder="#8f1731"
+              >
+              <input
+                type="color"
+                id="${variantColorPickerId}"
+                value="#8f1731"
+                aria-label="Pick variant color"
+              >
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Actual Price</label>
+            <input
+              type="number"
+              name="variant_actual_prices"
+              placeholder="Example: 2499"
+              min="0"
+              step="0.01"
+            >
+          </div>
+
+          <div class="field">
+            <label>Offer Price</label>
+            <input
+              type="number"
+              name="variant_offer_prices"
+              placeholder="Example: 1999"
+              min="0"
+              step="0.01"
+            >
+          </div>
+
+          <label class="check-field">
+            <input type="checkbox" name="variant_is_available" value="${variantCount}" checked>
+            <span>Variant Available</span>
+          </label>
+        </div>
+      </div>
+    `;
+
+    variantsList.appendChild(card);
+
+    setupImagePreview(variantImageId);
+
+    const variantColorPicker = document.getElementById(variantColorPickerId);
+    const variantColorText = document.getElementById(variantColorTextId);
+
+    if (variantColorPicker && variantColorText) {
+      variantColorPicker.addEventListener("input", function () {
+        variantColorText.value = this.value;
+      });
+
+      variantColorText.addEventListener("input", function () {
+        if (/^#[0-9A-Fa-f]{6}$/.test(this.value.trim())) {
+          variantColorPicker.value = this.value.trim();
+        }
+      });
+    }
+
+    const removeBtn = card.querySelector(".remove-variant-btn");
+    removeBtn.addEventListener("click", function () {
+      card.remove();
+      refreshVariantTitles();
+    });
+  }
+
+  function refreshVariantTitles() {
+    const cards = variantsList.querySelectorAll(".variant-card");
+
+    cards.forEach((card, index) => {
+      const title = card.querySelector(".variant-card__title");
+      if (title) {
+        title.textContent = `Variant ${index + 1}`;
+      }
+    });
+  }
+
+  addVariantBtn.addEventListener("click", createVariantCard);
+</script>
 
 </body>
 </html>

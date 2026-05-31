@@ -1,0 +1,54 @@
+<div class="pd-gallery">
+  <div class="pd-main-media" id="productSwipeArea">
+    {% if product.offer_price %}
+      <span class="pd-badge">Offer</span>
+    {% elif product.is_new_arrival %}
+      <span class="pd-badge">New</span>
+    {% endif %}
+
+    <button class="pd-gallery-arrow pd-gallery-arrow--prev" type="button" aria-label="Previous image">
+      ‹
+    </button>
+
+    {% if product.main_image %}
+      <img
+        id="mainProductImage"
+        src="{{ product.main_image.url }}"
+        alt="{{ product.name }}"
+        draggable="false"
+      >
+    {% endif %}
+
+    <button class="pd-gallery-arrow pd-gallery-arrow--next" type="button" aria-label="Next image">
+      ›
+    </button>
+
+    <span class="pd-image-count" id="imageCount">1 / 4</span>
+  </div>
+
+  <div class="pd-thumbs" aria-label="Product images">
+    {% if product.main_image %}
+      <button class="pd-thumb is-active" type="button" data-image="{{ product.main_image.url }}">
+        <img src="{{ product.main_image.url }}" alt="{{ product.name }}" draggable="false">
+      </button>
+    {% endif %}
+
+    {% if product.sub_image_1 %}
+      <button class="pd-thumb" type="button" data-image="{{ product.sub_image_1.url }}">
+        <img src="{{ product.sub_image_1.url }}" alt="{{ product.name }} sub image 1" draggable="false">
+      </button>
+    {% endif %}
+
+    {% if product.sub_image_2 %}
+      <button class="pd-thumb" type="button" data-image="{{ product.sub_image_2.url }}">
+        <img src="{{ product.sub_image_2.url }}" alt="{{ product.name }} sub image 2" draggable="false">
+      </button>
+    {% endif %}
+
+    {% if product.sub_image_3 %}
+      <button class="pd-thumb" type="button" data-image="{{ product.sub_image_3.url }}">
+        <img src="{{ product.sub_image_3.url }}" alt="{{ product.name }} sub image 3" draggable="false">
+      </button>
+    {% endif %}
+  </div>
+</div>

@@ -6,58 +6,39 @@
     <a href="{% url 'store:collections' %}?category=all"
        class="collection-tab {% if active_category == 'all' %}is-active{% endif %}">
       <span class="collection-tab__media">
-        <img src="{% static 'store/collections/tabs/all.webp' %}" alt="All sarees">
+        <img src="{% static 'store/collections/tabs/all.webp' %}" alt="All products">
       </span>
       <span class="collection-tab__label">All</span>
     </a>
 
-    <a href="{% url 'store:collections' %}?category=pattu"
-       class="collection-tab {% if active_category == 'pattu' %}is-active{% endif %}">
-      <span class="collection-tab__media">
-        <img src="{% static 'store/collections/tabs/pattu.webp' %}" alt="Pattu sarees">
-      </span>
-      <span class="collection-tab__label">Pattu</span>
-    </a>
+    {% for category in categories %}
+      <a href="{% url 'store:collections' %}?category={{ category.slug }}"
+         class="collection-tab {% if active_category == category.slug %}is-active{% endif %}">
+<span class="collection-tab__media">
+  {% if category.image %}
+    <img src="{{ category.image.url }}" alt="{{ category.name }}">
+  {% elif category.slug == "pattu" %}
+    <img src="{% static 'store/collections/tabs/pattu.webp' %}" alt="{{ category.name }}">
+  {% elif category.slug == "cotton" %}
+    <img src="{% static 'store/collections/tabs/cotton.webp' %}" alt="{{ category.name }}">
+  {% elif category.slug == "silk" %}
+    <img src="{% static 'store/collections/tabs/silk.webp' %}" alt="{{ category.name }}">
+  {% elif category.slug == "designer" %}
+    <img src="{% static 'store/collections/tabs/designer.webp' %}" alt="{{ category.name }}">
+  {% elif category.slug == "wedding" %}
+    <img src="{% static 'store/collections/tabs/wedding.webp' %}" alt="{{ category.name }}">
+  {% elif category.slug == "daily" %}
+    <img src="{% static 'store/collections/tabs/daily.webp' %}" alt="{{ category.name }}">
+  {% else %}
+    <img src="{% static 'store/collections/tabs/all.webp' %}" alt="{{ category.name }}">
+  {% endif %}
+</span>
 
-    <a href="{% url 'store:collections' %}?category=cotton"
-       class="collection-tab {% if active_category == 'cotton' %}is-active{% endif %}">
-      <span class="collection-tab__media">
-        <img src="{% static 'store/collections/tabs/cotton.webp' %}" alt="Cotton sarees">
-      </span>
-      <span class="collection-tab__label">Cotton</span>
-    </a>
-
-    <a href="{% url 'store:collections' %}?category=silk"
-       class="collection-tab {% if active_category == 'silk' %}is-active{% endif %}">
-      <span class="collection-tab__media">
-        <img src="{% static 'store/collections/tabs/silk.webp' %}" alt="Silk sarees">
-      </span>
-      <span class="collection-tab__label">Silk</span>
-    </a>
-
-    <a href="{% url 'store:collections' %}?category=designer"
-       class="collection-tab {% if active_category == 'designer' %}is-active{% endif %}">
-      <span class="collection-tab__media">
-        <img src="{% static 'store/collections/tabs/designer.webp' %}" alt="Designer sarees">
-      </span>
-      <span class="collection-tab__label">Designer</span>
-    </a>
-
-    <a href="{% url 'store:collections' %}?category=wedding"
-       class="collection-tab {% if active_category == 'wedding' %}is-active{% endif %}">
-      <span class="collection-tab__media">
-        <img src="{% static 'store/collections/tabs/wedding.webp' %}" alt="Wedding sarees">
-      </span>
-      <span class="collection-tab__label">Wedding</span>
-    </a>
-
-    <a href="{% url 'store:collections' %}?category=daily"
-       class="collection-tab {% if active_category == 'daily' %}is-active{% endif %}">
-      <span class="collection-tab__media">
-        <img src="{% static 'store/collections/tabs/daily.webp' %}" alt="Daily sarees">
-      </span>
-      <span class="collection-tab__label">Daily</span>
-    </a>
+        <span class="collection-tab__label">
+          {{ category.name }}
+        </span>
+      </a>
+    {% endfor %}
 
   </div>
 </section>
@@ -78,22 +59,34 @@
     background: #fffaf6;
     border-bottom: 1px solid rgba(143, 23, 49, 0.10);
     box-shadow: 0 8px 22px rgba(70, 28, 35, 0.06);
-    overflow: hidden;
 
-    --tab-media-height: clamp(78px, 7.1vw, 122px);
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
+
+    --tab-w: clamp(118px, 10.5vw, 158px);
+    --tab-media-height: clamp(84px, 7.5vw, 128px);
     --tab-radius: clamp(13px, 1.3vw, 20px);
-    --tab-gap: clamp(8px, 1.2vw, 16px);
+    --tab-gap: clamp(10px, 1.2vw, 16px);
+  }
+
+  .collection-tabs-wrap::-webkit-scrollbar {
+    display: none;
   }
 
   .collection-tabs {
-    width: 100%;
-    display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
+    width: max-content;
+    min-width: 100%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
     gap: var(--tab-gap);
 
     padding:
       clamp(12px, 1.8vw, 22px)
-      clamp(16px, 2vw, 30px)
+      clamp(14px, 2vw, 30px)
       clamp(11px, 1.5vw, 18px);
 
     background: #fffaf6;
@@ -101,7 +94,9 @@
 
   .collection-tab {
     position: relative;
-    min-width: 0;
+    flex: 0 0 var(--tab-w);
+    width: var(--tab-w);
+    min-width: var(--tab-w);
     text-decoration: none;
     color: #4a222b;
 
@@ -126,6 +121,10 @@
     background: #f7ece6;
     border: 1px solid rgba(143, 23, 49, 0.08);
     box-shadow: 0 8px 18px rgba(70, 28, 35, 0.08);
+    transition:
+      transform 180ms ease,
+      box-shadow 180ms ease,
+      border-color 180ms ease;
   }
 
   .collection-tab__media img {
@@ -143,13 +142,19 @@
     text-align: center;
 
     color: #4b1e29;
-    font-size: clamp(11px, 1.05vw, 16px);
+    font-size: clamp(11px, 1.05vw, 15px);
     line-height: 1.05;
-    font-weight: 800;
+    font-weight: 720;
 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .collection-tab:hover .collection-tab__media {
+    transform: translateY(-2px);
+    border-color: rgba(143, 23, 49, 0.18);
+    box-shadow: 0 10px 22px rgba(70, 28, 35, 0.12);
   }
 
   .collection-tab.is-active .collection-tab__media {
@@ -164,13 +169,14 @@
 
   .collection-tab.is-active .collection-tab__label {
     color: #8f1731;
+    font-weight: 800;
   }
 
   .collection-tab::after {
     content: "";
     position: absolute;
-    left: 20%;
-    right: 20%;
+    left: 25%;
+    right: 25%;
     bottom: -10px;
     height: 2px;
     border-radius: 999px;
@@ -181,10 +187,19 @@
     background: #8f1731;
   }
 
+  .collection-tabs-wrap.is-loading {
+    cursor: progress;
+  }
+
+  .collection-tabs-wrap.is-loading .collection-tab {
+    pointer-events: none;
+  }
+
   @media (max-width: 1100px) {
     .collection-tabs-wrap {
-      --tab-media-height: clamp(68px, 7.5vw, 92px);
-      --tab-gap: clamp(6px, 1vw, 10px);
+      --tab-w: clamp(108px, 13vw, 138px);
+      --tab-media-height: clamp(76px, 9vw, 100px);
+      --tab-gap: 10px;
       --tab-radius: 14px;
     }
 
@@ -193,19 +208,21 @@
     }
 
     .collection-tab__label {
-      font-size: clamp(10.5px, 1.25vw, 14px);
+      font-size: clamp(10.5px, 1.25vw, 13.5px);
     }
   }
 
   @media (max-width: 767px) {
     .collection-tabs-wrap {
       margin-bottom: 14px;
-      --tab-media-height: clamp(46px, 12vw, 68px);
-      --tab-gap: 7px;
+      --tab-w: clamp(84px, 24vw, 104px);
+      --tab-media-height: clamp(62px, 17vw, 78px);
+      --tab-gap: 8px;
       --tab-radius: 12px;
     }
 
     .collection-tabs {
+      min-width: max-content;
       padding: 10px 8px 10px;
     }
 
@@ -215,18 +232,20 @@
 
     .collection-tab__label {
       font-size: 10.5px;
+      font-weight: 720;
     }
   }
 
   @media (max-width: 480px) {
     .collection-tabs-wrap {
-      --tab-media-height: clamp(42px, 12vw, 60px);
-      --tab-gap: 6px;
-      --tab-radius: 10px;
+      --tab-w: clamp(82px, 25vw, 96px);
+      --tab-media-height: clamp(58px, 17vw, 72px);
+      --tab-gap: 7px;
+      --tab-radius: 11px;
     }
 
     .collection-tabs {
-      padding: 9px 6px 10px;
+      padding: 9px 7px 10px;
     }
 
     .collection-tab__label {
@@ -237,14 +256,15 @@
 
   @media (max-width: 380px) {
     .collection-tabs-wrap {
-      --tab-media-height: clamp(39px, 11.5vw, 52px);
-      --tab-gap: 5px;
-      --tab-radius: 9px;
+      --tab-w: clamp(78px, 25.5vw, 90px);
+      --tab-media-height: clamp(54px, 16.5vw, 66px);
+      --tab-gap: 6px;
+      --tab-radius: 10px;
     }
 
     .collection-tabs {
-      padding-left: 5px;
-      padding-right: 5px;
+      padding-left: 6px;
+      padding-right: 6px;
     }
 
     .collection-tab__label {
@@ -254,17 +274,184 @@
 
   @media (max-width: 340px) {
     .collection-tabs-wrap {
-      --tab-media-height: 36px;
-      --tab-gap: 4px;
+      --tab-w: 76px;
+      --tab-media-height: 52px;
+      --tab-gap: 6px;
     }
 
     .collection-tabs {
-      padding-left: 4px;
-      padding-right: 4px;
+      padding-left: 5px;
+      padding-right: 5px;
     }
 
     .collection-tab__label {
       font-size: 8.8px;
     }
   }
+
+  @media (min-width: 1400px) {
+    .collection-tabs-wrap {
+      --tab-w: clamp(150px, 9vw, 176px);
+      --tab-media-height: clamp(108px, 6.8vw, 138px);
+    }
+
+    .collection-tabs {
+      justify-content: center;
+    }
+  }
 </style>
+
+
+<script>
+  (() => {
+    const wrap = document.querySelector(".collection-tabs-wrap");
+
+    if (!wrap) return;
+
+    function getAjaxContent() {
+      return document.getElementById("collectionsAjaxContent");
+    }
+
+    function getActiveTab() {
+      return wrap.querySelector(".collection-tab.is-active");
+    }
+
+    function centerActiveTab(behavior = "auto") {
+      const activeTab = getActiveTab();
+      if (!activeTab) return;
+
+      const wrapRect = wrap.getBoundingClientRect();
+      const activeRect = activeTab.getBoundingClientRect();
+
+      const currentScroll = wrap.scrollLeft;
+      const activeLeftInsideWrap = activeRect.left - wrapRect.left + currentScroll;
+
+      const targetScroll =
+        activeLeftInsideWrap -
+        (wrap.clientWidth / 2) +
+        (activeTab.offsetWidth / 2);
+
+      wrap.scrollTo({
+        left: Math.max(0, targetScroll),
+        behavior,
+      });
+    }
+
+    function setActiveTabByUrl(url) {
+      const targetUrl = new URL(url, window.location.origin);
+      const targetCategory = targetUrl.searchParams.get("category") || "all";
+
+      wrap.querySelectorAll(".collection-tab").forEach((tab) => {
+        const tabUrl = new URL(tab.href, window.location.origin);
+        const tabCategory = tabUrl.searchParams.get("category") || "all";
+
+        tab.classList.toggle("is-active", tabCategory === targetCategory);
+      });
+
+      centerActiveTab("smooth");
+    }
+
+    function setLoading(isLoading) {
+      const ajaxContent = getAjaxContent();
+
+      wrap.classList.toggle("is-loading", isLoading);
+
+      if (!ajaxContent) return;
+
+      ajaxContent.style.opacity = isLoading ? "0.55" : "1";
+      ajaxContent.style.pointerEvents = isLoading ? "none" : "";
+      ajaxContent.style.transition = "opacity 160ms ease";
+    }
+
+    async function loadCategory(url, pushState = true) {
+      const ajaxContent = getAjaxContent();
+
+      if (!ajaxContent) {
+        console.warn("collectionsAjaxContent wrapper missing.");
+        window.location.href = url;
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const response = await fetch(url, {
+          method: "GET",
+          credentials: "same-origin",
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "Accept": "application/json",
+          },
+        });
+
+        const contentType = response.headers.get("content-type") || "";
+
+        if (!response.ok || !contentType.includes("application/json")) {
+          console.error("AJAX failed. Falling back to normal navigation.");
+          window.location.href = url;
+          return;
+        }
+
+        const data = await response.json();
+
+        if (!data.ok || !data.html) {
+          console.error("Invalid AJAX response:", data);
+          window.location.href = url;
+          return;
+        }
+
+        ajaxContent.innerHTML = data.html;
+
+        if (pushState) {
+          window.history.pushState(
+            { collectionsAjax: true },
+            "",
+            url
+          );
+        }
+
+        setActiveTabByUrl(url);
+
+      } catch (error) {
+        console.error("AJAX category error:", error);
+        window.location.href = url;
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    document.addEventListener("click", function (event) {
+      const tab = event.target.closest(".collection-tab");
+
+      if (!tab || !wrap.contains(tab)) return;
+
+      event.preventDefault();
+
+      const url = tab.href;
+      if (!url) return;
+
+      if (tab.classList.contains("is-active")) {
+        centerActiveTab("smooth");
+        return;
+      }
+
+      loadCategory(url, true);
+    });
+
+    window.addEventListener("popstate", () => {
+      loadCategory(window.location.href, false);
+    });
+
+    requestAnimationFrame(() => {
+      centerActiveTab("auto");
+    });
+
+    window.addEventListener("load", () => {
+      centerActiveTab("auto");
+    });
+
+    window.addEventListener("resize", () => {
+      centerActiveTab("auto");
+    });
+  })();
+</script>

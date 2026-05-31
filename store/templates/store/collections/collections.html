@@ -114,27 +114,32 @@
     }
 </style>
 
-  <main class="collections-page">
-    {% include "store/collections/partials/collections_hero.html" %}
+<main class="collections-page">
+  {% include "store/collections/partials/collections_hero.html" %}
 
-    {% if focus == "new" %}
+  {% if focus == "new" %}
 
-      {% include "store/collections/partials/new_arrivals.html" with new_arrivals=new_arrivals %}
+    {% include "store/collections/partials/collection_category_tabs.html" %}
+    {% include "store/collections/partials/collection_toolbar.html" %}
 
-      {% include "store/collections/partials/collection_category_tabs.html" %}
-      {% include "store/collections/partials/collection_toolbar.html" %}
+    <div id="collectionsAjaxContent">
       {% include "store/collections/partials/product_grid.html" %}
+    </div>
 
-    {% else %}
+  {% else %}
 
-      {% include "store/collections/partials/collection_category_tabs.html" %}
-      {% include "store/collections/partials/collection_toolbar.html" %}
+    {% include "store/collections/partials/collection_category_tabs.html" %}
+    {% include "store/collections/partials/collection_toolbar.html" %}
+
+    <div id="collectionsAjaxContent">
       {% include "store/collections/partials/product_grid.html" %}
+    </div>
 
+    {% if products and new_arrivals %}
       {% include "store/collections/partials/new_arrivals.html" with new_arrivals=new_arrivals %}
-
     {% endif %}
-  </main>
+  {% endif %}
+</main>
 
   <script>
   (function () {

@@ -30,11 +30,16 @@
   {# Shop by Collection section #}
   {% include "store/user_homepage/partials/collection_discovery.html" with collection_page_url=collection_page_url collection_focus="shop" %}
 
+  {% include "store/user_homepage/partials/shop_by_price.html" %}
+
   {# New Arrivals section #}
   {% include "store/user_homepage/partials/new_arrivals_preview.html" with collection_page_url=collection_page_url collection_focus="new" %}
 
-  {# Trending Collection section #}
+{% comment %}
+  Trending Collection section removed for now
   {% include "store/user_homepage/partials/trending_collections.html" with collection_page_url=collection_page_url collection_focus="trending" %}
+{% endcomment %}
+
 
   {% include "store/user_homepage/partials/top_sale_products.html" %}
   {% include "store/user_homepage/partials/watch_and_buy_slider.html" %}

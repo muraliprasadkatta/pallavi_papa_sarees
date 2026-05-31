@@ -2,19 +2,61 @@
 
   <div class="collection-products__head">
     <div>
-      <span class="collection-products__kicker">Beautiful Choices</span>
-      <h2>{{ products|length }} Items Found</h2>
+      {% if fallback_category_missing %}
+        <span class="collection-products__kicker">More Collections</span>
+        <h2>{{ fallback_category_title }} not available now</h2>
+        <p class="collection-products__subtext">
+          Showing other available saree collections instead.
+        </p>
+
+      {% elif search_query %}
+        <span class="collection-products__kicker">Search Results</span>
+        <h2>{{ products|length }} Item{{ products|length|pluralize }} Found</h2>
+        <p class="collection-products__subtext">
+          Results for “{{ search_query }}”.
+        </p>
+
+      {% elif active_category != "all" %}
+        <span class="collection-products__kicker">Selected Collection</span>
+        <h2>{{ page_title }}</h2>
+        <p class="collection-products__subtext">
+          {{ products|length }} item{{ products|length|pluralize }} available in this collection.
+        </p>
+
+      {% else %}
+        <span class="collection-products__kicker">Beautiful Choices</span>
+        <h2>{{ products|length }} Item{{ products|length|pluralize }} Found</h2>
+        <p class="collection-products__subtext">
+          Explore our latest saree collections.
+        </p>
+      {% endif %}
     </div>
   </div>
 
   {% if products %}
-    <div class="collection-products__grid">
-      {% for p in products %}
-        {% include "store/collections/partials/product_card.html" with p=p %}
+    <div class="collections-grid">
+      {% for product in products %}
+        {% include "store/collections/partials/product_card.html" with product=product %}
       {% endfor %}
     </div>
-  {% else %}
-    {% include "store/collections/partials/empty_state.html" %}
+  {% endif %}
+
+  {% if show_more_products %}
+    <div class="collection-products__more">
+      <div class="collection-products__more-head">
+        <span class="collection-products__kicker">More Collections</span>
+        <h2>Explore other sarees</h2>
+        <p class="collection-products__subtext">
+          You may also like these available collections.
+        </p>
+      </div>
+
+      <div class="collection-products__grid">
+        {% for p in more_products %}
+          {% include "store/collections/partials/product_card.html" with product=p %}
+        {% endfor %}
+      </div>
+    </div>
   {% endif %}
 
 </section>
@@ -54,7 +96,8 @@
     text-transform: uppercase;
   }
 
-  .collection-products__head h2 {
+  .collection-products__head h2,
+  .collection-products__more-head h2 {
     margin: 0;
     color: #4a1b25;
     font-family: Georgia, "Times New Roman", serif;
@@ -64,11 +107,35 @@
     letter-spacing: 0.01em;
   }
 
+  .collection-products__subtext {
+    margin: 7px 0 0;
+    max-width: 620px;
+    color: #78656a;
+    font-size: clamp(12px, 2.4vw, 14px);
+    line-height: 1.45;
+    font-weight: 600;
+  }
+
   .collection-products__grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: clamp(12px, 3vw, 28px);
     align-items: stretch;
+  }
+
+  .collection-products__more {
+    margin-top: clamp(28px, 5vw, 54px);
+  }
+
+  .collection-products__more-head {
+    margin-bottom: clamp(14px, 3vw, 24px);
+    padding: clamp(12px, 3vw, 20px);
+    border-radius: clamp(14px, 3vw, 22px);
+    background:
+      radial-gradient(circle at 96% 20%, rgba(199, 146, 67, 0.12), transparent 28%),
+      linear-gradient(135deg, #fffdfb, #fff8f2);
+    border: 1px solid rgba(143, 23, 49, 0.09);
+    box-shadow: 0 8px 22px rgba(70, 28, 35, 0.055);
   }
 
   .product-card {
@@ -78,7 +145,7 @@
     background: #fff;
     border: 1px solid rgba(48, 25, 31, 0.06);
     box-shadow: 0 8px 20px rgba(30, 20, 24, 0.045);
-
+    position: relative;
     height: 100%;
     min-height: clamp(255px, 72vw, 380px);
 
@@ -90,6 +157,14 @@
       box-shadow 180ms ease;
   }
 
+  .product-card__link {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
+  }
+
   .product-card:hover {
     transform: translateY(-3px);
     box-shadow: 0 14px 34px rgba(30, 20, 24, 0.085);
@@ -98,7 +173,9 @@
   .product-media {
     position: relative;
     width: 100%;
-    aspect-ratio: 0.78 / 1;
+    /* aspect-ratio: 0.78 / 1; */
+    aspect-ratio: 4 / 5;
+
     min-height: 0;
     flex: 0 0 auto;
     overflow: hidden;
@@ -270,9 +347,6 @@
       min-height: 390px;
     }
 
-    .product-media {
-      aspect-ratio: 0.82 / 1;
-    }
 
     .product-info {
       min-height: 124px;
@@ -289,9 +363,6 @@
       min-height: 405px;
     }
 
-    .product-media {
-      aspect-ratio: 0.78 / 1;
-    }
   }
 
   @media (max-width: 480px) {
@@ -308,9 +379,7 @@
       min-height: 255px;
     }
 
-    .product-media {
-      aspect-ratio: 0.86 / 1;
-    }
+
 
     .product-info h3 {
       font-size: 14px;

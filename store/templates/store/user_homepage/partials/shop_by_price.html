@@ -1,0 +1,246 @@
+{% load static %}
+{% url 'store:collections' as collections_url %}
+
+<section class="shop-price" aria-label="Shop by budget">
+  <div class="shop-price__head">
+    <span class="shop-price__kicker">Budget Friendly Picks</span>
+    <h2>Shop by Price</h2>
+    <p>Pick beautiful sarees, dresses & dress materials in your budget.</p>
+  </div>
+
+  <div class="shop-price__grid">
+
+    <a href="{{ collections_url }}?price=under-500" class="price-card price-card--wide" aria-label="Shop under ₹500">
+      <img
+        src="{% static 'store/user_home/shop_by_price/price_500.webp' %}"
+        alt="Budget deal under ₹500"
+        loading="lazy"
+      >
+    </a>
+
+    <a href="{{ collections_url }}?price=under-1000" class="price-card" aria-label="Shop under ₹1000">
+      <img
+        src="{% static 'store/user_home/shop_by_price/price_1000.webp' %}"
+        alt="Budget deal under ₹1000"
+        loading="lazy"
+      >
+    </a>
+
+    <a href="{{ collections_url }}?price=under-1500" class="price-card" aria-label="Shop under ₹1500">
+      <img
+        src="{% static 'store/user_home/shop_by_price/price_1500.webp' %}"
+        alt="Budget deal under ₹1500"
+        loading="lazy"
+      >
+    </a>
+
+  </div>
+</section>
+
+<style>
+  .shop-price,
+  .shop-price * {
+    box-sizing: border-box;
+  }
+
+  .shop-price {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: clamp(18px, 3vw, 42px) clamp(10px, 3vw, 28px) clamp(24px, 4vw, 52px);
+    overflow: hidden;
+  }
+
+  .shop-price__head {
+    width: min(100%, 720px);
+    margin: 0 auto clamp(14px, 2.4vw, 26px);
+    text-align: center;
+  }
+
+  .shop-price__kicker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(4px, 0.8vw, 6px) clamp(11px, 1.5vw, 15px);
+    border-radius: 999px;
+    background: #f5ecdc;
+    color: #925f21;
+    font-size: clamp(9px, 1.5vw, 11px);
+    font-weight: 850;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    white-space: nowrap;
+  }
+
+  .shop-price__head h2 {
+    margin: 0;
+    font-family: "Playfair Display", "Cormorant Garamond", serif;
+    font-size: clamp(25px, 4.4vw, 46px);
+    line-height: 1.02;
+    color: #17351f;
+    font-weight: 750;
+  }
+
+  .shop-price__head p {
+    margin: 8px auto 0;
+    max-width: 560px;
+    font-size: clamp(12px, 1.7vw, 14px);
+    line-height: 1.45;
+    color: #71766f;
+  }
+
+  /* Auto extend on desktop, auto fit on smaller screens */
+  .shop-price__grid {
+    width: min(100%, 1080px);
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(10px, 2vw, 22px);
+  }
+
+  .price-card {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    border-radius: clamp(16px, 2.5vw, 30px);
+    aspect-ratio: 0.84 / 1;
+    background: #f8efdf;
+    border: clamp(2px, 0.55vw, 5px) solid #f1dfc8;
+    text-decoration: none;
+    box-shadow: 0 16px 36px rgba(71, 44, 20, 0.12);
+    transform: translateZ(0);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+  }
+
+  .price-card--wide {
+    grid-column: 1 / -1;
+    aspect-ratio: 2.25 / 1;
+    border-radius: clamp(17px, 2.8vw, 32px);
+  }
+
+  .price-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 22px 44px rgba(71, 44, 20, 0.17);
+  }
+
+  .price-card img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center;
+    transition: transform 0.35s ease;
+  }
+
+  .price-card:hover img {
+    transform: scale(1.025);
+  }
+
+  /* Medium laptops / tablets */
+  @media (max-width: 900px) {
+    .shop-price__grid {
+      width: min(100%, 760px);
+      gap: 14px;
+    }
+
+    .price-card {
+      aspect-ratio: 0.82 / 1;
+    }
+
+    .price-card--wide {
+      aspect-ratio: 2.14 / 1;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 560px) {
+    .shop-price {
+      padding: 18px 12px 24px;
+    }
+
+    .shop-price__head {
+      text-align: left;
+      margin-bottom: 13px;
+    }
+
+    .shop-price__head p {
+      margin-left: 0;
+      max-width: 94%;
+    }
+
+    .shop-price__grid {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: clamp(8px, 2.6vw, 11px);
+    }
+
+    .price-card {
+      border-radius: clamp(14px, 4.8vw, 18px);
+      border-width: 3px;
+      aspect-ratio: 0.82 / 1;
+      box-shadow: 0 10px 22px rgba(71, 44, 20, 0.11);
+    }
+
+    .price-card--wide {
+      grid-column: 1 / -1;
+      aspect-ratio: 2.08 / 1;
+      border-radius: clamp(15px, 5vw, 19px);
+    }
+
+    .price-card:hover {
+      transform: none;
+      box-shadow: 0 10px 22px rgba(71, 44, 20, 0.11);
+    }
+
+    .price-card:hover img {
+      transform: none;
+    }
+  }
+
+  /* Small mobiles */
+  @media (max-width: 380px) {
+    .shop-price {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+
+    .shop-price__grid {
+      gap: 8px;
+    }
+
+    .price-card {
+      border-radius: 14px;
+      border-width: 2px;
+    }
+
+    .price-card--wide {
+      aspect-ratio: 2 / 1;
+      border-radius: 14px;
+    }
+  }
+
+  /* Very small mobiles */
+  @media (max-width: 330px) {
+    .shop-price {
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    .shop-price__grid {
+      gap: 7px;
+    }
+
+    .price-card {
+      border-radius: 12px;
+    }
+
+    .price-card--wide {
+      aspect-ratio: 1.95 / 1;
+    }
+  }
+</style>

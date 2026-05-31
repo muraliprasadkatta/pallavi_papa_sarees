@@ -1,0 +1,35 @@
+{% if same_category_products %}
+  <section class="pd-related">
+    <div class="pd-related-head">
+      <span>Similar Picks</span>
+      <h2>More from this collection</h2>
+    </div>
+
+    <div class="pd-related-grid">
+      {% for item in same_category_products %}
+        <a href="{% url 'store:product_detail' item.id %}" class="pd-related-card">
+          <div class="pd-related-img">
+            {% if item.main_image %}
+              <img src="{{ item.main_image.url }}" alt="{{ item.name }}" loading="lazy">
+            {% endif %}
+          </div>
+
+          <div class="pd-related-body">
+            <span class="pd-related-category">{{ item.get_category_display }}</span>
+
+            <h3>{{ item.name }}</h3>
+
+            <div class="pd-related-price">
+              {% if item.offer_price %}
+                <strong>₹{{ item.offer_price|floatformat:0 }}</strong>
+                <del>₹{{ item.actual_price|floatformat:0 }}</del>
+              {% else %}
+                <strong>₹{{ item.actual_price|floatformat:0 }}</strong>
+              {% endif %}
+            </div>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}

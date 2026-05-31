@@ -12,43 +12,58 @@
       </a>
     </div>
 
-    <div class="arrival-scroll">
+    {% if new_arrivals %}
+      <div class="arrival-scroll">
 
-      <a class="arrival-product" href="{{ collections_url }}?focus=new">
-        <div class="arrival-img arrival-img--one">
-          <span>New</span>
-        </div>
-        <div class="arrival-info">
-          <strong>Soft Pattu Saree</strong>
-          <p>Premium festive collection</p>
-        </div>
-      </a>
+        {% for p in new_arrivals %}
+          <a
+            class="arrival-product"
+            href="{{ collections_url }}?focus=new"
+            style="--card-bg: url('{% static 'store/user_home/new_arrivals/arrival_card_bg.webp' %}');"
+          >
+          {% if p.arrival_card_image or p.main_image %}
+            <div class="arrival-image-box">
+              <img
+                src="{% if p.arrival_card_image %}{{ p.arrival_card_image.url }}{% else %}{{ p.main_image.url }}{% endif %}"
+                alt="{{ p.name }}"
+                loading="lazy"
+                decoding="async"
+              >
+            </div>
+          {% endif %}
 
-      <a class="arrival-product" href="{{ collections_url }}?focus=new">
-        <div class="arrival-img arrival-img--two">
-          <span>New</span>
-        </div>
-        <div class="arrival-info">
-          <strong>Pastel Silk Saree</strong>
-          <p>Elegant daily function wear</p>
-        </div>
-      </a>
+            <div class="arrival-panel">
+              <span class="arrival-pill">New ✨</span>
 
-      <a class="arrival-product" href="{{ collections_url }}?focus=new">
-        <div class="arrival-img arrival-img--three">
-          <span>New</span>
-        </div>
-        <div class="arrival-info">
-          <strong>Designer Saree</strong>
-          <p>Handpicked premium style</p>
-        </div>
-      </a>
+              <strong>{{ p.name|truncatechars:20 }}</strong>
 
-    </div>
+              <i class="arrival-line" aria-hidden="true"></i>
+
+              <p>{{ p.get_category_display }}</p>
+
+              <span class="arrival-cta">
+                View Now <b>›</b>
+              </span>
+            </div>
+          </a>
+        {% endfor %}
+
+      </div>
+    {% else %}
+      <div class="arrival-empty">
+        New arrival products will appear here after you mark products as New Arrival.
+      </div>
+    {% endif %}
   </div>
 
 </section>
+
 <style>
+  .new-arrivals-preview,
+  .new-arrivals-preview * {
+    box-sizing: border-box;
+  }
+
   .new-arrivals-preview {
     position: relative;
     z-index: 10;
@@ -56,26 +71,22 @@
     max-width: 100%;
     margin-left: 0;
     margin-right: 0;
-    background:
-      radial-gradient(circle at 10% 0%, rgba(199, 146, 67, 0.07), transparent 26%),
-      linear-gradient(180deg, #fffaf6 0%, #fff7f1 100%);
+    background: transparent;
     padding: 0 0 clamp(8px, 2vw, 18px);
-    box-sizing: border-box;
     overflow-x: hidden;
   }
 
   .arrival-card {
-    width: min(100% - clamp(6px, 2.2vw, 56px), 1680px);
+    width: min(calc(100% - clamp(10px, 4vw, 56px)), 1680px);
     margin-inline: auto;
-    background: rgba(255, 255, 255, 0.72);
-    border: 1px solid rgba(143, 23, 49, 0.08);
-    border-radius: clamp(16px, 3vw, 30px);
     padding:
-      clamp(10px, 2.2vw, 24px)
-      clamp(8px, 2.2vw, 24px)
-      clamp(10px, 2vw, 22px);
-    box-shadow: 0 10px 34px rgba(80, 36, 40, 0.07);
-    box-sizing: border-box;
+      clamp(9px, 2.4vw, 24px)
+      clamp(6px, 2.2vw, 24px)
+      clamp(9px, 2vw, 22px);
+    border-radius: clamp(15px, 3vw, 30px);
+    border: 0;
+    background: transparent;
+    box-shadow: none;
     overflow: hidden;
   }
 
@@ -83,8 +94,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: clamp(8px, 2vw, 16px);
-    margin-bottom: clamp(10px, 2vw, 18px);
+    gap: clamp(6px, 2vw, 16px);
+    margin-bottom: clamp(8px, 2vw, 18px);
     min-width: 0;
   }
 
@@ -92,7 +103,7 @@
     margin: 0;
     color: var(--pp-maroon-dark, #5f1020);
     font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(17px, 2.2vw, 30px);
+    font-size: clamp(15px, 4.5vw, 30px);
     line-height: 1.06;
     letter-spacing: -0.02em;
     white-space: nowrap;
@@ -102,7 +113,7 @@
     flex: 0 0 auto;
     color: var(--pp-maroon, #8f1731);
     text-decoration: none;
-    font-size: clamp(12px, 1.35vw, 16px);
+    font-size: clamp(10.5px, 3vw, 16px);
     font-weight: 850;
     line-height: 1;
     white-space: nowrap;
@@ -110,7 +121,7 @@
 
   .arrival-head a span {
     color: var(--pp-gold, #c79243);
-    font-size: clamp(17px, 2vw, 23px);
+    font-size: clamp(16px, 4.2vw, 23px);
     vertical-align: -2px;
     margin-left: 3px;
   }
@@ -118,12 +129,12 @@
   .arrival-scroll {
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: clamp(138px, 68vw, 236px);
-    gap: clamp(10px, 2.6vw, 18px);
+    grid-auto-columns: clamp(224px, 76vw, 340px);
+    gap: clamp(7px, 2.6vw, 14px);
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
-    padding: 1px 2px 5px;
+    padding: 1px clamp(30px, 11vw, 44px) 7px 0;
     scrollbar-width: none;
   }
 
@@ -132,87 +143,161 @@
   }
 
   .arrival-product {
-    min-width: 0;
-    scroll-snap-align: start;
-    color: var(--pp-text, #3d2430);
-    text-decoration: none;
-    display: block;
-  }
-
-  .arrival-img {
     position: relative;
-    height: clamp(118px, 40vw, 185px);
-    border-radius: clamp(13px, 3.5vw, 21px);
+    min-width: 0;
+    aspect-ratio: 1.92 / 1;
+    display: block;
     overflow: hidden;
-    box-shadow: 0 10px 22px rgba(80, 36, 40, 0.11);
+    scroll-snap-align: start;
+    color: #fff;
+    text-decoration: none;
+    border-radius: clamp(15px, 4.5vw, 24px);
+    border: 0;
+    background: var(--card-bg) center / cover no-repeat;
+    box-shadow: 0 12px 28px rgba(80, 36, 40, 0.12);
     transform: translateZ(0);
   }
 
-  .arrival-img::before {
-    content: "";
+  .arrival-image-box {
     position: absolute;
-    inset: 0;
-    background:
-      repeating-linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.13) 0 2px,
-        transparent 2px 15px
-      );
+    z-index: 1;
+    right: clamp(-5px, -1vw, -1px);
+    top: 50%;
+    width: clamp(46%, 48vw, 49%);
+    height: clamp(94%, 98vw, 100%);
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
   }
 
-  .arrival-img span {
-    position: absolute;
-    top: clamp(7px, 2vw, 10px);
-    left: clamp(7px, 2vw, 10px);
-    background: var(--pp-maroon, #8f1731);
-    color: #fff;
-    font-size: clamp(9px, 2.4vw, 12px);
-    font-weight: 900;
-    line-height: 1;
-    padding:
-      clamp(4px, 1vw, 5px)
-      clamp(7px, 2vw, 10px);
-    border-radius: 999px;
-    box-shadow: 0 5px 14px rgba(95, 16, 32, 0.18);
-  }
-
-  .arrival-img--one {
-    background:
-      radial-gradient(circle at 28% 28%, rgba(255, 221, 133, 0.6), transparent 14%),
-      linear-gradient(135deg, #b81766, #7c1831 54%, #d29a3c);
-  }
-
-  .arrival-img--two {
-    background:
-      radial-gradient(circle at 58% 30%, rgba(255, 255, 255, 0.32), transparent 15%),
-      linear-gradient(135deg, #dfe6bd, #b5bd84 55%, #fff0c9);
-  }
-
-  .arrival-img--three {
-    background:
-      radial-gradient(circle at 34% 24%, rgba(244, 199, 107, 0.65), transparent 15%),
-      linear-gradient(135deg, #6b4da2, #7f2f6d 55%, #c69a44);
-  }
-
-  .arrival-info {
-    min-width: 0;
-    padding: clamp(7px, 1.5vw, 10px) 2px 0;
-  }
-
-  .arrival-info strong {
+  .arrival-image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center center;
     display: block;
-    color: var(--pp-maroon-dark, #5f1020);
-    font-size: clamp(12px, 1.25vw, 16px);
-    line-height: 1.15;
-    font-weight: 900;
-    letter-spacing: -0.01em;
+    transform: scale(clamp(1.01, 0.4vw + 1, 1.04));
+    transform-origin: center center;
+    filter: drop-shadow(0 12px 20px rgba(80, 36, 40, 0.20));
   }
 
-  .arrival-info p {
-    margin: clamp(3px, 0.8vw, 5px) 0 0;
-    color: var(--pp-muted, #82757b);
-    font-size: clamp(10px, 1.05vw, 14px);
-    line-height: 1.28;
+  .arrival-panel {
+    position: absolute;
+    inset: 0 auto 0 0;
+    z-index: 2;
+    width: clamp(60%, 64vw, 64%);
+    padding: clamp(6px, 2.2vw, 9px);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: transparent;
+    clip-path: none;
+    min-width: 0;
+  }
+
+  .arrival-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: clamp(16px, 4.8vw, 19px);
+    padding: 0 clamp(6px, 2vw, 9px);
+    border-radius: 999px;
+    color: #fff;
+    background: linear-gradient(135deg, #b97328, #e0a34a);
+    box-shadow: 0 7px 16px rgba(64, 15, 27, 0.20);
+    font-size: clamp(7px, 2.15vw, 8.5px);
+    line-height: 1;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .arrival-panel strong {
+    display: block;
+    margin-top: auto;
+    width: 100%;
+    max-width: 100%;
+    color: #fff8ef;
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(8.4px, 2.85vw, 15.2px);
+    line-height: 1.05;
+    font-weight: 520;
+    letter-spacing: -0.055em;
+    text-shadow: 0 3px 12px rgba(40, 8, 18, 0.22);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .arrival-line {
+    width: clamp(34px, 11vw, 58px);
+    height: 1px;
+    margin: clamp(3px, 1.25vw, 5px) 0;
+    display: block;
+    background: linear-gradient(
+      90deg,
+      rgba(235, 188, 91, 0.95),
+      rgba(235, 188, 91, 0.2)
+    );
+    position: relative;
+  }
+
+  .arrival-line::after {
+    content: "◆";
+    position: absolute;
+    left: 46%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: #ebbc5b;
+    font-size: clamp(5px, 1.5vw, 8px);
+    line-height: 1;
+  }
+
+  .arrival-panel p {
+    margin: 0 0 auto;
+    width: 100%;
+    max-width: 100%;
+    color: rgba(255, 248, 239, 0.9);
+    font-size: clamp(5.8px, 1.85vw, 9px);
+    line-height: 1;
+    font-weight: 600;
+    white-space: nowrap;
+    letter-spacing: -0.04em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .arrival-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: clamp(4px, 1.25vw, 8px);
+    margin-top: clamp(5px, 1.8vw, 11px);
+    min-height: clamp(19px, 5.8vw, 23px);
+    padding: 0 clamp(7px, 2.2vw, 10px);
+    border-radius: 999px;
+    color: #8f1731;
+    background: rgba(255, 255, 255, 0.96);
+    font-size: clamp(7.2px, 2.2vw, 10px);
+    line-height: 1;
+    font-weight: 900;
+    box-shadow: 0 9px 18px rgba(64, 15, 27, 0.12);
+    white-space: nowrap;
+  }
+
+  .arrival-cta b {
+    font-size: 1.25em;
+    line-height: 0.8;
+    font-weight: 800;
+  }
+
+  .arrival-empty {
+    padding: clamp(12px, 3vw, 16px);
+    border-radius: clamp(14px, 4vw, 18px);
+    color: #8f1731;
+    background: rgba(143, 23, 49, 0.06);
+    font-size: clamp(12px, 3vw, 13px);
+    font-weight: 700;
   }
 
   @media (min-width: 768px) {
@@ -228,127 +313,64 @@
 
     .arrival-product {
       scroll-snap-align: none;
+      aspect-ratio: 1.72 / 1;
     }
 
-    .arrival-img {
-      height: clamp(150px, 18vw, 260px);
+    .arrival-image-box {
+      right: -4%;
+      width: 52%;
+      height: 112%;
+    }
+
+    .arrival-image-box img {
+      object-fit: cover;
+      object-position: center top;
+      transform: scale(1.16);
+      transform-origin: center top;
+    }
+
+    .arrival-panel {
+      width: 60%;
+      padding: clamp(11px, 1.45vw, 19px);
+    }
+
+    .arrival-pill {
+      min-height: clamp(18px, 2vw, 26px);
+      padding: 0 clamp(8px, 1.2vw, 12px);
+      font-size: clamp(8.5px, 0.9vw, 12px);
+    }
+
+    .arrival-panel strong {
+      font-size: clamp(13.5px, 1.35vw, 22px);
+      line-height: 1.03;
+      font-weight: 560;
+      letter-spacing: -0.045em;
+    }
+
+    .arrival-line {
+      width: clamp(42px, 5vw, 74px);
+      margin: clamp(5px, 0.7vw, 8px) 0;
+    }
+
+    .arrival-panel p {
+      font-size: clamp(8px, 0.8vw, 12px);
+      letter-spacing: -0.02em;
+    }
+
+    .arrival-cta {
+      min-height: clamp(23px, 2.3vw, 32px);
+      padding: 0 clamp(10px, 1.1vw, 15px);
+      font-size: clamp(9px, 0.95vw, 13px);
     }
   }
 
   @media (min-width: 1200px) {
     .arrival-card {
-      width: min(100% - 56px, 1680px);
+      width: min(calc(100% - 56px), 1680px);
     }
 
     .arrival-scroll {
       gap: clamp(16px, 1.6vw, 28px);
-    }
-
-    .arrival-img {
-      height: clamp(190px, 15vw, 290px);
-    }
-  }
-
-  @media (max-width: 480px) {
-    .arrival-card {
-      width: min(100% - 6px, 980px);
-      padding: 10px 8px 10px;
-    }
-
-    .arrival-head {
-      margin-bottom: 9px;
-    }
-
-    .arrival-scroll {
-      grid-auto-columns: clamp(132px, 66vw, 220px);
-      gap: 10px;
-    }
-
-    .arrival-img {
-      height: clamp(112px, 38vw, 165px);
-    }
-
-    .arrival-info strong {
-      font-size: clamp(11.5px, 3.35vw, 14px);
-    }
-
-    .arrival-info p {
-      font-size: clamp(9.5px, 2.85vw, 12px);
-    }
-  }
-
-  @media (max-width: 360px) {
-    .arrival-card {
-      width: min(100% - 4px, 980px);
-      padding: 9px 6px 9px;
-      border-radius: 15px;
-    }
-
-    .arrival-head h2 {
-      font-size: 16px;
-    }
-
-    .arrival-head a {
-      font-size: 11px;
-    }
-
-    .arrival-scroll {
-      grid-auto-columns: clamp(124px, 65vw, 200px);
-      gap: 8px;
-    }
-
-    .arrival-img {
-      height: clamp(104px, 37vw, 145px);
-      border-radius: 12px;
-    }
-
-    .arrival-img span {
-      font-size: 8.5px;
-      padding: 4px 7px;
-    }
-
-    .arrival-info {
-      padding-top: 6px;
-    }
-
-    .arrival-info strong {
-      font-size: 11px;
-    }
-
-    .arrival-info p {
-      font-size: 9px;
-      line-height: 1.2;
-    }
-  }
-
-  @media (max-width: 320px) {
-    .arrival-head {
-      gap: 6px;
-    }
-
-    .arrival-head h2 {
-      font-size: 15px;
-    }
-
-    .arrival-head a {
-      font-size: 10.5px;
-    }
-
-    .arrival-scroll {
-      grid-auto-columns: 122px;
-      gap: 7px;
-    }
-
-    .arrival-img {
-      height: 100px;
-    }
-
-    .arrival-info strong {
-      font-size: 10.5px;
-    }
-
-    .arrival-info p {
-      font-size: 8.5px;
     }
   }
 </style>
