@@ -10,4 +10,10 @@ urlpatterns = [
 
     path("categories/add/", owner_views.owner_category_add_view, name="owner_category_add"),
     path("products/add/", owner_views.owner_product_add_view, name="owner_product_add"),
+
+    path(
+        "products/<int:product_id>/upload-image/",
+        owner_views.owner_product_upload_image_view,
+        name="owner_product_upload_image",
+    ),
 ]

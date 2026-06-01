@@ -5,10 +5,23 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.shortcuts import redirect, render
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.http import require_POST
 
 from .forms import CategoryForm, ProductForm
-from .models import ProductVariant
+from .models import Product, ProductVariant
+from .services.product_image_service import (
+    ARRIVAL_CARD_MAX_SIZE_KB,
+    ARRIVAL_CARD_TARGET_HEIGHT,
+    ARRIVAL_CARD_TARGET_WIDTH,
+    DEFAULT_WEBP_QUALITY,
+    TOP_SHOWCASE_MAX_SIZE_KB,
+    TOP_SHOWCASE_TARGET_HEIGHT,
+    TOP_SHOWCASE_TARGET_WIDTH,
+    convert_product_image_to_webp,
+    convert_sub_product_image_to_webp,
+)
 
 
 User = get_user_model()
@@ -20,11 +33,115 @@ OWNER_PRODUCT_FORM_TEMPLATE = "store/owner/partials/owner_add_product_form.html"
 OWNER_CATEGORY_FORM_TEMPLATE = "store/owner/partials/owner_add_category_form.html"
 
 
+AJAX_IMAGE_FIELDS = {
+    "arrival_card_image": "arrival_card_image",
+    "top_showcase_image": "top_showcase_image",
+    "sub_image_1": "sub_image_1",
+    "sub_image_2": "sub_image_2",
+    "sub_image_3": "sub_image_3",
+}
+
+EXTRA_IMAGE_FIELD_NAMES = [
+    "arrival_card_image",
+    "top_showcase_image",
+    "sub_image_1",
+    "sub_image_2",
+    "sub_image_3",
+    "variant_images",
+]
+
+EXTRA_IMAGE_MAX_MB = 5
+
+
+def _is_ajax_request(request):
+    return request.headers.get("x-requested-with") == "XMLHttpRequest"
+
+
+def _json_error(message, status=400, field_errors=None):
+    payload = {
+        "ok": False,
+        "message": message,
+    }
+
+    if field_errors:
+        payload["errors"] = field_errors
+
+    return JsonResponse(payload, status=status)
+
+
+def _flatten_form_errors(form):
+    errors = {}
+
+    for field_name, field_errors in form.errors.items():
+        errors[field_name] = [str(error) for error in field_errors]
+
+    return errors
+
+
+def _validate_extra_image(uploaded_file):
+    if not uploaded_file:
+        raise ValidationError("Please upload an image.")
+
+    if not getattr(uploaded_file, "content_type", "").startswith("image/"):
+        raise ValidationError("Please upload a valid image file.")
+
+    if uploaded_file.size > EXTRA_IMAGE_MAX_MB * 1024 * 1024:
+        raise ValidationError(f"Image should be under {EXTRA_IMAGE_MAX_MB}MB.")
+
+
+def _convert_extra_product_image(field_name, uploaded_file, product):
+    base_name = f"{product.name or 'product'}-{field_name}"
+
+    if field_name == "arrival_card_image":
+        return convert_product_image_to_webp(
+            uploaded_file=uploaded_file,
+            base_name=base_name,
+            target_width=ARRIVAL_CARD_TARGET_WIDTH,
+            target_height=ARRIVAL_CARD_TARGET_HEIGHT,
+            max_size_kb=ARRIVAL_CARD_MAX_SIZE_KB,
+            quality=DEFAULT_WEBP_QUALITY,
+            keep_alpha=False,
+        )
+
+    if field_name == "top_showcase_image":
+        return convert_product_image_to_webp(
+            uploaded_file=uploaded_file,
+            base_name=base_name,
+            target_width=TOP_SHOWCASE_TARGET_WIDTH,
+            target_height=TOP_SHOWCASE_TARGET_HEIGHT,
+            max_size_kb=TOP_SHOWCASE_MAX_SIZE_KB,
+            quality=DEFAULT_WEBP_QUALITY,
+            keep_alpha=False,
+        )
+
+    if field_name in {"sub_image_1", "sub_image_2", "sub_image_3"}:
+        return convert_sub_product_image_to_webp(
+            uploaded_file=uploaded_file,
+            base_name=base_name,
+        )
+
+    raise ValidationError("Invalid image field.")
+
+
+def _remove_extra_images_for_ajax_first_save(files):
+    """
+    AJAX first request should process only main_image.
+    Extra images are uploaded one-by-one after product is created.
+    This prevents Render worker RAM spike.
+    """
+    cleaned_files = files.copy()
+
+    for field_name in EXTRA_IMAGE_FIELD_NAMES:
+        try:
+            cleaned_files.pop(field_name, None)
+        except TypeError:
+            if field_name in cleaned_files:
+                del cleaned_files[field_name]
+
+    return cleaned_files
+
+
 def _get_username_from_username_or_email(value):
-    """
-    Owner can login using username or email.
-    authenticate() needs username, so email ni username ki convert chestham.
-    """
     value = (value or "").strip()
 
     if "@" not in value:
@@ -238,13 +355,25 @@ def owner_product_add_view(request):
         return redirect("store_owner:owner_login")
 
     if request.method == "POST":
-        form = ProductForm(request.POST, request.FILES)
+        files = request.FILES
+
+        if _is_ajax_request(request):
+            files = _remove_extra_images_for_ajax_first_save(request.FILES)
+
+        form = ProductForm(request.POST, files)
 
         if form.is_valid():
             try:
                 with transaction.atomic():
                     product = form.save()
                     _save_product_variants(product, request)
+
+                if _is_ajax_request(request):
+                    return JsonResponse({
+                        "ok": True,
+                        "product_id": product.id,
+                        "message": "Product details saved.",
+                    })
 
                 messages.success(request, "Product added successfully.")
                 return redirect("store_owner:owner_dashboard")
@@ -255,7 +384,17 @@ def owner_product_add_view(request):
                     if hasattr(error, "messages")
                     else str(error)
                 )
+
+                if _is_ajax_request(request):
+                    return _json_error(error_message)
+
                 messages.error(request, error_message)
+
+        elif _is_ajax_request(request):
+            return _json_error(
+                "Please check the form details and try again.",
+                field_errors=_flatten_form_errors(form),
+            )
 
     else:
         form = ProductForm()
@@ -267,3 +406,56 @@ def owner_product_add_view(request):
             "form": form,
         },
     )
+
+
+@require_POST
+@login_required(login_url="store_owner:owner_login")
+def owner_product_upload_image_view(request, product_id):
+    if not request.user.is_staff:
+        return _json_error("You do not have owner access.", status=403)
+
+    product = get_object_or_404(Product, id=product_id)
+
+    field_name = request.POST.get("field_name", "").strip()
+    model_field_name = AJAX_IMAGE_FIELDS.get(field_name)
+
+    if not model_field_name:
+        return _json_error("Invalid image field.")
+
+    uploaded_file = request.FILES.get("image")
+    if not uploaded_file:
+        return _json_error("No image file received.")
+
+    try:
+        _validate_extra_image(uploaded_file)
+
+        converted_file = _convert_extra_product_image(
+            field_name=model_field_name,
+            uploaded_file=uploaded_file,
+            product=product,
+        )
+
+        image_field = getattr(product, model_field_name)
+        image_field.save(converted_file.name, converted_file, save=False)
+
+        product.save(update_fields=[model_field_name])
+
+        return JsonResponse({
+            "ok": True,
+            "field_name": model_field_name,
+            "message": f"{model_field_name} uploaded successfully.",
+        })
+
+    except ValidationError as error:
+        error_message = (
+            " ".join(error.messages)
+            if hasattr(error, "messages")
+            else str(error)
+        )
+        return _json_error(error_message)
+
+    except Exception as error:
+        return _json_error(
+            f"Image upload failed. Please try again. Error: {error}",
+            status=500,
+        )
