@@ -8,9 +8,19 @@ from django.utils.text import slugify
 from PIL import Image, ImageOps
 
 
+# Safety limits for Render/free hosting
+Image.MAX_IMAGE_PIXELS = 30_000_000
+
+MAX_UPLOAD_SIZE_MB = 8
+MAX_IMAGE_PIXELS = 25_000_000
+
 # Product catalog image: 4:5 portrait
 PRODUCT_TARGET_WIDTH = 1600
 PRODUCT_TARGET_HEIGHT = 2000
+
+# Sub product images: smaller 4:5 portrait to reduce RAM/load
+SUB_PRODUCT_TARGET_WIDTH = 900
+SUB_PRODUCT_TARGET_HEIGHT = 1125
 
 # New arrival card image: 1:1 square
 ARRIVAL_CARD_TARGET_WIDTH = 900
@@ -28,34 +38,60 @@ DEFAULT_WEBP_QUALITY = 82
 MIN_WEBP_QUALITY = 58
 
 PRODUCT_MAX_SIZE_KB = 350
+SUB_PRODUCT_MAX_SIZE_KB = 180
 ARRIVAL_CARD_MAX_SIZE_KB = 160
 TOP_SHOWCASE_MAX_SIZE_KB = 180
 CATEGORY_MAX_SIZE_KB = 180
 
 
-def _center_crop_to_ratio(img, target_width, target_height):
-    """
-    Crop image from center to target ratio.
+def _validate_upload_size(uploaded_file):
+    size = getattr(uploaded_file, "size", 0) or 0
+    max_bytes = MAX_UPLOAD_SIZE_MB * 1024 * 1024
 
-    Examples:
-    - Product image: 1600x2000 = 4:5 portrait
-    - Arrival card image: 900x900 = 1:1 square
-    - Top carousel image: 900x1000 = 9:10 portrait
-    - Category image: 900x650 = landscape category card
+    if size > max_bytes:
+        raise ValidationError(
+            f"Image is too large. Please upload image below {MAX_UPLOAD_SIZE_MB} MB."
+        )
+
+
+def _validate_image_pixels(img):
+    width, height = img.size
+    pixels = width * height
+
+    if pixels > MAX_IMAGE_PIXELS:
+        raise ValidationError(
+            "Image resolution is too large. Please upload a smaller image."
+        )
+
+
+def _pre_shrink_before_crop(img, target_width, target_height):
     """
+    Memory-safe pre-resize before crop/final resize.
+    This reduces RAM spike for phone camera images.
+    """
+    max_side = max(target_width, target_height) * 2
+
+    if max(img.size) > max_side:
+        img.thumbnail(
+            (max_side, max_side),
+            Image.Resampling.LANCZOS,
+        )
+
+    return img
+
+
+def _center_crop_to_ratio(img, target_width, target_height):
     target_ratio = target_width / target_height
     width, height = img.size
     current_ratio = width / height
 
     if current_ratio > target_ratio:
-        # Image too wide, crop left/right.
         new_width = int(height * target_ratio)
         left = (width - new_width) // 2
         right = left + new_width
         return img.crop((left, 0, right, height))
 
     if current_ratio < target_ratio:
-        # Image too tall, crop top/bottom.
         new_height = int(width / target_ratio)
         top = (height - new_height) // 2
         bottom = top + new_height
@@ -65,13 +101,6 @@ def _center_crop_to_ratio(img, target_width, target_height):
 
 
 def _prepare_image_mode(img, keep_alpha=False):
-    """
-    keep_alpha=True:
-    - preserves transparent background.
-
-    keep_alpha=False:
-    - converts transparent images to white background.
-    """
     if keep_alpha:
         if img.mode != "RGBA":
             img = img.convert("RGBA")
@@ -89,10 +118,6 @@ def _prepare_image_mode(img, keep_alpha=False):
 
 
 def _save_webp_under_size(img, max_size_kb, start_quality=DEFAULT_WEBP_QUALITY):
-    """
-    Save WebP and reduce quality until it comes near/under target KB.
-    If it cannot reach target, returns the lowest safe quality version.
-    """
     max_size_bytes = max_size_kb * 1024
     quality = start_quality
     best_output = None
@@ -104,7 +129,7 @@ def _save_webp_under_size(img, max_size_kb, start_quality=DEFAULT_WEBP_QUALITY):
             output,
             format="WEBP",
             quality=quality,
-            method=6,
+            method=4,       # lighter than method=6 on small servers
             optimize=True,
         )
 
@@ -121,9 +146,6 @@ def _save_webp_under_size(img, max_size_kb, start_quality=DEFAULT_WEBP_QUALITY):
 
 
 def _get_uploaded_file_size(uploaded_file):
-    """
-    Safely get uploaded file size in bytes.
-    """
     size = getattr(uploaded_file, "size", None)
 
     if size is not None:
@@ -144,35 +166,12 @@ def _make_safe_webp_filename(base_name="image"):
 
 
 def _copy_original_without_recompressing(uploaded_file, base_name="image"):
-    """
-    Copy already optimized WebP as-is.
-
-    Important:
-    - This does NOT compress again.
-    - This only gives it our safe unique filename.
-    - Image clarity remains untouched.
-    """
     uploaded_file.seek(0)
     file_name = _make_safe_webp_filename(base_name)
     return ContentFile(uploaded_file.read(), name=file_name)
 
 
-def _can_skip_conversion(
-    uploaded_file,
-    img,
-    target_width,
-    target_height,
-    max_size_kb,
-):
-    """
-    Skip conversion only when image already matches our final requirement:
-
-    - Already WebP
-    - Exact target dimensions
-    - Already under target max KB
-
-    This avoids compressing an already optimized image again.
-    """
+def _can_skip_conversion(uploaded_file, img, target_width, target_height, max_size_kb):
     image_format = (img.format or "").upper()
     file_name = getattr(uploaded_file, "name", "") or ""
     file_extension = Path(file_name).suffix.lower()
@@ -195,43 +194,17 @@ def convert_product_image_to_webp(
     quality=DEFAULT_WEBP_QUALITY,
     keep_alpha=False,
 ):
-    """
-    Convert uploaded image to:
-    - requested ratio
-    - requested pixel size
-    - WebP format
-    - compressed target size
-
-    Product image:
-    - 1600x2000
-    - max around 350 KB
-
-    Arrival card image:
-    - 900x900
-    - max around 160 KB
-
-    Top carousel image:
-    - 900x1000
-    - max around 180 KB
-
-    Category image:
-    - 900x650
-    - max around 180 KB
-
-    Skip logic:
-    - If uploaded image is already WebP,
-    - already exact target dimensions,
-    - already under target max KB,
-    then it will NOT be re-compressed.
-    """
     if not uploaded_file:
         return None
 
     try:
-        uploaded_file.seek(0)
+        _validate_upload_size(uploaded_file)
 
+        uploaded_file.seek(0)
         img = Image.open(uploaded_file)
         img = ImageOps.exif_transpose(img)
+
+        _validate_image_pixels(img)
 
         if _can_skip_conversion(
             uploaded_file=uploaded_file,
@@ -240,12 +213,15 @@ def convert_product_image_to_webp(
             target_height=target_height,
             max_size_kb=max_size_kb,
         ):
-            return _copy_original_without_recompressing(
-                uploaded_file=uploaded_file,
-                base_name=base_name,
-            )
+            return _copy_original_without_recompressing(uploaded_file, base_name)
 
         img = _prepare_image_mode(img, keep_alpha=keep_alpha)
+
+        img = _pre_shrink_before_crop(
+            img,
+            target_width=target_width,
+            target_height=target_height,
+        )
 
         img = _center_crop_to_ratio(
             img,
@@ -265,11 +241,28 @@ def convert_product_image_to_webp(
         )
 
         file_name = _make_safe_webp_filename(base_name)
-
         return ContentFile(output.getvalue(), name=file_name)
 
+    except ValidationError:
+        raise
     except Exception as exc:
         raise ValidationError(
             "Invalid image. Please upload a clear JPG/PNG/WebP image. "
             f"Error: {exc}"
         )
+
+
+def convert_sub_product_image_to_webp(uploaded_file, base_name="sub-product"):
+    """
+    Use this for sub_image_1, sub_image_2, sub_image_3.
+    Smaller output reduces RAM, upload time, and Cloudinary load.
+    """
+    return convert_product_image_to_webp(
+        uploaded_file=uploaded_file,
+        base_name=base_name,
+        target_width=SUB_PRODUCT_TARGET_WIDTH,
+        target_height=SUB_PRODUCT_TARGET_HEIGHT,
+        max_size_kb=SUB_PRODUCT_MAX_SIZE_KB,
+        quality=DEFAULT_WEBP_QUALITY,
+        keep_alpha=False,
+    )
