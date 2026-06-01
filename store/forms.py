@@ -66,11 +66,14 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = [
             "category",
+
             "main_image",
             "arrival_card_image",
+            "top_showcase_image",
             "sub_image_1",
             "sub_image_2",
             "sub_image_3",
+
             "name",
             "material",
             "color_name",
@@ -78,8 +81,12 @@ class ProductForm(forms.ModelForm):
             "actual_price",
             "offer_price",
             "description",
+
             "is_available",
             "is_new_arrival",
+            "is_top_selling",
+            "is_most_liked",
+            "is_most_carted",
         ]
 
     def __init__(self, *args, **kwargs):
@@ -94,6 +101,22 @@ class ProductForm(forms.ModelForm):
 
         if image and image.size > 5 * 1024 * 1024:
             raise forms.ValidationError("Main image should be under 5MB.")
+
+        return image
+
+    def clean_arrival_card_image(self):
+        image = self.cleaned_data.get("arrival_card_image")
+
+        if image and image.size > 5 * 1024 * 1024:
+            raise forms.ValidationError("New arrival card image should be under 5MB.")
+
+        return image
+
+    def clean_top_showcase_image(self):
+        image = self.cleaned_data.get("top_showcase_image")
+
+        if image and image.size > 5 * 1024 * 1024:
+            raise forms.ValidationError("Top carousel image should be under 5MB.")
 
         return image
 

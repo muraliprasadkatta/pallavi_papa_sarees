@@ -13,6 +13,9 @@ from store.services.product_image_service import (
     PRODUCT_MAX_SIZE_KB,
     PRODUCT_TARGET_HEIGHT,
     PRODUCT_TARGET_WIDTH,
+    TOP_SHOWCASE_MAX_SIZE_KB,
+    TOP_SHOWCASE_TARGET_HEIGHT,
+    TOP_SHOWCASE_TARGET_WIDTH,
     convert_product_image_to_webp,
 )
 
@@ -37,6 +40,10 @@ def product_main_image_upload_to(instance, filename):
 
 def product_arrival_card_image_upload_to(instance, filename):
     return _product_image_path("arrival", filename)
+
+
+def product_top_showcase_image_upload_to(instance, filename):
+    return _product_image_path("top_showcase", filename)
 
 
 def product_sub_image_upload_to(instance, filename):
@@ -157,6 +164,14 @@ class Product(models.Model):
         max_length=255,
     )
 
+    top_showcase_image = models.ImageField(
+        upload_to=product_top_showcase_image_upload_to,
+        blank=True,
+        null=True,
+        max_length=255,
+        help_text="Optional image for homepage top carousel. If empty, main image can be used.",
+    )
+
     sub_image_1 = models.ImageField(
         upload_to=product_sub_image_upload_to,
         blank=True,
@@ -181,12 +196,18 @@ class Product(models.Model):
     is_available = models.BooleanField(default=True)
     is_new_arrival = models.BooleanField(default=False)
 
+    # Homepage top carousel flags
+    is_top_selling = models.BooleanField(default=False)
+    is_most_liked = models.BooleanField(default=False)
+    is_most_carted = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     IMAGE_FIELDS = (
         "main_image",
         "arrival_card_image",
+        "top_showcase_image",
         "sub_image_1",
         "sub_image_2",
         "sub_image_3",
@@ -197,6 +218,9 @@ class Product(models.Model):
         indexes = [
             models.Index(fields=["category", "is_available", "-created_at"]),
             models.Index(fields=["is_new_arrival", "is_available", "-created_at"]),
+            models.Index(fields=["is_top_selling", "is_available", "-created_at"]),
+            models.Index(fields=["is_most_liked", "is_available", "-created_at"]),
+            models.Index(fields=["is_most_carted", "is_available", "-created_at"]),
         ]
 
     def clean(self):
@@ -238,6 +262,17 @@ class Product(models.Model):
                             max_size_kb=ARRIVAL_CARD_MAX_SIZE_KB,
                             keep_alpha=True,
                         )
+
+                    elif field_name == "top_showcase_image":
+                        converted_image = convert_product_image_to_webp(
+                            uploaded_file=image,
+                            base_name=f"{self.name}-{field_name}",
+                            target_width=TOP_SHOWCASE_TARGET_WIDTH,
+                            target_height=TOP_SHOWCASE_TARGET_HEIGHT,
+                            max_size_kb=TOP_SHOWCASE_MAX_SIZE_KB,
+                            keep_alpha=False,
+                        )
+
                     else:
                         converted_image = convert_product_image_to_webp(
                             uploaded_file=image,

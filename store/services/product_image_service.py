@@ -16,6 +16,10 @@ PRODUCT_TARGET_HEIGHT = 2000
 ARRIVAL_CARD_TARGET_WIDTH = 900
 ARRIVAL_CARD_TARGET_HEIGHT = 900
 
+# Top carousel image: 9:10 portrait card
+TOP_SHOWCASE_TARGET_WIDTH = 900
+TOP_SHOWCASE_TARGET_HEIGHT = 1000
+
 # Category tab/card image: landscape style
 CATEGORY_TARGET_WIDTH = 900
 CATEGORY_TARGET_HEIGHT = 650
@@ -25,6 +29,7 @@ MIN_WEBP_QUALITY = 58
 
 PRODUCT_MAX_SIZE_KB = 350
 ARRIVAL_CARD_MAX_SIZE_KB = 160
+TOP_SHOWCASE_MAX_SIZE_KB = 180
 CATEGORY_MAX_SIZE_KB = 180
 
 
@@ -35,6 +40,7 @@ def _center_crop_to_ratio(img, target_width, target_height):
     Examples:
     - Product image: 1600x2000 = 4:5 portrait
     - Arrival card image: 900x900 = 1:1 square
+    - Top carousel image: 900x1000 = 9:10 portrait
     - Category image: 900x650 = landscape category card
     """
     target_ratio = target_width / target_height
@@ -114,6 +120,72 @@ def _save_webp_under_size(img, max_size_kb, start_quality=DEFAULT_WEBP_QUALITY):
     return best_output
 
 
+def _get_uploaded_file_size(uploaded_file):
+    """
+    Safely get uploaded file size in bytes.
+    """
+    size = getattr(uploaded_file, "size", None)
+
+    if size is not None:
+        return size
+
+    current_position = uploaded_file.tell()
+    uploaded_file.seek(0, 2)
+    size = uploaded_file.tell()
+    uploaded_file.seek(current_position)
+
+    return size
+
+
+def _make_safe_webp_filename(base_name="image"):
+    safe_name = slugify(Path(str(base_name)).stem) or "image"
+    safe_name = safe_name[:45]
+    return f"{safe_name}-{uuid4().hex[:8]}.webp"
+
+
+def _copy_original_without_recompressing(uploaded_file, base_name="image"):
+    """
+    Copy already optimized WebP as-is.
+
+    Important:
+    - This does NOT compress again.
+    - This only gives it our safe unique filename.
+    - Image clarity remains untouched.
+    """
+    uploaded_file.seek(0)
+    file_name = _make_safe_webp_filename(base_name)
+    return ContentFile(uploaded_file.read(), name=file_name)
+
+
+def _can_skip_conversion(
+    uploaded_file,
+    img,
+    target_width,
+    target_height,
+    max_size_kb,
+):
+    """
+    Skip conversion only when image already matches our final requirement:
+
+    - Already WebP
+    - Exact target dimensions
+    - Already under target max KB
+
+    This avoids compressing an already optimized image again.
+    """
+    image_format = (img.format or "").upper()
+    file_name = getattr(uploaded_file, "name", "") or ""
+    file_extension = Path(file_name).suffix.lower()
+
+    is_webp = image_format == "WEBP" or file_extension == ".webp"
+    is_exact_size = img.size == (target_width, target_height)
+
+    uploaded_size = _get_uploaded_file_size(uploaded_file)
+    is_under_target_size = uploaded_size <= max_size_kb * 1024
+
+    return is_webp and is_exact_size and is_under_target_size
+
+
 def convert_product_image_to_webp(
     uploaded_file,
     base_name="product",
@@ -138,9 +210,19 @@ def convert_product_image_to_webp(
     - 900x900
     - max around 160 KB
 
+    Top carousel image:
+    - 900x1000
+    - max around 180 KB
+
     Category image:
     - 900x650
     - max around 180 KB
+
+    Skip logic:
+    - If uploaded image is already WebP,
+    - already exact target dimensions,
+    - already under target max KB,
+    then it will NOT be re-compressed.
     """
     if not uploaded_file:
         return None
@@ -150,6 +232,19 @@ def convert_product_image_to_webp(
 
         img = Image.open(uploaded_file)
         img = ImageOps.exif_transpose(img)
+
+        if _can_skip_conversion(
+            uploaded_file=uploaded_file,
+            img=img,
+            target_width=target_width,
+            target_height=target_height,
+            max_size_kb=max_size_kb,
+        ):
+            return _copy_original_without_recompressing(
+                uploaded_file=uploaded_file,
+                base_name=base_name,
+            )
+
         img = _prepare_image_mode(img, keep_alpha=keep_alpha)
 
         img = _center_crop_to_ratio(
@@ -169,9 +264,7 @@ def convert_product_image_to_webp(
             start_quality=quality,
         )
 
-        safe_name = slugify(Path(str(base_name)).stem) or "image"
-        safe_name = safe_name[:45]
-        file_name = f"{safe_name}-{uuid4().hex[:8]}.webp"
+        file_name = _make_safe_webp_filename(base_name)
 
         return ContentFile(output.getvalue(), name=file_name)
 

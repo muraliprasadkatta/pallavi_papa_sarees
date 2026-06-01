@@ -1,5 +1,6 @@
 {% load static %}
 
+
 <section class="trend-showcase" aria-label="Popular products section">
   <div class="trend-card">
 
@@ -34,93 +35,224 @@
     <div class="trend-stage">
       <div class="trend-track" id="trendTrack">
 
-        <article class="trend-product" data-trend-type="selling" data-carousel-pos="3">
-          <div class="trend-badge">Best Pick</div>
-          <button class="trend-heart" type="button" aria-label="Add to wishlist">♥</button>
-
-          <div class="trend-art trend-art--image">
-            <img
-              src="{% static 'store/user_home/top_sale_products/semi_uppada_1299.webp' %}"
-              alt="Semi Uppada Saree"
-              loading="lazy"
-            >
-          </div>
-
-          <div class="trend-info">
-            <h3>Semi Uppada Saree</h3>
-            <div class="trend-price">
-              <strong>₹1,299</strong>
-              <del>₹1,799</del>
+        {% with product=top_selling_products.0 %}
+          <article class="trend-product {% if not product %}trend-product--placeholder{% endif %}" data-trend-type="selling">
+            <div class="trend-badge">
+              {% if product %}Best Pick{% else %}Coming Soon{% endif %}
             </div>
-            <p>Owner selected pick</p>
-            <a class="trend-whatsapp trend-whatsapp--solid" href="https://wa.me/918333895789" target="_blank" rel="noopener">
-              WhatsApp
-            </a>
-          </div>
-        </article>
 
-        <article class="trend-product" data-trend-type="liked" data-carousel-pos="4">
-          <div class="trend-badge trend-badge--pink">Most Loved</div>
-          <button class="trend-heart" type="button" aria-label="Add to wishlist">♥</button>
+            {% if product %}
+              <button class="trend-heart" type="button" aria-label="Add to wishlist">♥</button>
+            {% endif %}
 
-          <div class="trend-art trend-art--image">
-            <img
-              src="{% static 'store/user_home/top_sale_products/co_ordsets_650.webp' %}"
-              alt="Co-ord Sets"
-              loading="lazy"
-            >
-          </div>
+            {% if product %}
+              <a
+                href="{% url 'store:product_detail' product.id %}"
+                class="trend-art trend-art--image trend-detail-link"
+                aria-label="View {{ product.name }}"
+              >
+                {% if product.top_showcase_image %}
+                  <img src="{{ product.top_showcase_image.url }}" alt="{{ product.name }}" loading="lazy">
+                {% elif product.main_image %}
+                  <img src="{{ product.main_image.url }}" alt="{{ product.name }}" loading="lazy">
+                {% endif %}
+              </a>
+            {% else %}
+              <div class="trend-art trend-art--image">
+                <img src="{% static 'store/user_home/top_sale_products/carousel.webp' %}" alt="Coming soon preview" loading="lazy">
+              </div>
+            {% endif %}
 
-          <div class="trend-info">
-            <h3>Co-ord Sets</h3>
-            <div class="trend-price">
-              <strong>₹650</strong>
-              <del>₹999</del>
+            <div class="trend-info">
+              {% if product %}
+                <h3>
+                  <a href="{% url 'store:product_detail' product.id %}" class="trend-title-link">
+                    {{ product.name }}
+                  </a>
+                </h3>
+
+                <div class="trend-price">
+                  {% if product.offer_price %}
+                    <strong>₹{{ product.offer_price|floatformat:0 }}</strong>
+                    <del>₹{{ product.actual_price|floatformat:0 }}</del>
+                  {% else %}
+                    <strong>₹{{ product.actual_price|floatformat:0 }}</strong>
+                  {% endif %}
+                </div>
+
+                <p>
+                  {% if product.category %}
+                    {{ product.category.name }}
+                  {% else %}
+                    Owner selected pick
+                  {% endif %}
+                </p>
+
+                <a
+                  class="trend-whatsapp trend-whatsapp--solid"
+                  href="https://wa.me/918333895789?text=Hi%20Pallavi%20Papa%20Collections%2C%20I%20am%20interested%20in%20{{ product.name|urlencode }}"
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="Ask about {{ product.name }} on WhatsApp"
+                >
+                  WhatsApp
+                </a>
+              {% else %}
+                <h3>Best Picks Soon</h3>
+                <p>Owner will add new products</p>
+              {% endif %}
             </div>
-            <p>Customer favourite</p>
-            <a class="trend-whatsapp" href="https://wa.me/918333895789" target="_blank" rel="noopener">
-              WhatsApp
-            </a>
-          </div>
-        </article>
+          </article>
+        {% endwith %}
 
-        <article class="trend-product" data-trend-type="carted" data-carousel-pos="2">
-          <div class="trend-badge trend-badge--gold">Popular</div>
-          <button class="trend-heart" type="button" aria-label="Add to wishlist">♥</button>
-
-          <div class="trend-art trend-art--image">
-            <img
-              src="{% static 'store/user_home/top_sale_products/top_sale_399.webp' %}"
-              alt="Top Sale Pick"
-              loading="lazy"
-            >
-          </div>
-
-          <div class="trend-info">
-            <h3>Top Sale Pick</h3>
-            <div class="trend-price">
-              <strong>₹399</strong>
-              <del>₹699</del>
-              <span>43% OFF</span>
+        {% with product=most_liked_products.0 %}
+          <article class="trend-product {% if not product %}trend-product--placeholder{% endif %}" data-trend-type="liked">
+            <div class="trend-badge {% if product %}trend-badge--pink{% endif %}">
+              {% if product %}Most Loved{% else %}Coming Soon{% endif %}
             </div>
-            <p>Budget favourite</p>
-            <a class="trend-whatsapp" href="https://wa.me/918333895789" target="_blank" rel="noopener">
-              WhatsApp
-            </a>
-          </div>
-        </article>
+
+            {% if product %}
+              <button class="trend-heart" type="button" aria-label="Add to wishlist">♥</button>
+            {% endif %}
+
+            {% if product %}
+              <a
+                href="{% url 'store:product_detail' product.id %}"
+                class="trend-art trend-art--image trend-detail-link"
+                aria-label="View {{ product.name }}"
+              >
+                {% if product.top_showcase_image %}
+                  <img src="{{ product.top_showcase_image.url }}" alt="{{ product.name }}" loading="lazy">
+                {% elif product.main_image %}
+                  <img src="{{ product.main_image.url }}" alt="{{ product.name }}" loading="lazy">
+                {% endif %}
+              </a>
+            {% else %}
+              <div class="trend-art trend-art--image">
+                <img src="{% static 'store/user_home/top_sale_products/carousel.webp' %}" alt="Coming soon preview" loading="lazy">
+              </div>
+            {% endif %}
+
+            <div class="trend-info">
+              {% if product %}
+                <h3>
+                  <a href="{% url 'store:product_detail' product.id %}" class="trend-title-link">
+                    {{ product.name }}
+                  </a>
+                </h3>
+
+                <div class="trend-price">
+                  {% if product.offer_price %}
+                    <strong>₹{{ product.offer_price|floatformat:0 }}</strong>
+                    <del>₹{{ product.actual_price|floatformat:0 }}</del>
+                  {% else %}
+                    <strong>₹{{ product.actual_price|floatformat:0 }}</strong>
+                  {% endif %}
+                </div>
+
+                <p>
+                  {% if product.category %}
+                    {{ product.category.name }}
+                  {% else %}
+                    Customer favourite
+                  {% endif %}
+                </p>
+
+                <a
+                  class="trend-whatsapp"
+                  href="https://wa.me/918333895789?text=Hi%20Pallavi%20Papa%20Collections%2C%20I%20am%20interested%20in%20{{ product.name|urlencode }}"
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="Ask about {{ product.name }} on WhatsApp"
+                >
+                  WhatsApp
+                </a>
+              {% else %}
+                <h3>Most Loved Soon</h3>
+                <p>Owner will add new products</p>
+              {% endif %}
+            </div>
+          </article>
+        {% endwith %}
+
+        {% with product=most_carted_products.0 %}
+          <article class="trend-product {% if not product %}trend-product--placeholder{% endif %}" data-trend-type="carted">
+            <div class="trend-badge {% if product %}trend-badge--gold{% endif %}">
+              {% if product %}Popular{% else %}Coming Soon{% endif %}
+            </div>
+
+            {% if product %}
+              <button class="trend-heart" type="button" aria-label="Add to wishlist">♥</button>
+            {% endif %}
+
+            {% if product %}
+              <a
+                href="{% url 'store:product_detail' product.id %}"
+                class="trend-art trend-art--image trend-detail-link"
+                aria-label="View {{ product.name }}"
+              >
+                {% if product.top_showcase_image %}
+                  <img src="{{ product.top_showcase_image.url }}" alt="{{ product.name }}" loading="lazy">
+                {% elif product.main_image %}
+                  <img src="{{ product.main_image.url }}" alt="{{ product.name }}" loading="lazy">
+                {% endif %}
+              </a>
+            {% else %}
+              <div class="trend-art trend-art--image">
+                <img src="{% static 'store/user_home/top_sale_products/carousel.webp' %}" alt="Coming soon preview" loading="lazy">
+              </div>
+            {% endif %}
+
+            <div class="trend-info">
+              {% if product %}
+                <h3>
+                  <a href="{% url 'store:product_detail' product.id %}" class="trend-title-link">
+                    {{ product.name }}
+                  </a>
+                </h3>
+
+                <div class="trend-price">
+                  {% if product.offer_price %}
+                    <strong>₹{{ product.offer_price|floatformat:0 }}</strong>
+                    <del>₹{{ product.actual_price|floatformat:0 }}</del>
+                  {% else %}
+                    <strong>₹{{ product.actual_price|floatformat:0 }}</strong>
+                  {% endif %}
+                </div>
+
+                <p>
+                  {% if product.category %}
+                    {{ product.category.name }}
+                  {% else %}
+                    Popular pick
+                  {% endif %}
+                </p>
+
+                <a
+                  class="trend-whatsapp"
+                  href="https://wa.me/918333895789?text=Hi%20Pallavi%20Papa%20Collections%2C%20I%20am%20interested%20in%20{{ product.name|urlencode }}"
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="Ask about {{ product.name }} on WhatsApp"
+                >
+                  WhatsApp
+                </a>
+              {% else %}
+                <h3>Popular Picks Soon</h3>
+                <p>Owner will add new products</p>
+              {% endif %}
+            </div>
+          </article>
+        {% endwith %}
 
       </div>
     </div>
 
-    <div class="trend-dots" aria-hidden="true">
-      <span class="is-active"></span>
-      <span></span>
-      <span></span>
-    </div>
+    <div class="trend-dots" aria-hidden="true"></div>
 
   </div>
 </section>
+
 
 <style>
   .trend-showcase,
@@ -262,6 +394,32 @@
     transform: translateY(-4px);
     border-color: rgba(143, 23, 49, 0.22);
     box-shadow: 0 18px 36px rgba(68, 31, 38, 0.15);
+  }
+
+  .trend-product--placeholder {
+    opacity: 0.74;
+  }
+
+  .trend-product--placeholder .trend-badge {
+    background: linear-gradient(135deg, #8f8a7d, #4e463f);
+  }
+
+  .trend-product--placeholder .trend-info h3 {
+    color: #6d5960;
+  }
+
+  .trend-product--placeholder .trend-price,
+  .trend-product--placeholder .trend-whatsapp,
+  .trend-product--placeholder .trend-heart {
+    display: none;
+  }
+
+  .trend-product--placeholder .trend-art img {
+    filter: saturate(0.85) contrast(0.92);
+  }
+
+  .trend-product--placeholder .trend-info p {
+    padding-right: 0;
   }
 
   .trend-badge {
@@ -650,7 +808,7 @@
     .trend-badge {
       top: 7px;
       left: 7px;
-      max-width: 58px;
+      max-width: 62px;
       padding: 4px 6px;
       border-radius: 9px;
       font-size: clamp(6.8px, 1.95vw, 8.5px);
@@ -678,6 +836,10 @@
       font-size: clamp(8.8px, 2.45vw, 11.5px);
       line-height: 1.1;
       font-weight: 610;
+    }
+
+    .trend-product--placeholder .trend-info h3 {
+      padding-right: 0;
     }
 
     .trend-price {
@@ -806,21 +968,16 @@
     const cards = Array.from(root.querySelectorAll(".trend-product"));
     const tabs = Array.from(root.querySelectorAll(".trend-tab"));
     const tabWrap = root.querySelector(".trend-tabs");
-    const dots = Array.from(root.querySelectorAll(".trend-dots span"));
+    const dotsWrap = root.querySelector(".trend-dots");
     const stage = root.querySelector(".trend-stage");
 
     if (!cards.length || !tabs.length) return;
-
-    const orderedTypes = tabs
-      .map((tab) => tab.dataset.trendTab)
-      .filter(Boolean);
 
     function isMobileCarousel() {
       return window.matchMedia("(max-width: 767px)").matches;
     }
 
     function normalizeIndex(index, total) {
-      if (!total) return 0;
       return (index + total) % total;
     }
 
@@ -835,19 +992,24 @@
     }
 
     function getPositionFromOffset(offset) {
-      if (offset <= -3) return 0;
-      if (offset === -2) return 1;
       if (offset === -1) return 2;
       if (offset === 0) return 3;
       if (offset === 1) return 4;
-      if (offset === 2) return 5;
-      return 6;
+      if (offset < -1) return 1;
+      return 5;
     }
 
-    function findPreferredCardIndex(type) {
-      const matchIndex = cards.findIndex((card) => card.dataset.trendType === type);
-      return matchIndex >= 0 ? matchIndex : 0;
+    function getCardType(card) {
+      return card?.dataset.trendType || "selling";
     }
+
+    function findCardIndexByType(type) {
+      const index = cards.findIndex((card) => card.dataset.trendType === type);
+      return index >= 0 ? index : 0;
+    }
+
+    let activeIndex = 0;
+    let activeType = getCardType(cards[activeIndex]);
 
     let walkerReady = false;
     let walkerX = 0;
@@ -866,8 +1028,6 @@
     }
 
     function updateTabWalker() {
-      if (!isMobileCarousel()) return;
-
       const activeTab =
         tabs.find((tab) => tab.classList.contains("is-active")) || tabs[0];
 
@@ -907,44 +1067,32 @@
       }, 520);
     }
 
-    const initialType =
-      tabs.find((tab) => tab.classList.contains("is-active"))?.dataset.trendTab ||
-      orderedTypes[0];
+    function renderDots() {
+      if (!dotsWrap) return;
 
-    let activeType = initialType;
-    let activeIndex = findPreferredCardIndex(activeType);
+      dotsWrap.innerHTML = "";
 
-    function renderMobileCarousel() {
+      cards.forEach((_, index) => {
+        const dot = document.createElement("span");
+        dot.classList.toggle("is-active", index === activeIndex);
+        dotsWrap.appendChild(dot);
+      });
+    }
+
+    function renderCarousel() {
       activeIndex = normalizeIndex(activeIndex, cards.length);
-      activeType = cards[activeIndex]?.dataset.trendType || activeType;
+      activeType = getCardType(cards[activeIndex]);
 
       cards.forEach((card, index) => {
         const offset = getCircularOffset(index, activeIndex, cards.length);
         const pos = getPositionFromOffset(offset);
 
+        card.style.display = "flex";
         card.dataset.carouselPos = String(pos);
         card.classList.toggle("trend-product--main", pos === 3);
         card.classList.toggle("trend-product--side", pos !== 3);
         card.setAttribute("aria-hidden", Math.abs(offset) <= 1 ? "false" : "true");
       });
-    }
-
-    function renderDots() {
-      dots.forEach((dot, index) => {
-        dot.style.display = index < cards.length ? "" : "none";
-        dot.classList.toggle("is-active", index === activeIndex);
-      });
-    }
-
-    function renderCarousel() {
-      if (isMobileCarousel()) {
-        renderMobileCarousel();
-      } else {
-        cards.forEach((card) => {
-          card.removeAttribute("data-carousel-pos");
-          card.setAttribute("aria-hidden", "false");
-        });
-      }
 
       tabs.forEach((tab) => {
         tab.classList.toggle("is-active", tab.dataset.trendTab === activeType);
@@ -956,7 +1104,6 @@
 
     function moveCarousel(direction) {
       activeIndex = normalizeIndex(activeIndex + direction, cards.length);
-      activeType = cards[activeIndex]?.dataset.trendType || activeType;
       renderCarousel();
     }
 
@@ -966,8 +1113,6 @@
     stage?.addEventListener(
       "touchstart",
       (event) => {
-        if (!isMobileCarousel()) return;
-
         const touch = event.changedTouches[0];
         touchStartX = touch.clientX;
         touchStartY = touch.clientY;
@@ -978,19 +1123,11 @@
     stage?.addEventListener(
       "touchend",
       (event) => {
-        if (!isMobileCarousel()) return;
-
         const touch = event.changedTouches[0];
-        const touchEndX = touch.clientX;
-        const touchEndY = touch.clientY;
+        const diffX = touchStartX - touch.clientX;
+        const diffY = touchStartY - touch.clientY;
 
-        const diffX = touchStartX - touchEndX;
-        const diffY = touchStartY - touchEndY;
-
-        const isHorizontalSwipe = Math.abs(diffX) > Math.abs(diffY) * 1.4;
-        const isStrongSwipe = Math.abs(diffX) > 35;
-
-        if (!isHorizontalSwipe || !isStrongSwipe) return;
+        if (Math.abs(diffX) <= Math.abs(diffY) * 1.4 || Math.abs(diffX) <= 35) return;
 
         moveCarousel(diffX > 0 ? 1 : -1);
       },
@@ -1002,25 +1139,16 @@
         const type = tab.dataset.trendTab;
         if (!type) return;
 
-        activeType = type;
-        activeIndex = findPreferredCardIndex(activeType);
-
+        activeIndex = findCardIndexByType(type);
         renderCarousel();
       });
     });
 
     window.addEventListener("resize", () => {
+      walkerReady = false;
       renderCarousel();
-
-      if (isMobileCarousel()) {
-        requestAnimationFrame(updateTabWalker);
-      }
     });
 
     renderCarousel();
-
-    if (isMobileCarousel()) {
-      requestAnimationFrame(updateTabWalker);
-    }
   })();
 </script>

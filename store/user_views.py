@@ -47,9 +47,51 @@ def user_home_view(request):
         .order_by("-created_at")[:8]
     )
 
+    showcase_products = (
+        Product.objects
+        .select_related("category")
+        .filter(is_available=True)
+        .only(
+            "id",
+            "name",
+            "category",
+            "category__name",
+            "category__slug",
+            "actual_price",
+            "offer_price",
+            "main_image",
+            "top_showcase_image",
+            "is_top_selling",
+            "is_most_liked",
+            "is_most_carted",
+            "created_at",
+        )
+    )
+
+    top_selling_products = (
+        showcase_products
+        .filter(is_top_selling=True)
+        .order_by("-created_at")[:12]
+    )
+
+    most_liked_products = (
+        showcase_products
+        .filter(is_most_liked=True)
+        .order_by("-created_at")[:12]
+    )
+
+    most_carted_products = (
+        showcase_products
+        .filter(is_most_carted=True)
+        .order_by("-created_at")[:12]
+    )
+
     context = {
         "new_arrivals": new_arrivals,
         "latest_products": latest_products,
+        "top_selling_products": top_selling_products,
+        "most_liked_products": most_liked_products,
+        "most_carted_products": most_carted_products,
     }
 
     return render(request, "store/user_homepage/user_home.html", context)

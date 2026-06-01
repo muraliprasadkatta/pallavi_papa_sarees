@@ -942,9 +942,6 @@
   {% include "store/partials/header.html" %}
 
   <main class="pd-page">
-    <a href="{% url 'store:collections' %}?category={{ product.category }}" class="pd-back">
-      ← Back to {{ product.get_category_display }}
-    </a>
 
     <section class="pd-shell">
     {% include "store/product_detail/partials/product_gallery.html" %}
