@@ -13,6 +13,7 @@
       --muted: #7d646a;
       --primary: #8f1731;
       --primary-dark: #681021;
+      --danger: #b00020;
       --border: rgba(143, 23, 49, 0.14);
       --shadow: 0 14px 42px rgba(70, 28, 35, 0.10);
     }
@@ -169,6 +170,47 @@
       line-height: 1.35;
     }
 
+    .image-error {
+      display: none;
+      margin-top: 8px;
+      color: var(--danger);
+      background: rgba(176, 0, 32, 0.08);
+      border: 1px solid rgba(176, 0, 32, 0.22);
+      border-radius: 12px;
+      padding: 9px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .image-error.is-visible {
+      display: block;
+    }
+
+    .field.has-file-error input[type="file"] {
+      border-color: var(--danger);
+      background: rgba(176, 0, 32, 0.06);
+      box-shadow: 0 0 0 4px rgba(176, 0, 32, 0.08);
+    }
+
+    .field.has-file-error .upload-limit-note {
+      color: var(--danger);
+      background: rgba(176, 0, 32, 0.08);
+      border-color: rgba(176, 0, 32, 0.22);
+    }
+
+    .shake {
+      animation: shakeBox 0.34s ease-in-out;
+    }
+
+    @keyframes shakeBox {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-7px); }
+      40% { transform: translateX(7px); }
+      60% { transform: translateX(-5px); }
+      80% { transform: translateX(5px); }
+    }
+
     .category-image-preview {
       display: none;
       width: 100%;
@@ -296,7 +338,7 @@
           {{ form.name.errors }}
         </div>
 
-        <div class="field">
+        <div class="field" id="categoryImageField">
           <label for="id_image">Category Image</label>
           {{ form.image }}
           <small>Optional, but recommended. This image will show in Collections category tabs.</small>
@@ -304,6 +346,8 @@
           <div class="upload-limit-note">
             Max upload size: 3MB. Final output: 900 × 650 WebP.
           </div>
+
+          <div class="image-error" id="categoryImageError"></div>
 
           {{ form.image.errors }}
 
@@ -330,14 +374,36 @@
   <script>
     (() => {
       const imageInput = document.getElementById("id_image");
+      const imageField = document.getElementById("categoryImageField");
+      const imageError = document.getElementById("categoryImageError");
       const previewBox = document.getElementById("categoryImagePreview");
       const previewImg = previewBox ? previewBox.querySelector("img") : null;
       const maxBytes = 3 * 1024 * 1024;
 
-      if (!imageInput || !previewBox || !previewImg) return;
+      if (!imageInput || !imageField || !imageError || !previewBox || !previewImg) return;
+
+      function clearImageError() {
+        imageField.classList.remove("has-file-error", "shake");
+        imageError.classList.remove("is-visible");
+        imageError.textContent = "";
+      }
+
+      function showImageError(message) {
+        imageField.classList.remove("shake");
+        void imageField.offsetWidth;
+        imageField.classList.add("has-file-error", "shake");
+
+        imageError.textContent = message;
+        imageError.classList.add("is-visible");
+
+        previewBox.style.display = "none";
+        previewImg.src = "";
+      }
 
       imageInput.addEventListener("change", function () {
         const file = this.files && this.files[0];
+
+        clearImageError();
 
         if (!file) {
           previewBox.style.display = "none";
@@ -346,18 +412,14 @@
         }
 
         if (!file.type.startsWith("image/")) {
-          alert("Please select an image file only.");
+          showImageError("Please select an image file only.");
           this.value = "";
-          previewBox.style.display = "none";
-          previewImg.src = "";
           return;
         }
 
         if (file.size > maxBytes) {
-          alert(`${file.name} is above 3MB. Please upload an image below 3MB.`);
+          showImageError(`${file.name} is above 3MB. Please upload an image below 3MB.`);
           this.value = "";
-          previewBox.style.display = "none";
-          previewImg.src = "";
           return;
         }
 
