@@ -390,3 +390,10 @@ def product_detail_view(request, product_id):
         "store/product_detail/product_detail.html",
         context,
     )
+
+
+from django.http import HttpResponse
+
+
+def health_check(request):
+    return HttpResponse("OK", content_type="text/plain")
