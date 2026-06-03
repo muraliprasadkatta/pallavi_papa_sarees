@@ -1,3 +1,5 @@
+{% url 'store:cart' as cart_url %}
+
 <header class="site-header">
   <div class="header-inner">
 
@@ -11,18 +13,18 @@
     <!-- Center brand -->
     <a href="{% url 'store:user_home' %}" class="brand-center" aria-label="Pallavi Papa Sarees home">
       <strong>Pallavi Papa</strong>
-      <small>Sarees</small>
+      <small>Collections</small>
     </a>
 
-    <!-- Right icons -->
+    <!-- Right cart -->
     <div class="header-actions">
-      <a href="#" class="header-icon bag-icon" aria-label="Cart">
+      <a href="{{ cart_url }}" class="header-icon bag-icon" aria-label="Open cart">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M6.5 8.5h11l-.7 11H7.2l-.7-11Z"/>
           <path d="M9 8.5V6.8a3 3 0 0 1 6 0v1.7"/>
         </svg>
 
-        <span class="bag-count">2</span>
+        <span class="bag-count is-hidden" data-cart-count>0</span>
       </a>
     </div>
 
@@ -30,158 +32,148 @@
 </header>
 
 <style>
-:root {
-  --bg: #fff7f2;
-  --text: #2b1718;
-  --muted: rgba(43, 23, 24, 0.68);
-  --primary: #8f182d;
-  --primary-dark: #5b0d12;
-  --border: rgba(43, 23, 24, 0.10);
-}
+/* =========================
+   SITE HEADER - SCOPED ONLY
+========================= */
 
-* {
+.site-header,
+.site-header * {
   box-sizing: border-box;
 }
 
-html {
-  scroll-behavior: smooth;
+.site-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1000 !important;
+  width: 100% !important;
+  min-height: 70px !important;
+  background: rgba(255, 250, 247, 0.96) !important;
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(43, 23, 24, 0.10) !important;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
 }
 
-body {
-  margin: 0;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: var(--text);
-  background: linear-gradient(135deg, #fffaf5, #fff1eb);
-}
-
-a {
+.site-header a {
   color: inherit;
   text-decoration: none;
 }
 
-button {
+.site-header button {
   font: inherit;
 }
 
-/* =========================
-   HEADER
-========================= */
+.site-header .header-inner {
+  position: relative !important;
+  width: min(1120px, calc(100% - clamp(22px, 5vw, 54px))) !important;
+  min-height: 70px !important;
+  margin: 0 auto !important;
 
-.site-header {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  background: rgba(255, 250, 247, 0.96);
-  backdrop-filter: blur(14px);
-  border-bottom: 1px solid var(--border);
-}
-
-.header-inner {
-  position: relative;
-  width: min(1120px, calc(100% - clamp(22px, 5vw, 54px)));
-  min-height: clamp(54px, 7vw, 70px);
-  margin: 0 auto;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
 }
 
 /* =========================
-   CENTER BRAND
+   BRAND
 ========================= */
 
-.brand-center {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  min-width: 0;
+.site-header .brand-center {
+  position: absolute !important;
+  left: 50% !important;
+  top: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  min-width: 0 !important;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-  text-align: center;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  text-align: center !important;
 }
 
-.brand-center strong {
-  display: block;
-  color: #32191b;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(21px, 3.6vw, 34px);
-  font-weight: 500;
-  line-height: 0.88;
-  letter-spacing: 0.065em;
-  text-transform: uppercase;
-  white-space: nowrap;
+.site-header .brand-center strong {
+  display: block !important;
+  color: #32191b !important;
+  font-family: Georgia, "Times New Roman", serif !important;
+  font-size: clamp(21px, 3.6vw, 34px) !important;
+  font-weight: 500 !important;
+  line-height: 0.88 !important;
+  letter-spacing: 0.065em !important;
+  text-transform: uppercase !important;
+  white-space: nowrap !important;
 }
 
-.brand-center small {
-  display: block;
-  margin-top: clamp(3px, 0.8vw, 5px);
-  color: rgba(50, 25, 27, 0.70);
-  font-size: clamp(7px, 1.15vw, 10px);
-  font-weight: 700;
-  line-height: 1;
-  letter-spacing: 0.46em;
-  text-transform: uppercase;
-  transform: translateX(0.22em);
+.site-header .brand-center small {
+  display: block !important;
+  margin-top: clamp(3px, 0.8vw, 5px) !important;
+  color: rgba(50, 25, 27, 0.70) !important;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-size: clamp(7px, 1.15vw, 10px) !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.46em !important;
+  text-transform: uppercase !important;
+  transform: translateX(0.22em) !important;
 }
 
 /* =========================
    ICONS
 ========================= */
 
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0;
+.site-header .header-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0 !important;
 }
 
-.header-icon {
-  position: relative;
-  width: clamp(32px, 5.5vw, 42px);
-  height: clamp(32px, 5.5vw, 42px);
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: #32191b;
-  display: inline-grid;
-  place-items: center;
-  cursor: pointer;
+.site-header .header-icon {
+  position: relative !important;
+  width: clamp(32px, 5.5vw, 42px) !important;
+  height: clamp(32px, 5.5vw, 42px) !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #32191b !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  cursor: pointer !important;
 }
 
-.header-icon svg {
-  width: clamp(23px, 4.2vw, 32px);
-  height: clamp(23px, 4.2vw, 32px);
-  display: block;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.9;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.site-header .header-icon svg {
+  width: clamp(23px, 4.2vw, 32px) !important;
+  height: clamp(23px, 4.2vw, 32px) !important;
+  display: block !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.9 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
 }
 
-.bag-count {
-  position: absolute;
-  right: -3px;
-  top: -3px;
-  min-width: clamp(18px, 3.5vw, 24px);
-  height: clamp(18px, 3.5vw, 24px);
-  padding: 0 5px;
-  border-radius: 999px;
-  display: grid;
-  place-items: center;
+.site-header .bag-count {
+  position: absolute !important;
+  right: -3px !important;
+  top: -3px !important;
+  min-width: clamp(18px, 3.5vw, 24px) !important;
+  height: clamp(18px, 3.5vw, 24px) !important;
+  padding: 0 5px !important;
+  border-radius: 999px !important;
 
-  color: #fff8ef;
-  background: #8f182d;
-  border: 2px solid #fffaf7;
-  font-size: clamp(10px, 2vw, 13px);
-  font-weight: 800;
-  line-height: 1;
+  display: grid !important;
+  place-items: center !important;
+
+  color: #fff8ef !important;
+  background: #8f182d !important;
+  border: 2px solid #fffaf7 !important;
+  font-size: clamp(10px, 2vw, 13px) !important;
+  font-weight: 800 !important;
+  line-height: 1 !important;
+}
+
+.site-header .bag-count.is-hidden {
+  display: none !important;
 }
 
 /* =========================
@@ -189,42 +181,44 @@ button {
 ========================= */
 
 @media (max-width: 767px) {
-  .header-inner {
-    width: min(100%, calc(100% - 28px));
-    min-height: 58px;
+  .site-header {
+    min-height: 58px !important;
   }
 
-  .brand-center strong {
-    font-size: clamp(21px, 7vw, 29px);
-    line-height: 0.88;
-    letter-spacing: 0.055em;
+  .site-header .header-inner {
+    width: min(100%, calc(100% - 28px)) !important;
+    min-height: 58px !important;
   }
 
-  .brand-center small {
-    margin-top: 4px;
-    font-size: 8px;
-    letter-spacing: 0.40em;
-    transform: translateX(0.20em);
+  .site-header .brand-center strong {
+    font-size: clamp(21px, 7vw, 29px) !important;
+    line-height: 0.88 !important;
+    letter-spacing: 0.055em !important;
   }
 
-  .header-actions {
-    gap: 0;
+  .site-header .brand-center small {
+    margin-top: 4px !important;
+    font-size: 8px !important;
+    letter-spacing: 0.40em !important;
+    transform: translateX(0.20em) !important;
   }
 
-  .header-icon {
-    width: 34px;
-    height: 34px;
+  .site-header .header-icon {
+    width: 34px !important;
+    height: 34px !important;
   }
 
-  .header-icon svg {
-    width: 25px;
-    height: 25px;
+  .site-header .header-icon svg {
+    width: 25px !important;
+    height: 25px !important;
   }
 
-  .bag-count {
-    min-width: 20px;
-    height: 20px;
-    font-size: 11px;
+  .site-header .bag-count {
+    right: -3px !important;
+    top: -3px !important;
+    min-width: 20px !important;
+    height: 20px !important;
+    font-size: 11px !important;
   }
 }
 
@@ -233,45 +227,41 @@ button {
 ========================= */
 
 @media (max-width: 380px) {
-  .header-inner {
-    width: min(100%, calc(100% - 22px));
-    min-height: 56px;
+  .site-header .header-inner {
+    width: min(100%, calc(100% - 22px)) !important;
+    min-height: 56px !important;
   }
 
-  .brand-center strong {
-    font-size: clamp(19px, 6.6vw, 25px);
-    line-height: 0.88;
-    letter-spacing: 0.045em;
+  .site-header .brand-center strong {
+    font-size: clamp(19px, 6.6vw, 25px) !important;
+    line-height: 0.88 !important;
+    letter-spacing: 0.045em !important;
   }
 
-  .brand-center small {
-    margin-top: 3px;
-    font-size: 7.5px;
-    letter-spacing: 0.34em;
-    transform: translateX(0.17em);
+  .site-header .brand-center small {
+    margin-top: 3px !important;
+    font-size: 7.5px !important;
+    letter-spacing: 0.34em !important;
+    transform: translateX(0.17em) !important;
   }
 
-  .header-actions {
-    gap: 0px;
+  .site-header .header-icon {
+    width: 32px !important;
+    height: 32px !important;
   }
 
-  .header-icon {
-    width: 32px;
-    height: 32px;
+  .site-header .header-icon svg {
+    width: 24px !important;
+    height: 24px !important;
   }
 
-  .header-icon svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  .bag-count {
-    right: -2px;
-    top: -2px;
-    min-width: 18px;
-    height: 18px;
-    font-size: 10px;
-    border-width: 1.5px;
+  .site-header .bag-count {
+    right: -2px !important;
+    top: -2px !important;
+    min-width: 18px !important;
+    height: 18px !important;
+    font-size: 10px !important;
+    border-width: 1.5px !important;
   }
 }
 
@@ -280,33 +270,69 @@ button {
 ========================= */
 
 @media (max-width: 320px) {
-  .header-inner {
-    min-height: 54px;
+  .site-header .header-inner {
+    min-height: 54px !important;
   }
 
-  .brand-center strong {
-    font-size: 18px;
-    letter-spacing: 0.035em;
+  .site-header .brand-center strong {
+    font-size: 18px !important;
+    letter-spacing: 0.035em !important;
   }
 
-  .brand-center small {
-    font-size: 7px;
-    letter-spacing: 0.28em;
+  .site-header .brand-center small {
+    font-size: 7px !important;
+    letter-spacing: 0.28em !important;
   }
 
-  .header-actions {
-    gap: 0;
+  .site-header .header-icon {
+    width: 30px !important;
+    height: 30px !important;
   }
 
-
-  .header-icon {
-    width: 30px;
-    height: 30px;
-  }
-
-  .header-icon svg {
-    width: 22px;
-    height: 22px;
+  .site-header .header-icon svg {
+    width: 22px !important;
+    height: 22px !important;
   }
 }
 </style>
+
+<script>
+  (function () {
+    const cartCountEls = document.querySelectorAll(".site-header [data-cart-count]");
+
+    function getCartCount() {
+      try {
+        const cart = JSON.parse(localStorage.getItem("pp_cart") || "[]");
+
+        if (!Array.isArray(cart)) {
+          return 0;
+        }
+
+        return cart.reduce(function (total, item) {
+          return total + Number(item.qty || 1);
+        }, 0);
+      } catch (error) {
+        return 0;
+      }
+    }
+
+    function updateCartBadge() {
+      const count = getCartCount();
+
+      cartCountEls.forEach(function (el) {
+        el.textContent = count;
+
+        if (count > 0) {
+          el.classList.remove("is-hidden");
+        } else {
+          el.classList.add("is-hidden");
+        }
+      });
+    }
+
+    updateCartBadge();
+
+    window.addEventListener("storage", updateCartBadge);
+    window.addEventListener("pp-cart-updated", updateCartBadge);
+  })();
+</script>

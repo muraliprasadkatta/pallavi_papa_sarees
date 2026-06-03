@@ -85,6 +85,8 @@ class ProductForm(forms.ModelForm):
             "material",
             "color_name",
             "color_code",
+            "product_size",
+            "stock_quantity",
             "actual_price",
             "offer_price",
             "description",
@@ -161,6 +163,20 @@ class ProductForm(forms.ModelForm):
             raise forms.ValidationError("Color code should contain only hex characters.")
 
         return color_code.lower()
+
+    def clean_product_size(self):
+        return (self.cleaned_data.get("product_size") or "").strip()
+
+    def clean_stock_quantity(self):
+        stock_quantity = self.cleaned_data.get("stock_quantity")
+
+        if stock_quantity is None:
+            return 0
+
+        if stock_quantity < 0:
+            raise forms.ValidationError("Available pieces cannot be negative.")
+
+        return stock_quantity
 
     def clean(self):
         cleaned_data = super().clean()

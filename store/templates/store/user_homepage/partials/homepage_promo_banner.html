@@ -1,0 +1,74 @@
+{% load static %}
+{% url 'store:collections' as collections_url %}
+
+<section class="homepage-promo-banner-section" aria-label="Homepage promotional banner">
+  <a href="{{ collections_url }}" class="homepage-promo-banner-card">
+    <img
+      src="{% static 'store/user_home/homepage_promo_banner/homepage_promo_banner.webp' %}"
+      alt="Handpicked sarees for every budget"
+      loading="lazy"
+    >
+  </a>
+</section>
+
+<style>
+.homepage-promo-banner-section {
+  width: 100%;
+  margin: 0;
+  padding: 12px 0 18px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  background: linear-gradient(180deg, #fff4ec 0%, #fff1ec 100%);
+}
+
+.homepage-promo-banner-card {
+  display: block;
+  width: min(calc(100% - 10px), 1460px);
+  margin-inline: auto;
+  border-radius: clamp(18px, 3vw, 30px);
+  overflow: hidden;
+  text-decoration: none;
+  box-shadow: 0 12px 32px rgba(55, 20, 20, .10);
+  transform: translateZ(0);
+}
+
+.homepage-promo-banner-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 25 / 8;
+  height: auto;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .homepage-promo-banner-section {
+    padding: 8px 0 12px;
+  }
+
+  .homepage-promo-banner-card {
+    width: calc(100% - 4px);
+    max-width: none;
+    border-radius: 16px;
+  }
+
+  .homepage-promo-banner-card img {
+    aspect-ratio: 25 / 8;
+    object-fit: cover;
+    object-position: center;
+  }
+}
+
+/* Very small mobiles */
+@media (max-width: 360px) {
+  .homepage-promo-banner-section {
+    padding: 7px 0 11px;
+  }
+
+  .homepage-promo-banner-card {
+    width: calc(100% - 2px);
+    border-radius: 14px;
+  }
+}
+</style>

@@ -1,9 +1,17 @@
+{% url 'store:product_detail' product.id as product_detail_url %}
+
 <div class="pd-actions">
   <a
     class="pd-whatsapp"
-    href="https://wa.me/918333895789?text=Hi%20I%20am%20interested%20in%20{{ product.name|urlencode }}"
+    href="#"
     target="_blank"
     rel="noopener"
+    data-direct-whatsapp
+    data-product-name="{{ product.name }}"
+    data-product-category="{{ product.get_category_display }}"
+    data-product-price="{% if product.offer_price %}{{ product.offer_price|floatformat:0 }}{% else %}{{ product.actual_price|floatformat:0 }}{% endif %}"
+    data-product-image="{% if product.main_image %}{{ product.main_image.url }}{% endif %}"
+    data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
   >
     <span class="pd-action-icon" aria-hidden="true">
       <svg viewBox="0 0 24 24">
@@ -14,12 +22,17 @@
     Order on WhatsApp
   </a>
 
-  <button class="pd-secondary" type="button">
-    <span class="pd-action-icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24">
-        <path d="M20.5 8.8c0 5.1-8.5 10.2-8.5 10.2S3.5 13.9 3.5 8.8A4.4 4.4 0 0 1 12 7.2a4.4 4.4 0 0 1 8.5 1.6Z"></path>
-      </svg>
-    </span>
-    Add to Wishlist
+  <button
+    class="pd-secondary"
+    type="button"
+    data-cart-add
+    data-product-id="{{ product.id }}"
+    data-product-name="{{ product.name }}"
+    data-product-category="{{ product.get_category_display }}"
+    data-product-price="{% if product.offer_price %}{{ product.offer_price|floatformat:0 }}{% else %}{{ product.actual_price|floatformat:0 }}{% endif %}"
+    data-product-image="{% if product.main_image %}{{ product.main_image.url }}{% endif %}"
+    data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
+  >
+    Add to Cart
   </button>
 </div>

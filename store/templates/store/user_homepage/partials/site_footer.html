@@ -1,11 +1,14 @@
 {% load static %}
+{% url 'store:user_home' as home_url %}
+{% url 'store:collections' as collections_url %}
+{% url 'store:about_contact' as about_contact_url %}
 
 <footer class="site-footer" aria-label="Pallavi Papa footer">
   <div class="site-footer__inner">
 
     <!-- Brand -->
     <div class="site-footer__brand">
-      <a href="{% url 'store:user_home' %}" class="footer-brand-link" aria-label="Pallavi Papa home">
+      <a href="{{ home_url }}" class="footer-brand-link" aria-label="Pallavi Papa home">
         <span class="footer-logo">PP</span>
 
         <span class="footer-brand-text">
@@ -24,11 +27,47 @@
       <h3>Quick Links</h3>
 
       <ul>
-        <li><a href="{% url 'store:user_home' %}">Home</a></li>
-        <li><a href="#">Collections</a></li>
-        <li><a href="#">New Arrivals</a></li>
-        <li><a href="#">About Us</a></li>
-        <li><a href="#">Contact Us</a></li>
+        <li>
+          {% if request.resolver_match.url_name == 'user_home' %}
+            <span class="footer-link footer-link--active" aria-current="page">Home</span>
+          {% else %}
+            <a href="{{ home_url }}" class="footer-link">Home</a>
+          {% endif %}
+        </li>
+
+        <li>
+          {% if request.resolver_match.url_name == 'collections' and request.GET.focus != 'new' %}
+            <span class="footer-link footer-link--active" aria-current="page">Collections</span>
+          {% else %}
+            <a href="{{ collections_url }}" class="footer-link">Collections</a>
+          {% endif %}
+        </li>
+
+        <li>
+          {% if request.resolver_match.url_name == 'collections' and request.GET.focus == 'new' %}
+            <span class="footer-link footer-link--active" aria-current="page">New Arrivals</span>
+          {% else %}
+            <a href="{{ collections_url }}?focus=new" class="footer-link">New Arrivals</a>
+          {% endif %}
+        </li>
+
+        <li>
+          <a
+            href="{% if request.resolver_match.url_name == 'about_contact' %}#about{% else %}{{ about_contact_url }}#about{% endif %}"
+            class="footer-link {% if request.resolver_match.url_name == 'about_contact' %}footer-link--active{% endif %}"
+          >
+            About Us
+          </a>
+        </li>
+
+        <li>
+          <a
+            href="{% if request.resolver_match.url_name == 'about_contact' %}#contact{% else %}{{ about_contact_url }}#contact{% endif %}"
+            class="footer-link"
+          >
+            Contact Us
+          </a>
+        </li>
       </ul>
     </nav>
 
@@ -37,11 +76,50 @@
       <h3>Customer Care</h3>
 
       <ul>
-        <li><a href="#">How to Order</a></li>
-        <li><a href="#">Shipping &amp; Delivery</a></li>
-        <li><a href="#">Return Policy</a></li>
-        <li><a href="#">Size Guide</a></li>
-        <li><a href="#">FAQ</a></li>
+        <li>
+          <a
+            href="{% if request.resolver_match.url_name == 'about_contact' %}#how-to-order{% else %}{{ about_contact_url }}#how-to-order{% endif %}"
+            class="footer-link"
+          >
+            How to Order
+          </a>
+        </li>
+
+        <li>
+          <a
+            href="{% if request.resolver_match.url_name == 'about_contact' %}#shipping{% else %}{{ about_contact_url }}#shipping{% endif %}"
+            class="footer-link"
+          >
+            Shipping &amp; Delivery
+          </a>
+        </li>
+
+        <li>
+          <a
+            href="{% if request.resolver_match.url_name == 'about_contact' %}#return-policy{% else %}{{ about_contact_url }}#return-policy{% endif %}"
+            class="footer-link"
+          >
+            Return Policy
+          </a>
+        </li>
+
+        <li>
+          <a
+            href="{% if request.resolver_match.url_name == 'about_contact' %}#size-guide{% else %}{{ about_contact_url }}#size-guide{% endif %}"
+            class="footer-link"
+          >
+            Size Guide
+          </a>
+        </li>
+
+        <li>
+          <a
+            href="{% if request.resolver_match.url_name == 'about_contact' %}#faq{% else %}{{ about_contact_url }}#faq{% endif %}"
+            class="footer-link"
+          >
+            FAQ
+          </a>
+        </li>
       </ul>
     </nav>
 
@@ -50,7 +128,13 @@
       <h3>Follow Us</h3>
 
       <div class="footer-social-icons" aria-label="Social media links">
-        <a class="footer-social footer-social--instagram" href="#" aria-label="Instagram">
+        <a
+          class="footer-social footer-social--instagram"
+          href="https://www.instagram.com/pallavi_papa_collections/"
+          target="_blank"
+          rel="noopener"
+          aria-label="Instagram"
+        >
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path
               fill="currentColor"
@@ -61,7 +145,7 @@
 
         <a
           class="footer-social footer-social--whatsapp"
-          href="https://wa.me/919123456789"
+          href="https://api.whatsapp.com/send?phone=918333895789&amp;text=Hi%20Pallavi%20Papa%20Collections%2C%20I%20came%20from%20your%20website%20contact%20page."
           target="_blank"
           rel="noopener"
           aria-label="WhatsApp"
@@ -74,7 +158,7 @@
           </svg>
         </a>
 
-        <a class="footer-social footer-social--facebook" href="#" aria-label="Facebook">
+        <a class="footer-social footer-social--facebook" href="https://www.facebook.com/profile.php?id=61587042106432" aria-label="Facebook">
           <svg viewBox="0 0 24 24" aria-hidden="true">
             <path
               fill="currentColor"
@@ -98,31 +182,34 @@
     width: 100%;
     max-width: 100%;
     margin: 0;
-    background:
-      radial-gradient(circle at 12% 0%, rgba(199, 146, 67, 0.08), transparent 24%),
-      linear-gradient(180deg, #fff7f1 0%, #f8eadf 100%);
     padding: 0 0 clamp(10px, 2vw, 18px);
     box-sizing: border-box;
     overflow-x: hidden;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(199, 146, 67, 0.08), transparent 24%),
+      linear-gradient(180deg, #fff7f1 0%, #f8eadf 100%);
+  }
+
+  .site-footer,
+  .site-footer * {
+    box-sizing: border-box;
   }
 
   .site-footer__inner {
-    width: min(100% - clamp(6px, 2.2vw, 56px), 1680px);
+    width: min(100% - clamp(8px, 3vw, 56px), 1680px);
     margin-inline: auto;
     display: grid;
     grid-template-columns:
-      minmax(220px, 1.35fr)
-      minmax(130px, 0.85fr)
-      minmax(150px, 0.95fr)
-      minmax(190px, 1.05fr);
-    gap: 0;
+      minmax(210px, 1.35fr)
+      minmax(135px, 0.85fr)
+      minmax(160px, 0.95fr)
+      minmax(185px, 1.05fr);
     background:
       linear-gradient(145deg, rgba(255, 250, 245, 0.96), rgba(248, 234, 223, 0.92));
     border: 1px solid rgba(143, 23, 49, 0.08);
     border-radius: clamp(12px, 2.2vw, 22px);
     box-shadow: 0 10px 28px rgba(80, 36, 40, 0.07);
     overflow: hidden;
-    box-sizing: border-box;
   }
 
   .site-footer__brand,
@@ -130,9 +217,8 @@
   .site-footer__social {
     min-width: 0;
     padding:
-      clamp(16px, 2.3vw, 28px)
-      clamp(16px, 2.5vw, 34px);
-    box-sizing: border-box;
+      clamp(14px, 2.2vw, 28px)
+      clamp(14px, 2.4vw, 34px);
   }
 
   .site-footer__brand,
@@ -150,8 +236,8 @@
   }
 
   .footer-logo {
-    width: clamp(42px, 5vw, 64px);
-    height: clamp(42px, 5vw, 64px);
+    width: clamp(40px, 4.4vw, 64px);
+    height: clamp(40px, 4.4vw, 64px);
     flex: 0 0 auto;
     border-radius: 999px;
     display: grid;
@@ -159,7 +245,7 @@
     background: linear-gradient(135deg, #9b1c31, #721324);
     color: #ffffff;
     font-weight: 900;
-    font-size: clamp(15px, 1.7vw, 23px);
+    font-size: clamp(14px, 1.55vw, 23px);
     letter-spacing: -0.03em;
     box-shadow: 0 9px 20px rgba(95, 16, 32, 0.18);
   }
@@ -172,8 +258,9 @@
   }
 
   .footer-brand-text strong {
+    max-width: 100%;
     color: #8f1731;
-    font-size: clamp(17px, 1.9vw, 28px);
+    font-size: clamp(16px, 1.75vw, 28px);
     font-weight: 900;
     letter-spacing: -0.035em;
     white-space: nowrap;
@@ -183,8 +270,9 @@
 
   .footer-brand-text small {
     margin-top: 4px;
+    max-width: 100%;
     color: #6f666b;
-    font-size: clamp(11px, 1.15vw, 16px);
+    font-size: clamp(10.5px, 1.05vw, 16px);
     font-weight: 600;
     white-space: nowrap;
     overflow: hidden;
@@ -192,17 +280,17 @@
   }
 
   .site-footer__brand p {
-    max-width: 280px;
-    margin: clamp(12px, 1.6vw, 18px) 0 0;
+    max-width: 300px;
+    margin: clamp(11px, 1.45vw, 18px) 0 0;
     color: #63585c;
-    font-size: clamp(11px, 1.1vw, 15px);
+    font-size: clamp(10.5px, 1vw, 15px);
     line-height: 1.45;
   }
 
   .site-footer h3 {
     margin: 0 0 clamp(8px, 1vw, 12px);
     color: #5f1020;
-    font-size: clamp(12px, 1.25vw, 17px);
+    font-size: clamp(12px, 1.18vw, 17px);
     line-height: 1.15;
     font-weight: 900;
     letter-spacing: -0.01em;
@@ -213,7 +301,7 @@
     padding: 0;
     margin: 0;
     display: grid;
-    gap: clamp(5px, 0.75vw, 8px);
+    gap: clamp(5px, 0.75vw, 9px);
   }
 
   .site-footer li {
@@ -224,19 +312,43 @@
     color: inherit;
   }
 
-  .site-footer__col a {
-    color: #665b5f;
-    font-size: clamp(10.5px, 1.05vw, 14px);
-    line-height: 1.2;
-    text-decoration: none;
-    font-weight: 560;
-    transition: color 160ms ease, transform 160ms ease;
+  .site-footer__col .footer-link {
+    position: relative;
     display: inline-block;
+    max-width: 100%;
+    color: #665b5f;
+    font-size: clamp(10.5px, 1vw, 14px);
+    line-height: 1.22;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 160ms ease, transform 160ms ease;
+    overflow-wrap: anywhere;
   }
 
-  .site-footer__col a:hover {
+  .site-footer__col a.footer-link:hover {
     color: #8f1731;
     transform: translateX(2px);
+  }
+
+  .site-footer__col .footer-link--active {
+    color: #8f1731;
+    font-weight: 900;
+    cursor: default;
+  }
+
+  .site-footer__col span.footer-link--active {
+    pointer-events: none;
+  }
+
+  .site-footer__col .footer-link--active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -3px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #8f1731, #c79243);
   }
 
   .footer-social-icons {
@@ -247,8 +359,8 @@
   }
 
   .footer-social {
-    width: clamp(30px, 3vw, 42px);
-    height: clamp(30px, 3vw, 42px);
+    width: clamp(30px, 2.9vw, 42px);
+    height: clamp(30px, 2.9vw, 42px);
     flex: 0 0 auto;
     border-radius: 999px;
     display: grid;
@@ -287,18 +399,22 @@
   .footer-copy {
     margin: clamp(12px, 1.6vw, 18px) 0 0;
     color: #6f666b;
-    font-size: clamp(10.5px, 1.05vw, 14px);
+    font-size: clamp(10.5px, 1vw, 14px);
     line-height: 1.45;
     font-weight: 550;
   }
 
-  @media (min-width: 1200px) {
+  @media (max-width: 1180px) {
     .site-footer__inner {
-      width: min(100% - 56px, 1680px);
+      grid-template-columns:
+        minmax(220px, 1.25fr)
+        minmax(150px, .85fr)
+        minmax(180px, .95fr)
+        minmax(180px, 1fr);
     }
   }
 
-  @media (max-width: 900px) {
+  @media (max-width: 980px) {
     .site-footer__inner {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
@@ -307,34 +423,37 @@
     .site-footer__col,
     .site-footer__social {
       border-right: 0;
-    }
-
-    .site-footer__brand,
-    .site-footer__col:nth-of-type(1) {
       border-bottom: 1px solid rgba(143, 23, 49, 0.08);
     }
 
     .site-footer__brand,
-    .site-footer__col {
+    .site-footer__col:nth-of-type(2) {
       border-right: 1px solid rgba(143, 23, 49, 0.08);
     }
 
-    .site-footer__col:nth-of-type(2) {
-      border-right: 0;
+    .site-footer__social {
+      border-bottom: 0;
     }
   }
 
   @media (max-width: 767px) {
+    .site-footer {
+      padding-bottom: 12px;
+    }
+
     .site-footer__inner {
-      width: min(100% - 8px, 980px);
+      width: min(100% - 8px, 760px);
+      border-radius: 16px;
     }
 
     .site-footer__brand,
     .site-footer__col,
     .site-footer__social {
-      padding:
-        clamp(13px, 3.5vw, 18px)
-        clamp(12px, 3.8vw, 18px);
+      padding: 14px 13px;
+    }
+
+    .site-footer ul {
+      gap: 7px 12px;
     }
   }
 
@@ -354,38 +473,37 @@
       border-bottom: 0;
     }
 
-    .site-footer__brand {
-      text-align: left;
-    }
-
     .site-footer__brand p {
       max-width: 100%;
     }
 
     .site-footer ul {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 7px 12px;
     }
   }
 
   @media (max-width: 380px) {
     .site-footer__inner {
-      width: min(100% - 6px, 980px);
+      width: min(100% - 6px, 760px);
       border-radius: 12px;
     }
 
+    .footer-brand-link {
+      gap: 9px;
+    }
+
     .footer-logo {
-      width: 40px;
-      height: 40px;
-      font-size: 14px;
+      width: 38px;
+      height: 38px;
+      font-size: 13px;
     }
 
     .footer-brand-text strong {
-      font-size: 16px;
+      font-size: 15.5px;
     }
 
     .footer-brand-text small {
-      font-size: 10.5px;
+      font-size: 10px;
     }
 
     .site-footer__brand,
@@ -396,6 +514,7 @@
 
     .site-footer ul {
       grid-template-columns: 1fr 1fr;
+      gap: 7px 10px;
     }
 
     .footer-social {
@@ -406,7 +525,7 @@
 
   @media (max-width: 320px) {
     .site-footer__inner {
-      width: min(100% - 4px, 980px);
+      width: min(100% - 4px, 760px);
     }
 
     .footer-brand-link {
@@ -414,27 +533,27 @@
     }
 
     .footer-logo {
-      width: 36px;
-      height: 36px;
-      font-size: 13px;
+      width: 35px;
+      height: 35px;
+      font-size: 12px;
     }
 
     .footer-brand-text strong {
-      font-size: 15px;
+      font-size: 14.5px;
     }
 
     .footer-brand-text small {
-      font-size: 10px;
+      font-size: 9.5px;
     }
 
     .site-footer__brand p,
-    .site-footer__col a,
+    .site-footer__col .footer-link,
     .footer-copy {
-      font-size: 10px;
+      font-size: 9.8px;
     }
 
     .site-footer h3 {
-      font-size: 11.5px;
+      font-size: 11px;
     }
   }
 </style>

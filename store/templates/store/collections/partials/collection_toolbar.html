@@ -85,8 +85,8 @@
     max-width: 100%;
     margin-left: 0;
     margin-right: 0;
-    margin-bottom: clamp(14px, 3vw, 24px);
-    padding: 0 clamp(16px, 4vw, 28px);
+    margin-bottom: clamp(12px, 2.5vw, 22px);
+    padding: 0 clamp(14px, 3vw, 26px);
     background: #fffaf6;
   }
 
@@ -94,33 +94,33 @@
     width: min(100%, 1180px);
     margin: 0 auto;
     display: grid;
-    gap: 12px;
+    gap: 10px;
   }
 
   .collection-toolbar__top {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    gap: clamp(10px, 2.4vw, 18px);
+    gap: clamp(8px, 2vw, 16px);
   }
 
   .toolbar-search {
     min-width: 0;
-    height: clamp(48px, 8vw, 58px);
+    height: clamp(44px, 7vw, 54px);
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 0 clamp(15px, 3vw, 22px);
+    gap: 9px;
+    padding: 0 clamp(13px, 2.6vw, 20px);
     border-radius: 999px;
     background: #fffdfb;
-    border: 1px solid rgba(95, 16, 32, 0.16);
-    box-shadow: 0 8px 20px rgba(70, 28, 35, 0.045);
+    border: 1px solid rgba(95, 16, 32, 0.14);
+    box-shadow: 0 6px 16px rgba(70, 28, 35, 0.04);
   }
 
   .toolbar-search__icon {
     flex: 0 0 auto;
-    width: clamp(18px, 4vw, 22px);
-    height: clamp(18px, 4vw, 22px);
+    width: clamp(17px, 3.4vw, 21px);
+    height: clamp(17px, 3.4vw, 21px);
     fill: none;
     stroke: #3b252b;
     stroke-width: 2;
@@ -137,7 +137,7 @@
     background: transparent;
     color: #34262b;
     font: inherit;
-    font-size: clamp(14px, 3.4vw, 17px);
+    font-size: clamp(13px, 3vw, 16px);
     font-weight: 600;
   }
 
@@ -147,18 +147,18 @@
   }
 
   .toolbar-search:focus-within {
-    border-color: rgba(143, 23, 49, 0.32);
+    border-color: rgba(143, 23, 49, 0.28);
     box-shadow:
-      0 8px 20px rgba(70, 28, 35, 0.06),
-      0 0 0 4px rgba(143, 23, 49, 0.06);
+      0 6px 16px rgba(70, 28, 35, 0.055),
+      0 0 0 3px rgba(143, 23, 49, 0.055);
   }
 
   .toolbar-filter {
-    height: clamp(48px, 8vw, 58px);
-    min-width: clamp(104px, 22vw, 138px);
-    padding: 0 clamp(16px, 3vw, 24px);
+    height: clamp(44px, 7vw, 54px);
+    min-width: clamp(88px, 18vw, 126px);
+    padding: 0 clamp(12px, 2.6vw, 22px);
     border-radius: 999px;
-    border: 1px solid rgba(95, 16, 32, 0.16);
+    border: 1px solid rgba(95, 16, 32, 0.14);
     background: #fffdfb;
     color: #2d2025;
     cursor: pointer;
@@ -166,18 +166,18 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 9px;
+    gap: 7px;
 
     font: inherit;
-    font-size: clamp(14px, 3.2vw, 17px);
+    font-size: clamp(13px, 3vw, 16px);
     font-weight: 850;
 
-    box-shadow: 0 8px 20px rgba(70, 28, 35, 0.045);
+    box-shadow: 0 6px 16px rgba(70, 28, 35, 0.04);
   }
 
   .toolbar-filter svg {
-    width: clamp(18px, 4vw, 22px);
-    height: clamp(18px, 4vw, 22px);
+    width: clamp(17px, 3.4vw, 21px);
+    height: clamp(17px, 3.4vw, 21px);
     fill: none;
     stroke: #5f1020;
     stroke-width: 2;
@@ -188,8 +188,8 @@
     min-width: 0;
     display: flex;
     align-items: center;
-    gap: clamp(12px, 2.8vw, 22px);
-    padding: 0 2px 8px;
+    gap: clamp(10px, 2.4vw, 20px);
+    padding: 0 2px 7px;
     overflow-x: auto;
     scrollbar-width: none;
     border-bottom: 1px solid rgba(95, 16, 32, 0.10);
@@ -202,7 +202,7 @@
   .sort-label {
     flex: 0 0 auto;
     color: #5d5054;
-    font-size: clamp(12px, 2.8vw, 14px);
+    font-size: clamp(11px, 2.5vw, 14px);
     font-weight: 650;
     white-space: nowrap;
   }
@@ -210,10 +210,10 @@
   .sort-chip {
     position: relative;
     flex: 0 0 auto;
-    padding: 8px 0;
+    padding: 7px 0;
     color: #423439;
     text-decoration: none;
-    font-size: clamp(12px, 2.8vw, 14px);
+    font-size: clamp(11px, 2.5vw, 14px);
     font-weight: 650;
     white-space: nowrap;
   }
@@ -223,7 +223,7 @@
     position: absolute;
     left: 0;
     right: 0;
-    bottom: -9px;
+    bottom: -8px;
     height: 2px;
     border-radius: 999px;
     background: transparent;
@@ -242,7 +242,7 @@
     flex: 0 0 auto;
     margin-left: auto;
     color: #8f1731;
-    font-size: clamp(12px, 2.8vw, 14px);
+    font-size: clamp(11px, 2.5vw, 14px);
     font-weight: 900;
     white-space: nowrap;
   }
@@ -253,32 +253,68 @@
     margin-top: -4px;
     color: #8f1731;
     text-decoration: none;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 800;
   }
 
   @media (max-width: 767px) {
     .collection-toolbar {
-      padding-left: 16px;
-      padding-right: 16px;
+      padding-left: 12px;
+      padding-right: 12px;
+      margin-bottom: 12px;
     }
 
     .collection-toolbar__form {
-      gap: 10px;
+      gap: 8px;
+    }
+
+    .collection-toolbar__top {
+      gap: 8px;
     }
 
     .toolbar-search,
     .toolbar-filter {
-      height: 48px;
+      height: 42px;
+      min-height: 42px;
+    }
+
+    .toolbar-search {
+      padding-left: 13px;
+      padding-right: 10px;
+      gap: 7px;
+    }
+
+    .toolbar-search__icon,
+    .toolbar-filter svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .toolbar-search input {
+      font-size: 13px;
     }
 
     .toolbar-filter {
-      min-width: 104px;
+      min-width: 82px;
+      padding-left: 11px;
+      padding-right: 11px;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .toolbar-filter span {
+      font-size: 13px;
+      line-height: 1;
     }
 
     .collection-toolbar__sortbar {
-      gap: 18px;
-      padding-bottom: 8px;
+      gap: 14px;
+      padding-bottom: 7px;
+    }
+
+    .sort-label,
+    .sort-chip {
+      font-size: 12px;
     }
 
     .toolbar-count {
@@ -288,55 +324,94 @@
 
   @media (max-width: 480px) {
     .collection-toolbar {
-      padding-left: 14px;
-      padding-right: 14px;
+      padding-left: 10px;
+      padding-right: 10px;
     }
 
     .collection-toolbar__top {
-      gap: 10px;
+      gap: 8px;
       grid-template-columns: minmax(0, 1fr) auto;
     }
 
     .toolbar-search {
-      padding-left: 16px;
-      padding-right: 12px;
+      height: 40px;
+      min-height: 40px;
+      padding-left: 12px;
+      padding-right: 9px;
+      gap: 7px;
     }
 
     .toolbar-filter {
-      min-width: 94px;
-      padding-left: 14px;
-      padding-right: 14px;
+      height: 40px;
+      min-height: 40px;
+      min-width: 76px;
+      padding-left: 10px;
+      padding-right: 10px;
+      gap: 5px;
+    }
+
+    .toolbar-search__icon,
+    .toolbar-filter svg {
+      width: 16px;
+      height: 16px;
     }
 
     .toolbar-filter span {
-      font-size: 14px;
+      font-size: 12px;
     }
 
     .collection-toolbar__sortbar {
-      gap: 16px;
+      gap: 13px;
+    }
+
+    .sort-chip,
+    .sort-label {
+      font-size: 11.5px;
     }
   }
 
   @media (max-width: 360px) {
     .collection-toolbar {
-      padding-left: 10px;
-      padding-right: 10px;
+      padding-left: 8px;
+      padding-right: 8px;
     }
 
-    .toolbar-filter {
-      min-width: 86px;
-      gap: 6px;
-      padding-left: 12px;
-      padding-right: 12px;
+    .collection-toolbar__top {
+      gap: 7px;
+    }
+
+    .toolbar-search {
+      height: 38px;
+      min-height: 38px;
+      padding-left: 10px;
+      padding-right: 8px;
     }
 
     .toolbar-search input {
-      font-size: 13px;
+      font-size: 12.5px;
+    }
+
+    .toolbar-filter {
+      height: 38px;
+      min-height: 38px;
+      min-width: 68px;
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+
+    .toolbar-filter span {
+      font-size: 11px;
+    }
+
+    .toolbar-search__icon,
+    .toolbar-filter svg {
+      width: 15px;
+      height: 15px;
     }
 
     .sort-chip,
     .sort-label {
-      font-size: 12px;
+      font-size: 11px;
     }
   }
 </style>

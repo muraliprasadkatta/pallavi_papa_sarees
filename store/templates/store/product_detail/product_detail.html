@@ -435,6 +435,11 @@
     background: linear-gradient(135deg, var(--primary-dark), var(--primary));
     box-shadow: none;
   }
+  .pd-secondary.is-added {
+    border-color: rgba(13, 125, 54, 0.55);
+    color: #fff;
+    background: linear-gradient(135deg, #0e8a3f, #087334);
+  }
 
   .pd-secondary {
     border: 1px solid rgba(143, 23, 49, 0.45);
@@ -990,6 +995,146 @@
       </section>
     {% endif %}
   </main>
+
+
+<!-- add to cart script and whatsapp script are added at the end of body to ensure they work even if some error occurs in above html or scripts. This way user can still add products to cart or contact via whatsapp even if there is some issue in product details rendering or any other part of the page.? -->
+
+<script>
+  (function () {
+    const addButtons = document.querySelectorAll("[data-cart-add]");
+
+    function getCart() {
+      try {
+        const cart = JSON.parse(localStorage.getItem("pp_cart") || "[]");
+        return Array.isArray(cart) ? cart : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    function saveCart(cart) {
+      localStorage.setItem("pp_cart", JSON.stringify(cart));
+      window.dispatchEvent(new Event("pp-cart-updated"));
+    }
+
+    addButtons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        const productId = String(button.dataset.productId || "").trim();
+        if (!productId) return;
+
+        const productData = {
+          id: productId,
+          name: button.dataset.productName || "Product",
+          category: button.dataset.productCategory || "",
+          price: Number(button.dataset.productPrice || 0),
+          image: button.dataset.productImage || "",
+          url: button.dataset.productUrl || "",
+          qty: 1
+        };
+
+        const cart = getCart();
+
+        const existingItem = cart.find(function (item) {
+          return String(item.id) === productId;
+        });
+
+        if (existingItem) {
+          existingItem.qty = Number(existingItem.qty || 1) + 1;
+
+          /* Important: refresh old cart data also */
+          existingItem.name = productData.name;
+          existingItem.category = productData.category;
+          existingItem.price = productData.price;
+          existingItem.image = productData.image;
+          existingItem.url = productData.url;
+        } else {
+          cart.push(productData);
+        }
+
+        saveCart(cart);
+
+        const oldHtml = button.innerHTML;
+        button.classList.add("is-added");
+        button.innerHTML = "Added to Cart ✓";
+
+        setTimeout(function () {
+          button.classList.remove("is-added");
+          button.innerHTML = oldHtml;
+        }, 1200);
+      });
+    });
+  })();
+</script>
+
+
+<script>
+  (function () {
+    const WHATSAPP_NUMBER = "918333895789";
+
+    function safeText(value) {
+      return String(value || "").trim();
+    }
+
+    function money(value) {
+      return Number(value || 0).toLocaleString("en-IN");
+    }
+
+    function absoluteUrl(url) {
+      const rawUrl = safeText(url);
+
+      if (!rawUrl) return "";
+
+      if (rawUrl.startsWith("http://") || rawUrl.startsWith("https://")) {
+        return rawUrl;
+      }
+
+      if (rawUrl.startsWith("/")) {
+        return window.location.origin + rawUrl;
+      }
+
+      return window.location.origin + "/" + rawUrl;
+    }
+
+    document.querySelectorAll("[data-direct-whatsapp]").forEach(function (link) {
+      link.addEventListener("click", function (event) {
+        event.preventDefault();
+
+        const productUrl = absoluteUrl(link.dataset.productUrl);
+        const imageUrl = absoluteUrl(link.dataset.productImage);
+
+        const lines = [
+          "Hi Pallavi Papa Collections,",
+          "I am interested in this product:",
+          "",
+          "Product: " + safeText(link.dataset.productName || "Product"),
+          "Category: " + safeText(link.dataset.productCategory || "Pallavi Papa Collection"),
+          "Price: ₹" + money(link.dataset.productPrice)
+        ];
+
+        if (productUrl) {
+          lines.push("Product Link: " + productUrl);
+        }
+
+        if (imageUrl) {
+          lines.push("Image: " + imageUrl);
+        }
+
+        lines.push("");
+        lines.push("Source: Product Detail Page");
+
+        const whatsappUrl =
+          "https://api.whatsapp.com/send?phone=" +
+          WHATSAPP_NUMBER +
+          "&text=" +
+          encodeURIComponent(lines.join("\n"));
+
+        window.open(whatsappUrl, "_blank", "noopener");
+      });
+    });
+  })();
+</script>
+
+
 
 <script>
   const mainProductImage = document.getElementById("mainProductImage");

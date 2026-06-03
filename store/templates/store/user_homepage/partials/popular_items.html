@@ -1,0 +1,364 @@
+{% load static %}
+{% url 'store:collections' as collections_url %}
+
+<section class="featured-price-section" aria-label="Featured sarees preview">
+  <div class="featured-price-wrap">
+
+    <div class="featured-price-head">
+      <div>
+        <span class="featured-price-kicker">Handpicked Picks</span>
+        <h2>Featured Sarees</h2>
+        <p>Explore beautiful sarees selected for every budget.</p>
+      </div>
+
+      <a href="{{ collections_url }}" class="featured-price-view">
+        View All ›
+      </a>
+    </div>
+
+<div class="featured-price-grid">
+
+  {% for p in featured_sarees %}
+    <a href="{% url 'store:product_detail' p.id %}" class="featured-price-card">
+      <div class="featured-price-art">
+        {% if p.main_image %}
+          <img
+            src="{{ p.main_image.url }}"
+            alt="{{ p.name }}"
+            loading="lazy"
+          >
+        {% else %}
+          <span class="featured-price-shine"></span>
+        {% endif %}
+      </div>
+
+      <strong class="featured-price-tag">
+        {% if p.offer_price %}
+          ₹{{ p.offer_price|floatformat:0 }}
+        {% else %}
+          ₹{{ p.actual_price|floatformat:0 }}
+        {% endif %}
+      </strong>
+    </a>
+  {% empty %}
+    <a href="{{ collections_url }}" class="featured-price-card">
+      <div class="featured-price-art featured-price-art--one">
+        <span class="featured-price-shine"></span>
+      </div>
+      <strong class="featured-price-tag">₹799</strong>
+    </a>
+
+    <a href="{{ collections_url }}" class="featured-price-card">
+      <div class="featured-price-art featured-price-art--two">
+        <span class="featured-price-shine"></span>
+      </div>
+      <strong class="featured-price-tag">₹999</strong>
+    </a>
+
+    <a href="{{ collections_url }}" class="featured-price-card">
+      <div class="featured-price-art featured-price-art--three">
+        <span class="featured-price-shine"></span>
+      </div>
+      <strong class="featured-price-tag">₹1,499</strong>
+    </a>
+
+    <a href="{{ collections_url }}" class="featured-price-card">
+      <div class="featured-price-art featured-price-art--four">
+        <span class="featured-price-shine"></span>
+      </div>
+      <strong class="featured-price-tag">₹1,999</strong>
+    </a>
+  {% endfor %}
+
+</div>
+
+
+  </div>
+</section>
+
+<style>
+.featured-price-art img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+.featured-price-art:has(img)::before,
+.featured-price-art:has(img)::after {
+  display: none;
+}
+
+.featured-price-section {
+  width: 100%;
+  margin: 0;
+  padding: 14px 0 18px;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #fff8f1 0%, #fff4ec 100%);
+  overflow-x: hidden;
+}
+
+.featured-price-wrap {
+   width: min(calc(100% - 10px), 1460px);
+
+  max-width: none;
+  margin-inline: auto;
+  padding: 16px 14px 18px;
+  box-sizing: border-box;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(255, 220, 185, .35), transparent 28%),
+    radial-gradient(circle at 90% 15%, rgba(255, 185, 195, .28), transparent 26%),
+    rgba(255, 255, 255, .74);
+  box-shadow: 0 12px 34px rgba(92, 30, 30, .08);
+  border: 1px solid rgba(98, 28, 28, .08);
+}
+
+.featured-price-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.featured-price-kicker {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f2dfb3;
+  color: #7a3a07;
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.featured-price-head h2 {
+  margin: 7px 0 4px;
+  color: #5b0710;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(22px, 4.8vw, 38px);
+  line-height: .95;
+  letter-spacing: -.03em;
+}
+
+.featured-price-head p {
+  margin: 0;
+  max-width: 520px;
+  color: #6f4c4c;
+  font-size: clamp(11px, 2.6vw, 14px);
+  line-height: 1.35;
+}
+
+.featured-price-view {
+  flex: 0 0 auto;
+  margin-top: 8px;
+  color: #7a0814;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.featured-price-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.featured-price-card {
+  position: relative;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 18px;
+  text-decoration: none;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(82, 20, 30, .10);
+  border: 1px solid rgba(91, 7, 16, .09);
+  transform: translateZ(0);
+}
+
+.featured-price-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.45);
+}
+
+.featured-price-art {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.featured-price-art::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 13%;
+  width: 48%;
+  height: 76%;
+  border-radius: 999px 999px 22px 22px;
+  transform: translateX(-50%) rotate(-5deg);
+  background:
+    linear-gradient(130deg, rgba(255,255,255,.34), transparent 30%),
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.10));
+  box-shadow: 0 16px 30px rgba(0,0,0,.14);
+}
+
+.featured-price-art::after {
+  content: "";
+  position: absolute;
+  right: 13%;
+  bottom: 13%;
+  width: 34%;
+  height: 52%;
+  border-radius: 999px 999px 18px 18px;
+  transform: rotate(10deg);
+  background: rgba(255,255,255,.28);
+  filter: blur(.2px);
+}
+
+.featured-price-art--one {
+  background:
+    radial-gradient(circle at 50% 15%, rgba(255,242,204,.78), transparent 23%),
+    linear-gradient(135deg, #7b3c12 0%, #c58a30 50%, #2b1309 100%);
+}
+
+.featured-price-art--two {
+  background:
+    radial-gradient(circle at 48% 16%, rgba(255,255,255,.75), transparent 23%),
+    linear-gradient(135deg, #eec5c2 0%, #b33b55 48%, #ffcf7a 100%);
+}
+
+.featured-price-art--three {
+  background:
+    radial-gradient(circle at 48% 15%, rgba(255,255,255,.70), transparent 22%),
+    linear-gradient(135deg, #0d6b61 0%, #123e49 52%, #c89445 100%);
+}
+
+.featured-price-art--four {
+  background:
+    radial-gradient(circle at 50% 14%, rgba(255,255,255,.78), transparent 23%),
+    linear-gradient(135deg, #badb5d 0%, #78af25 52%, #13563f 100%);
+}
+
+.featured-price-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(120deg, transparent 0%, rgba(255,255,255,.20) 38%, transparent 58%),
+    linear-gradient(180deg, transparent 52%, rgba(0,0,0,.18) 100%);
+}
+
+.featured-price-tag {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  z-index: 4;
+  transform: translateX(-50%);
+  min-width: 72px;
+  min-height: 30px;
+  padding: 7px 13px;
+  box-sizing: border-box;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,.94);
+  color: #5b0710;
+  font-size: clamp(14px, 2.4vw, 18px);
+  line-height: 1;
+  font-weight: 950;
+  box-shadow: 0 8px 18px rgba(45, 8, 12, .16);
+}
+
+@media (hover: hover) {
+  .featured-price-card {
+    transition: transform 220ms ease, box-shadow 220ms ease;
+  }
+
+  .featured-price-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px rgba(82, 20, 30, .14);
+  }
+}
+
+@media (max-width: 767px) {
+  .featured-price-section {
+    padding: 10px 0 16px;
+  }
+
+  .featured-price-wrap {
+    width: calc(100% - 4px);
+    max-width: none;
+    padding: 14px 10px 15px;
+    border-radius: 22px;
+  }
+
+  .featured-price-head {
+    margin-bottom: 11px;
+  }
+
+  .featured-price-view {
+    font-size: 11px;
+  }
+
+  .featured-price-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .featured-price-card {
+    border-radius: 16px;
+  }
+
+  .featured-price-art {
+    border-radius: 16px;
+    aspect-ratio: 4 / 4.85;
+  }
+
+  .featured-price-tag {
+    bottom: 8px;
+    min-width: 64px;
+    min-height: 28px;
+    padding: 6px 11px;
+  }
+}
+
+@media (max-width: 360px) {
+  .featured-price-wrap {
+    width: calc(100% - 2px);
+    padding: 12px 8px 14px;
+  }
+
+  .featured-price-grid {
+    gap: 8px;
+  }
+
+  .featured-price-head h2 {
+    font-size: 21px;
+  }
+
+  .featured-price-head p {
+    font-size: 10.5px;
+  }
+
+  .featured-price-tag {
+    min-width: 58px;
+    min-height: 26px;
+    font-size: 13px;
+  }
+}
+</style>

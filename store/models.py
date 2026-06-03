@@ -1,3 +1,5 @@
+from decimal import Decimal, ROUND_HALF_UP
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -143,6 +145,17 @@ class Product(models.Model):
     color_name = models.CharField(max_length=80, blank=True)
     color_code = models.CharField(max_length=20, blank=True)
 
+    product_size = models.CharField(
+        max_length=80,
+        blank=True,
+        help_text="Example: Free Size, 38, M, 30, 4-5Y.",
+    )
+
+    stock_quantity = models.PositiveIntegerField(
+        default=1,
+        help_text="Number of pieces available.",
+    )
+
     actual_price = models.DecimalField(max_digits=10, decimal_places=2)
 
     offer_price = models.DecimalField(
@@ -221,7 +234,32 @@ class Product(models.Model):
             models.Index(fields=["is_top_selling", "is_available", "-created_at"]),
             models.Index(fields=["is_most_liked", "is_available", "-created_at"]),
             models.Index(fields=["is_most_carted", "is_available", "-created_at"]),
+            models.Index(fields=["product_size", "is_available"]),
         ]
+
+    @property
+    def has_offer(self):
+        return bool(
+            self.offer_price
+            and self.actual_price
+            and self.offer_price < self.actual_price
+        )
+
+    @property
+    def discount_percentage(self):
+        if not self.actual_price or not self.offer_price:
+            return 0
+
+        actual_price = Decimal(str(self.actual_price))
+        offer_price = Decimal(str(self.offer_price))
+
+        if actual_price <= 0 or offer_price >= actual_price:
+            return 0
+
+        discount = ((actual_price - offer_price) * Decimal("100")) / actual_price
+
+        return int(discount.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+
 
     def clean(self):
         super().clean()
@@ -248,6 +286,9 @@ class Product(models.Model):
         return old_image.name != image.name
 
     def save(self, *args, **kwargs):
+        if self.stock_quantity == 0:
+            self.is_available = False
+
         for field_name in self.IMAGE_FIELDS:
             if self._image_changed(field_name):
                 image = getattr(self, field_name)
@@ -289,6 +330,35 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ProductHighlight(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="highlights",
+    )
+
+    label = models.CharField(max_length=80)
+    value = models.CharField(max_length=180)
+    sort_order = models.PositiveIntegerField(default=0)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["sort_order", "id"]
+        indexes = [
+            models.Index(fields=["product", "sort_order"]),
+        ]
+
+    def save(self, *args, **kwargs):
+        self.label = (self.label or "").strip()
+        self.value = (self.value or "").strip()
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.product.name} - {self.label}: {self.value}"
 
 
 class ProductVariant(models.Model):
@@ -334,6 +404,30 @@ class ProductVariant(models.Model):
             models.Index(fields=["color_name"]),
         ]
 
+    @property
+    def has_offer(self):
+        return bool(
+            self.offer_price
+            and self.actual_price
+            and self.offer_price < self.actual_price
+        )
+
+    @property
+    def discount_percentage(self):
+        if not self.actual_price or not self.offer_price:
+            return 0
+
+        actual_price = Decimal(str(self.actual_price))
+        offer_price = Decimal(str(self.offer_price))
+
+        if actual_price <= 0 or offer_price >= actual_price:
+            return 0
+
+        discount = ((actual_price - offer_price) * Decimal("100")) / actual_price
+
+        return int(discount.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+    
+    
     def clean(self):
         super().clean()
 

@@ -1,108 +1,120 @@
 {% load static %}
+{% url 'store:collections' as collections_url %}
 
-<section class="watch-buy-section" aria-label="Watch and buy saree collections">
-  <div class="watch-buy-card" data-watch-buy-slider tabindex="0">
+<section class="special-offers-section" aria-label="Special saree offers">
+  <div class="special-offers-card" data-special-offers-slider tabindex="0">
 
-<div class="watch-buy-head">
-  <svg
-    class="watch-buy-title-svg"
-    viewBox="0 55 1200 185"
-    role="img"
-    aria-label="Watch and Buy"
-  >
-    <defs>
+    <div class="special-offers-head">
+      <svg
+        class="special-offers-title-svg"
+        viewBox="0 55 1200 185"
+        role="img"
+        aria-label="Special Offers"
+      >
+        <defs>
+          <path id="specialOffersArcDeep" d="M 90 202 Q 600 118 1110 202"></path>
+          <path id="specialOffersArcShadow" d="M 90 200 Q 600 106 1110 200"></path>
+          <path id="specialOffersArcMain" d="M 90 194 Q 600 90 1110 194"></path>
+        </defs>
 
+        <text class="special-offers-title-deep">
+          <textPath href="#specialOffersArcDeep" startOffset="50%" text-anchor="middle">
+            SPECIAL OFFERS
+          </textPath>
+        </text>
 
-      <path id="watchBuyArcDeep" d="M 90 202 Q 600 118 1110 202"></path>
-      <path id="watchBuyArcShadow" d="M 90 200 Q 600 106 1110 200"></path>
-      <path id="watchBuyArcMain" d="M 90 194 Q 600 90 1110 194"></path>
-    </defs>
+        <text class="special-offers-title-shadow">
+          <textPath href="#specialOffersArcShadow" startOffset="50%" text-anchor="middle">
+            SPECIAL OFFERS
+          </textPath>
+        </text>
 
-    <text class="watch-buy-title-deep">
-      <textPath href="#watchBuyArcDeep" startOffset="50%" text-anchor="middle">
-        WATCH AND BUY
-      </textPath>
-    </text>
+        <text class="special-offers-title-main">
+          <textPath href="#specialOffersArcMain" startOffset="50%" text-anchor="middle">
+            SPECIAL OFFERS
+          </textPath>
+        </text>
+      </svg>
+    </div>
 
-    <text class="watch-buy-title-shadow">
-      <textPath href="#watchBuyArcShadow" startOffset="50%" text-anchor="middle">
-        WATCH AND BUY
-      </textPath>
-    </text>
+    <div class="special-offers-stage" data-special-offers-stage>
 
-    <text class="watch-buy-title-main">
-      <textPath href="#watchBuyArcMain" startOffset="50%" text-anchor="middle">
-        WATCH AND BUY
-      </textPath>
-    </text>
-  </svg>
-
-</div>
-
-    <div class="watch-buy-stage" data-watch-buy-stage>
-
-      <article class="watch-buy-slide is-active" data-watch-buy-slide>
-        <div class="watch-buy-thumb watch-buy-thumb--one">
-          <span class="watch-buy-views">1.2L</span>
-          <span class="watch-buy-products">4 Products</span>
+      <article class="special-offers-slide is-active" data-special-offers-slide>
+        <div class="special-offers-thumb special-offers-thumb--one">
+          <img
+            class="special-offers-img"
+            src="{% static 'store/user_home/special_offers/free_saree_offer_900x1200.webp' %}"
+            data-fallback="{% static 'store/user_home/special_offers/big_sale_900x1200.webp' %}"
+            alt="Free saree offer"
+            loading="lazy"
+            draggable="false"
+          >
+          <div class="special-offers-fallback">
+            <span>Special Offer</span>
+            <strong>Free Saree Offer</strong>
+          </div>
         </div>
       </article>
 
-      <article class="watch-buy-slide is-next" data-watch-buy-slide aria-hidden="true">
-        <div class="watch-buy-thumb watch-buy-thumb--two">
-          <span class="watch-buy-views">85.6K</span>
-          <span class="watch-buy-products">6 Products</span>
+      <article class="special-offers-slide is-next" data-special-offers-slide aria-hidden="true">
+        <div class="special-offers-thumb special-offers-thumb--two">
+          <img
+            class="special-offers-img"
+            src="{% static 'store/user_home/special_offers/free_lucky_draw_900x1200.webp' %}"
+            data-fallback="{% static 'store/user_home/special_offers/big_sale_900x1200.webp' %}"
+            alt="Free lucky draw offer"
+            loading="lazy"
+            draggable="false"
+          >
+          <div class="special-offers-fallback">
+            <span>Special Offer</span>
+            <strong>Lucky Draw Gift</strong>
+          </div>
         </div>
       </article>
 
-      <article class="watch-buy-slide is-next-2" data-watch-buy-slide aria-hidden="true">
-        <div class="watch-buy-thumb watch-buy-thumb--three">
-          <span class="watch-buy-views">94.4K</span>
-          <span class="watch-buy-products">8 Products</span>
-        </div>
-      </article>
-
-      <article class="watch-buy-slide is-prev-2" data-watch-buy-slide aria-hidden="true">
-        <div class="watch-buy-thumb watch-buy-thumb--four">
-          <span class="watch-buy-views">2.1L</span>
-          <span class="watch-buy-products">5 Products</span>
-        </div>
-      </article>
-
-      <article class="watch-buy-slide is-prev" data-watch-buy-slide aria-hidden="true">
-        <div class="watch-buy-thumb watch-buy-thumb--five">
-          <span class="watch-buy-views">73.8K</span>
-          <span class="watch-buy-products">3 Products</span>
+      <article class="special-offers-slide is-prev" data-special-offers-slide aria-hidden="true">
+        <div class="special-offers-thumb special-offers-thumb--three">
+          <img
+            class="special-offers-img"
+            src="{% static 'store/user_home/special_offers/big_sale_900x1200.webp' %}"
+            data-fallback="{% static 'store/user_home/special_offers/free_saree_offer_900x1200.webp' %}"
+            alt="Big sale offer"
+            loading="lazy"
+            draggable="false"
+          >
+          <div class="special-offers-fallback">
+            <span>Special Offer</span>
+            <strong>Big Sale</strong>
+          </div>
         </div>
       </article>
 
     </div>
 
-    <button class="watch-buy-nav watch-buy-nav--prev" type="button" aria-label="Previous video" data-watch-buy-prev>
+    <button class="special-offers-nav special-offers-nav--prev" type="button" aria-label="Previous offer" data-special-offers-prev>
       ‹
     </button>
 
-    <button class="watch-buy-nav watch-buy-nav--next" type="button" aria-label="Next video" data-watch-buy-next>
+    <button class="special-offers-nav special-offers-nav--next" type="button" aria-label="Next offer" data-special-offers-next>
       ›
     </button>
 
-    <div class="watch-buy-dots" aria-label="Watch and buy slider controls">
-      <button type="button" class="is-active" aria-label="Show first video" aria-current="true" data-watch-buy-dot></button>
-      <button type="button" aria-label="Show second video" data-watch-buy-dot></button>
-      <button type="button" aria-label="Show third video" data-watch-buy-dot></button>
-      <button type="button" aria-label="Show fourth video" data-watch-buy-dot></button>
-      <button type="button" aria-label="Show fifth video" data-watch-buy-dot></button>
+    <div class="special-offers-dots" aria-label="Special offers slider controls">
+      <button type="button" class="is-active" aria-label="Show free saree offer" aria-current="true" data-special-offers-dot></button>
+      <button type="button" aria-label="Show lucky draw offer" data-special-offers-dot></button>
+      <button type="button" aria-label="Show big sale offer" data-special-offers-dot></button>
     </div>
 
-    <a href="#" class="watch-buy-cta">
-      Explore the Whole Collection <span>→</span>
+    <a href="{{ collections_url }}" class="special-offers-cta">
+      Explore More Collections <span>→</span>
     </a>
 
   </div>
 </section>
 
 <style>
-.watch-buy-section {
+.special-offers-section {
   width: 100%;
   margin: 0;
   padding: 6px 0 34px;
@@ -111,7 +123,7 @@
   background: linear-gradient(180deg, #fff8f5 0%, #fff1ec 100%);
 }
 
-.watch-buy-card {
+.special-offers-card {
   position: relative;
   width: min(100% - 8px, 1680px);
   margin-inline: auto;
@@ -132,7 +144,7 @@
   box-shadow: 0 18px 40px rgba(95,18,32,.12), inset 0 1px 0 rgba(255,255,255,.38);
 }
 
-.watch-buy-card::before {
+.special-offers-card::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -145,7 +157,7 @@
     repeating-linear-gradient(135deg, rgba(255,255,255,.09) 0 2px, transparent 2px 18px);
 }
 
-.watch-buy-card::after {
+.special-offers-card::after {
   content: "";
   position: absolute;
   inset: auto 0 0;
@@ -156,7 +168,7 @@
   background: linear-gradient(180deg, transparent 0%, rgba(255,78,96,.22) 100%);
 }
 
-.watch-buy-head {
+.special-offers-head {
   position: relative;
   z-index: 5;
   text-align: center;
@@ -164,8 +176,8 @@
   padding-inline: clamp(8px, 1.5vw, 16px);
 }
 
-.watch-buy-title-svg {
-  width: min(72%, 780px);
+.special-offers-title-svg {
+  width: min(78%, 860px);
   height: clamp(86px, 7.4vw, 118px);
   display: block;
   margin: 0 auto -6px !important;
@@ -173,18 +185,23 @@
   transform: translateY(-8px);
 }
 
-.watch-buy-title-svg text {
+.special-offers-title-svg text {
   font-family: Impact, Haettenschweiler, "Arial Black", system-ui, sans-serif;
-  font-size: clamp(86px, 7.7vw, 120px);
+  font-size: clamp(76px, 6.85vw, 106px);
   font-weight: 900;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
-.watch-buy-title-deep { fill: rgba(55,22,60,.18); }
-.watch-buy-title-shadow { fill: #201023; }
+.special-offers-title-deep {
+  fill: rgba(55,22,60,.18);
+}
 
-.watch-buy-title-main {
+.special-offers-title-shadow {
+  fill: #201023;
+}
+
+.special-offers-title-main {
   fill: #f4eb08;
   stroke: #171021;
   stroke-width: 10px;
@@ -192,34 +209,34 @@
   stroke-linejoin: round;
 }
 
-.watch-buy-stage {
+.special-offers-stage {
   position: relative;
   width: 100%;
-  height: clamp(345px, 37vw, 555px);
+  height: clamp(350px, 38vw, 590px);
   margin-inline: auto;
   perspective: 1200px;
   transform-style: preserve-3d;
   user-select: none;
 }
 
-.watch-buy-slide {
+.special-offers-slide {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: clamp(205px, 29vw, 410px);
-  height: clamp(285px, 39vw, 535px);
+  width: clamp(210px, 27vw, 430px);
+  height: clamp(280px, 36vw, 573px);
   border-radius: clamp(18px, 2vw, 30px);
   overflow: hidden;
   transform: translate(-50%, -50%) scale(.64);
   opacity: 0;
   visibility: hidden;
   z-index: 1;
-  filter: saturate(.84) brightness(.82);
+  filter: saturate(.88) brightness(.86);
   pointer-events: none;
   transition: transform 620ms cubic-bezier(.2,.8,.2,1), opacity 360ms ease, filter 360ms ease;
 }
 
-.watch-buy-slide.is-active {
+.special-offers-slide.is-active {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
   visibility: visible;
@@ -228,128 +245,132 @@
   pointer-events: auto;
 }
 
-.watch-buy-slide.is-prev {
+.special-offers-slide.is-prev {
   transform: translate(calc(-50% - clamp(160px, 29vw, 420px)), -50%) scale(.74) rotateY(20deg);
   opacity: .58;
   visibility: visible;
   z-index: 4;
 }
 
-.watch-buy-slide.is-next {
+.special-offers-slide.is-next {
   transform: translate(calc(-50% + clamp(160px, 29vw, 420px)), -50%) scale(.74) rotateY(-20deg);
   opacity: .58;
   visibility: visible;
   z-index: 4;
 }
 
-.watch-buy-slide.is-prev-2,
-.watch-buy-slide.is-next-2 {
+.special-offers-slide.is-prev-2,
+.special-offers-slide.is-next-2 {
   opacity: 0;
   visibility: hidden;
   z-index: 1;
   pointer-events: none;
 }
 
-.watch-buy-thumb {
+.special-offers-thumb {
   position: relative;
   width: 100%;
   height: 100%;
   border-radius: inherit;
   overflow: hidden;
+  background: linear-gradient(135deg, #bb135f, #7c1831 55%, #f4c76b);
   box-shadow: 0 22px 42px rgba(55,10,20,.22), inset 0 0 0 1px rgba(255,255,255,.20);
 }
 
-.watch-buy-thumb::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  background:
-    radial-gradient(circle at 48% 34%, rgba(255,255,255,.22), transparent 15%),
-    repeating-linear-gradient(135deg, rgba(255,255,255,.10) 0 2px, transparent 2px 16px);
+.special-offers-thumb--one {
+  background: linear-gradient(135deg, #bb135f, #7c1831 55%, #f4c76b);
 }
 
-.watch-buy-thumb::after {
-  content: "";
-  position: absolute;
-  inset: 0;
+.special-offers-thumb--two {
+  background: linear-gradient(135deg, #f7d8d6, #ca6b7e 55%, #f2c36a);
+}
+
+.special-offers-thumb--three {
+  background: linear-gradient(135deg, #0e6268, #16444e 58%, #c79243);
+}
+
+.special-offers-img {
+  position: relative;
   z-index: 2;
-  background: linear-gradient(180deg, rgba(0,0,0,.04), transparent 34%, rgba(0,0,0,.32));
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  user-select: none;
+  pointer-events: none;
 }
 
-.watch-buy-thumb--one { background: linear-gradient(135deg, #bb135f, #7c1831 55%, #f4c76b); }
-.watch-buy-thumb--two { background: linear-gradient(135deg, #f7d8d6, #ca6b7e 55%, #f2c36a); }
-.watch-buy-thumb--three { background: linear-gradient(135deg, #0e6268, #16444e 58%, #c79243); }
-.watch-buy-thumb--four { background: linear-gradient(135deg, #6b4da2, #7f2f6d 56%, #c69a44); }
-.watch-buy-thumb--five { background: linear-gradient(135deg, #dfe6bd, #b5bd84 55%, #fff0c9); }
-
-.watch-buy-views,
-.watch-buy-products {
-  position: absolute;
-  z-index: 4;
-  color: #fff;
-  font-weight: 800;
-}
-
-.watch-buy-views {
-  left: clamp(14px, 2vw, 24px);
-  top: clamp(14px, 2vw, 24px);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: clamp(14px, 1.72vw, 25px);
-  line-height: 1;
-  letter-spacing: .01em;
-}
-
-.watch-buy-views::before {
-  content: none !important;
-  display: none !important;
-}
-
-.watch-buy-views::after {
+.special-offers-thumb::before {
   content: "";
-  width: .5em;
-  height: .5em;
-  border-radius: 999px;
-  background: #24e45e;
-  box-shadow: 0 0 0 0 rgba(36,228,94,.58), 0 0 9px rgba(36,228,94,.85);
-  animation: watchBuyLiveBlink 1.05s ease-in-out infinite;
-  flex: 0 0 auto;
-  margin-left: 1px;
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, rgba(255,255,255,.16), transparent 28%),
+    radial-gradient(circle at 50% 5%, rgba(255,255,255,.18), transparent 18%);
 }
 
-.watch-buy-products {
-  left: clamp(14px, 2vw, 24px);
-  bottom: clamp(18px, 2.5vw, 32px);
+.special-offers-thumb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.25);
+  border-radius: inherit;
+}
+
+.special-offers-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+  color: #fff8ef;
+  background:
+    radial-gradient(circle at 50% 24%, rgba(255,255,255,.18), transparent 22%),
+    linear-gradient(145deg, rgba(95,16,32,.35), rgba(20,8,20,.42));
+}
+
+.special-offers-thumb.is-fallback-only .special-offers-fallback {
+  display: flex;
+}
+
+.special-offers-fallback span {
   display: inline-flex;
   align-items: center;
-  min-height: clamp(28px, 3.15vw, 40px);
-  padding: clamp(6px, .82vw, 9px) clamp(12px, 1.65vw, 18px);
+  justify-content: center;
+  min-height: 28px;
+  padding: 7px 15px;
   border-radius: 999px;
-  background: rgba(0,0,0,.40);
+  background: rgba(0,0,0,.28);
   backdrop-filter: blur(8px);
-  font-size: clamp(12px, 1.28vw, 18px);
+  font-size: clamp(11px, 1.15vw, 15px);
   line-height: 1;
-  letter-spacing: .01em;
-  white-space: nowrap;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
 }
 
-@keyframes watchBuyLiveBlink {
-  0%, 100% {
-    opacity: .45;
-    transform: scale(.78);
-    box-shadow: 0 0 0 0 rgba(36,228,94,.45), 0 0 7px rgba(36,228,94,.65);
-  }
-
-  50% {
-    opacity: 1;
-    transform: scale(1);
-    box-shadow: 0 0 0 5px rgba(36,228,94,0), 0 0 12px rgba(36,228,94,.95);
-  }
+.special-offers-fallback strong {
+  display: block;
+  max-width: 90%;
+  font-size: clamp(28px, 4.2vw, 54px);
+  line-height: .92;
+  font-weight: 950;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  text-shadow: 0 4px 14px rgba(0,0,0,.22);
 }
 
-.watch-buy-nav {
+.special-offers-nav {
   position: absolute;
   top: 50%;
   z-index: 9;
@@ -372,17 +393,17 @@
   font-size: clamp(24px, 3.6vw, 40px);
 }
 
-.watch-buy-nav--prev {
+.special-offers-nav--prev {
   left: clamp(18px, 2.4vw, 34px);
   text-indent: -2px;
 }
 
-.watch-buy-nav--next {
+.special-offers-nav--next {
   right: clamp(18px, 2.4vw, 34px);
   text-indent: 2px;
 }
 
-.watch-buy-dots {
+.special-offers-dots {
   position: relative;
   z-index: 10;
   margin-top: 18px;
@@ -392,7 +413,7 @@
   gap: 7px;
 }
 
-.watch-buy-dots button {
+.special-offers-dots button {
   width: 7px;
   height: 7px;
   padding: 0;
@@ -402,12 +423,12 @@
   cursor: pointer;
 }
 
-.watch-buy-dots button.is-active {
+.special-offers-dots button.is-active {
   width: 22px;
   background: #5f1020;
 }
 
-.watch-buy-cta {
+.special-offers-cta {
   position: absolute;
   left: 50%;
   bottom: -18px;
@@ -434,17 +455,17 @@
   white-space: nowrap;
 }
 
-.watch-buy-cta span {
+.special-offers-cta span {
   font-size: 1.4em;
   line-height: 0;
 }
 
 @media (max-width: 767px) {
-  .watch-buy-section {
+  .special-offers-section {
     padding-bottom: 20px;
   }
 
-  .watch-buy-card {
+  .special-offers-card {
     width: min(100% - 6px, 980px);
     min-height: 374px;
     border-radius: clamp(18px, 6vw, 34px);
@@ -452,71 +473,45 @@
     padding-bottom: 4px;
   }
 
-  .watch-buy-title-svg {
-    width: 245px;
+  .special-offers-title-svg {
+    width: 282px;
     height: 70px;
     margin-bottom: -10px !important;
     transform: translateY(-14px);
   }
 
-  .watch-buy-title-svg text {
-    font-size: 104px;
+  .special-offers-title-svg text {
+    font-size: 82px;
+    letter-spacing: .035em;
   }
 
-  .watch-buy-stage {
+  .special-offers-stage {
     height: 246px;
   }
 
-  .watch-buy-slide {
-    width: 184px;
-    height: 258px;
+  .special-offers-slide {
+    width: 180px;
+    height: 240px;
   }
 
-  .watch-buy-slide.is-prev {
+  .special-offers-slide.is-prev {
     transform: translate(calc(-50% - clamp(145px, 48vw, 330px)), -50%) scale(.70) rotateY(22deg);
   }
 
-  .watch-buy-slide.is-next {
+  .special-offers-slide.is-next {
     transform: translate(calc(-50% + clamp(145px, 48vw, 330px)), -50%) scale(.70) rotateY(-22deg);
   }
 
-  .watch-buy-views {
-    left: 13px;
-    top: 13px;
-    gap: 5px;
-    font-size: 12.5px;
-    font-weight: 700;
-  }
-
-  .watch-buy-views::before {
-    font-size: .62em;
-  }
-
-  .watch-buy-views::after {
-    width: 6px;
-    height: 6px;
-    margin-left: 0;
-  }
-
-  .watch-buy-products {
-    left: 13px;
-    bottom: 14px;
-    min-height: 25px;
-    padding: 5px 11px;
-    font-size: 10.8px;
-    font-weight: 700;
-  }
-
-  .watch-buy-nav {
+  .special-offers-nav {
     display: none !important;
   }
 
-  .watch-buy-dots {
+  .special-offers-dots {
     margin-top: 10px;
     transform: translateY(8px);
   }
 
-  .watch-buy-cta {
+  .special-offers-cta {
     bottom: -17px;
     width: min(100% - 46px, 430px);
     min-height: 34px;
@@ -528,55 +523,37 @@
 }
 
 @media (max-width: 480px) {
-  .watch-buy-card {
+  .special-offers-card {
     min-height: 362px;
     padding-bottom: 2px;
   }
 
-  .watch-buy-title-svg {
-    width: 232px;
+  .special-offers-title-svg {
+    width: 266px;
     height: 66px;
     margin-bottom: -12px !important;
     transform: translateY(-14px);
   }
 
-  .watch-buy-stage {
+  .special-offers-title-svg text {
+    font-size: 78px;
+  }
+
+  .special-offers-stage {
     height: 238px;
   }
 
-  .watch-buy-slide {
-    width: 178px;
-    height: 252px;
+  .special-offers-slide {
+    width: 176px;
+    height: 235px;
   }
 
-  .watch-buy-views {
-    left: 12px;
-    top: 12px;
-    gap: 4px;
-    font-size: 11.4px;
-    font-weight: 680;
-  }
-
-  .watch-buy-views::after {
-    width: 5.5px;
-    height: 5.5px;
-  }
-
-  .watch-buy-products {
-    left: 12px;
-    bottom: 13px;
-    min-height: 24px;
-    padding: 5px 10px;
-    font-size: 10px;
-    font-weight: 680;
-  }
-
-  .watch-buy-dots {
+  .special-offers-dots {
     margin-top: 10px;
     transform: translateY(9px);
   }
 
-  .watch-buy-cta {
+  .special-offers-cta {
     width: min(100% - 38px, 390px);
     min-height: 32px;
     bottom: -16px;
@@ -586,43 +563,30 @@
 }
 
 @media (max-width: 360px) {
-  .watch-buy-card {
+  .special-offers-card {
     min-height: 348px;
   }
 
-  .watch-buy-title-svg {
-    width: 214px;
+  .special-offers-title-svg {
+    width: 246px;
     height: 60px;
     transform: translateY(-12px);
   }
 
-  .watch-buy-stage {
+  .special-offers-title-svg text {
+    font-size: 74px;
+  }
+
+  .special-offers-stage {
     height: 226px;
   }
 
-  .watch-buy-slide {
+  .special-offers-slide {
     width: 168px;
-    height: 238px;
+    height: 224px;
   }
 
-  .watch-buy-views {
-    font-size: 10.7px;
-    font-weight: 650;
-  }
-
-  .watch-buy-views::after {
-    width: 5px;
-    height: 5px;
-  }
-
-  .watch-buy-products {
-    min-height: 23px;
-    padding: 4px 9px;
-    font-size: 9.4px;
-    font-weight: 650;
-  }
-
-  .watch-buy-cta {
+  .special-offers-cta {
     width: min(100% - 30px, 330px);
     min-height: 31px;
     font-size: 7.8px;
@@ -630,47 +594,42 @@
 }
 
 @media (max-width: 320px) {
-  .watch-buy-card {
+  .special-offers-card {
     min-height: 334px;
   }
 
-  .watch-buy-title-svg {
-    width: 198px;
+  .special-offers-title-svg {
+    width: 226px;
     height: 56px;
     transform: translateY(-10px);
   }
 
-  .watch-buy-stage {
+  .special-offers-title-svg text {
+    font-size: 70px;
+  }
+
+  .special-offers-stage {
     height: 212px;
   }
 
-  .watch-buy-slide {
+  .special-offers-slide {
     width: 158px;
-    height: 224px;
-  }
-
-  .watch-buy-views {
-    font-size: 10px;
-  }
-
-  .watch-buy-products {
-    min-height: 22px;
-    padding: 4px 8px;
-    font-size: 8.8px;
+    height: 211px;
   }
 }
 </style>
 
 <script>
   (function () {
-    const sliders = document.querySelectorAll("[data-watch-buy-slider]");
+    const sliders = document.querySelectorAll("[data-special-offers-slider]");
 
     sliders.forEach(function (slider) {
-      const slides = Array.from(slider.querySelectorAll("[data-watch-buy-slide]"));
-      const dots = Array.from(slider.querySelectorAll("[data-watch-buy-dot]"));
-      const prevBtn = slider.querySelector("[data-watch-buy-prev]");
-      const nextBtn = slider.querySelector("[data-watch-buy-next]");
-      const stage = slider.querySelector("[data-watch-buy-stage]") || slider;
+      const slides = Array.from(slider.querySelectorAll("[data-special-offers-slide]"));
+      const dots = Array.from(slider.querySelectorAll("[data-special-offers-dot]"));
+      const prevBtn = slider.querySelector("[data-special-offers-prev]");
+      const nextBtn = slider.querySelector("[data-special-offers-next]");
+      const stage = slider.querySelector("[data-special-offers-stage]") || slider;
+      const images = Array.from(slider.querySelectorAll(".special-offers-img"));
 
       if (slides.length <= 1) return;
 
@@ -688,6 +647,26 @@
       const SWIPE_DISTANCE = 44;
       const SWIPE_VELOCITY_DISTANCE = 28;
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      images.forEach(function (img) {
+        img.addEventListener("error", function () {
+          const fallback = img.getAttribute("data-fallback");
+          const fallbackUsed = img.getAttribute("data-fallback-used") === "1";
+          const thumb = img.closest(".special-offers-thumb");
+
+          if (fallback && !fallbackUsed) {
+            img.setAttribute("data-fallback-used", "1");
+            img.src = fallback;
+            return;
+          }
+
+          img.hidden = true;
+
+          if (thumb) {
+            thumb.classList.add("is-fallback-only");
+          }
+        });
+      });
 
       function getPosition(index) {
         const total = slides.length;
@@ -773,7 +752,7 @@
       function startDrag(event) {
         if (event.button !== undefined && event.button !== 0) return;
 
-        const clickedControl = event.target.closest("button, .watch-buy-cta");
+        const clickedControl = event.target.closest("button, .special-offers-cta");
         if (clickedControl) return;
 
         isDragging = true;

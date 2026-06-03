@@ -1,898 +1,13 @@
 {% load static %}
-<!-- E:\pallavi_papa_sarees\store\templates\store\owner\owner_product_form.html -->
+<!-- E:\pallavi_papa_sarees\store\templates\store\owner\partials\owner_add_product_form.html -->
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Add Products</title>
-<style>
-  :root {
-    --bg: #fff7f0;
-    --card: #ffffff;
-    --text: #3f1d25;
-    --muted: #7d646a;
-    --primary: #8f1731;
-    --primary-dark: #681021;
-    --border: rgba(143, 23, 49, 0.14);
-    --shadow: 0 14px 42px rgba(70, 28, 35, 0.10);
-  }
-
-  * {
-    box-sizing: border-box;
-  }
-
-  body {
-    margin: 0;
-    min-height: 100vh;
-    font-family: Arial, Helvetica, sans-serif;
-    color: var(--text);
-    background:
-      radial-gradient(circle at top left, rgba(244, 199, 107, 0.18), transparent 32%),
-      linear-gradient(135deg, #fffaf6 0%, var(--bg) 100%);
-  }
-
-  .owner-header {
-    min-height: 72px;
-    padding: 12px clamp(14px, 3vw, 34px);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    background: rgba(255, 250, 246, 0.94);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    min-width: 0;
-  }
-
-  .brand-logo {
-    width: 40px;
-    height: 40px;
-    border-radius: 14px;
-    display: grid;
-    place-items: center;
-    color: #fff;
-    font-size: 14px;
-    font-weight: 900;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    flex: 0 0 auto;
-  }
-
-  .brand strong {
-    display: block;
-    font-size: 18px;
-    line-height: 1.1;
-  }
-
-  .brand span {
-    display: block;
-    margin-top: 3px;
-    color: var(--muted);
-    font-size: 12.5px;
-  }
-
-  .back-btn {
-    text-decoration: none;
-    color: #fff;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    padding: 10px 16px;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 800;
-    white-space: nowrap;
-  }
-
-  .wrap {
-    width: 100%;
-    max-width: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .form-card {
-    width: 100%;
-    background: var(--card);
-    border: 0;
-    border-bottom: 1px solid var(--border);
-    border-radius: 0;
-    padding: clamp(18px, 2.4vw, 30px);
-    box-shadow: var(--shadow);
-  }
-
-  .form-card h1 {
-    margin: 0;
-    font-size: clamp(24px, 3vw, 34px);
-    line-height: 1.08;
-    letter-spacing: -0.03em;
-  }
-
-  .form-card p {
-    margin: 8px 0 20px;
-    color: var(--muted);
-    font-size: 14px;
-    line-height: 1.5;
-  }
-
-  .product-form {
-    width: 100%;
-    margin-top: 18px;
-  }
-
-  .product-details {
-    display: none;
-    margin-top: 20px;
-    padding-top: 18px;
-    border-top: 1px solid var(--border);
-  }
-
-  .product-details.is-open {
-    display: block;
-  }
-
-  .arrival-card-field,
-  .top-showcase-field {
-    display: none;
-  }
-
-  .arrival-card-field.is-visible,
-  .top-showcase-field.is-visible {
-    display: block;
-  }
-
-  .form-grid {
-    display: grid;
-    gap: 16px;
-  }
-
-  .two-col {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .three-col {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .field {
-    width: 100%;
-  }
-
-  .field label {
-    display: block;
-    margin-bottom: 8px;
-    color: var(--text);
-    font-size: 13px;
-    font-weight: 800;
-  }
-
-  .category-title-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 8px;
-  }
-
-  .category-title-row label {
-    margin-bottom: 0;
-  }
-
-  .add-category-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 32px;
-    padding: 0 12px;
-    border-radius: 999px;
-    color: #fff;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    box-shadow: 0 8px 18px rgba(143, 23, 49, 0.15);
-    font-size: 12px;
-    font-weight: 900;
-    text-decoration: none;
-    white-space: nowrap;
-  }
-
-  .add-category-link:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 10px 22px rgba(143, 23, 49, 0.20);
-  }
-
-  .field input,
-  .field select,
-  .field textarea {
-    width: 100%;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    outline: none;
-    background: #fff;
-    color: var(--text);
-    font-size: 14px;
-  }
-
-  .field input,
-  .field select {
-    min-height: 48px;
-    padding: 0 14px;
-  }
-
-  .field input[type="color"] {
-    min-height: 48px;
-    padding: 6px;
-    cursor: pointer;
-  }
-
-  .field textarea {
-    padding: 13px 14px;
-    resize: vertical;
-    min-height: 110px;
-    line-height: 1.5;
-  }
-
-  .field input:focus,
-  .field select:focus,
-  .field textarea:focus {
-    border-color: rgba(143, 23, 49, 0.52);
-    box-shadow: 0 0 0 4px rgba(143, 23, 49, 0.08);
-  }
-
-  .field small {
-    display: block;
-    margin-top: 7px;
-    color: var(--muted);
-    font-size: 12.5px;
-    line-height: 1.4;
-  }
-
-  .upload-section {
-    display: grid;
-    grid-template-columns: minmax(260px, 360px) 1fr;
-    gap: 18px;
-    margin-bottom: 18px;
-    align-items: start;
-  }
-
-  .side-upload-stack {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(150px, 220px));
-    gap: 14px;
-    align-items: start;
-    justify-content: start;
-  }
-
-  .side-upload-stack > .field:last-child {
-    grid-column: 1 / -1;
-    width: 100%;
-  }
-
-  .catalog-upload,
-  .arrival-upload,
-  .top-showcase-upload,
-  .sub-upload,
-  .variant-upload {
-    cursor: pointer;
-    border: 1px dashed rgba(143, 23, 49, 0.32);
-    background: #fffaf6;
-    overflow: hidden;
-    position: relative;
-  }
-
-  .catalog-upload input,
-  .arrival-upload input,
-  .top-showcase-upload input,
-  .sub-upload input,
-  .variant-upload input {
-    display: none;
-  }
-
-  .catalog-upload {
-    width: 100%;
-    aspect-ratio: 1 / 1.12;
-    min-height: 320px;
-    border-radius: 22px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    text-align: center;
-  }
-
-  .upload-plus {
-    width: 46px;
-    height: 46px;
-    border-radius: 999px;
-    display: grid;
-    place-items: center;
-    background: rgba(143, 23, 49, 0.10);
-    color: var(--primary);
-    font-size: 28px;
-    font-weight: 900;
-  }
-
-  .catalog-upload strong {
-    font-size: 15px;
-    color: var(--text);
-  }
-
-  .catalog-upload small {
-    color: var(--muted);
-    font-size: 12.5px;
-  }
-
-  .arrival-upload,
-  .top-showcase-upload {
-    width: 100%;
-    max-width: 220px;
-    height: 190px;
-    min-height: unset;
-    aspect-ratio: auto;
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    text-align: center;
-  }
-
-  .arrival-upload span,
-  .top-showcase-upload span {
-    width: 32px;
-    height: 32px;
-    border-radius: 999px;
-    display: grid;
-    place-items: center;
-    background: rgba(143, 23, 49, 0.10);
-    color: var(--primary);
-    font-size: 21px;
-    font-weight: 900;
-  }
-
-  .arrival-upload strong,
-  .top-showcase-upload strong {
-    color: var(--text);
-    font-size: 12.5px;
-    line-height: 1.25;
-  }
-
-  .arrival-upload small,
-  .top-showcase-upload small {
-    max-width: 150px;
-    color: var(--muted);
-    font-size: 11.5px;
-    line-height: 1.3;
-  }
-
-  .sub-upload-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-  }
-
-  .sub-upload {
-    aspect-ratio: 1 / 1.12;
-    min-height: 130px;
-    border-radius: 18px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    text-align: center;
-  }
-
-  .sub-upload span,
-  .variant-upload span {
-    width: 34px;
-    height: 34px;
-    border-radius: 999px;
-    display: grid;
-    place-items: center;
-    background: rgba(143, 23, 49, 0.10);
-    color: var(--primary);
-    font-size: 22px;
-    font-weight: 900;
-  }
-
-  .sub-upload small,
-  .variant-upload small {
-    color: var(--muted);
-    font-size: 12px;
-  }
-
-  .check-field {
-    min-height: 46px;
-    padding: 12px 14px;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    background: #fffaf6;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--text);
-    font-size: 13px;
-    font-weight: 800;
-  }
-
-  .check-field input {
-    width: 16px;
-    height: 16px;
-    margin: 0;
-    flex: 0 0 auto;
-  }
-
-  .error-box {
-    margin-bottom: 16px;
-    padding: 12px 14px;
-    border-radius: 14px;
-    color: #7a1025;
-    background: rgba(143, 23, 49, 0.08);
-    border: 1px solid rgba(143, 23, 49, 0.16);
-    font-size: 13px;
-    line-height: 1.5;
-  }
-
-  .form-actions {
-    margin-top: 18px;
-    display: flex;
-    justify-content: flex-end;
-  }
-
-  .save-btn {
-    min-height: 44px;
-    padding: 0 22px;
-    border: 0;
-    border-radius: 999px;
-    color: #fff;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    font-size: 13px;
-    font-weight: 900;
-    cursor: pointer;
-    box-shadow: 0 10px 24px rgba(143, 23, 49, 0.18);
-  }
-
-  .upload-preview-img {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: inherit;
-    z-index: 1;
-  }
-
-  .upload-preview-layer {
-    position: absolute;
-    left: 10px;
-    right: 10px;
-    bottom: 10px;
-    z-index: 2;
-    padding: 8px 10px;
-    border-radius: 12px;
-    color: #fff;
-    background: rgba(63, 29, 37, 0.70);
-    backdrop-filter: blur(8px);
-    font-size: 12px;
-    font-weight: 800;
-    line-height: 1.25;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .catalog-upload.has-preview .upload-plus,
-  .catalog-upload.has-preview strong,
-  .catalog-upload.has-preview small,
-  .arrival-upload.has-preview span,
-  .arrival-upload.has-preview strong,
-  .arrival-upload.has-preview small,
-  .top-showcase-upload.has-preview span,
-  .top-showcase-upload.has-preview strong,
-  .top-showcase-upload.has-preview small,
-  .sub-upload.has-preview span,
-  .sub-upload.has-preview small,
-  .variant-upload.has-preview span,
-  .variant-upload.has-preview small {
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  .section-panel {
-    margin-top: 18px;
-    padding: clamp(14px, 2.4vw, 22px);
-    border: 1px solid var(--border);
-    border-radius: 22px;
-    background:
-      radial-gradient(circle at 96% 12%, rgba(244, 199, 107, 0.16), transparent 24%),
-      #fffaf6;
-  }
-
-  .section-head {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 14px;
-    margin-bottom: 16px;
-  }
-
-  .section-head h2 {
-    margin: 0;
-    color: var(--text);
-    font-size: clamp(18px, 2.4vw, 24px);
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-  }
-
-  .section-head p {
-    margin: 6px 0 0;
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.45;
-  }
-
-  .showcase-panel {
-    margin-top: 18px;
-    padding: 16px;
-    border: 1px solid rgba(143, 23, 49, 0.12);
-    border-radius: 18px;
-    background: #fff;
-  }
-
-  .showcase-panel h3 {
-    margin: 0 0 6px;
-    color: var(--text);
-    font-size: 16px;
-    letter-spacing: -0.01em;
-  }
-
-  .showcase-panel p {
-    margin: 0 0 14px;
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.45;
-  }
-
-  .add-variant-btn,
-  .remove-variant-btn {
-    border: 0;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 900;
-    border-radius: 999px;
-    white-space: nowrap;
-  }
-
-  .add-variant-btn {
-    min-height: 40px;
-    padding: 0 16px;
-    color: #fff;
-    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-    box-shadow: 0 10px 22px rgba(143, 23, 49, 0.16);
-  }
-
-  .remove-variant-btn {
-    min-height: 34px;
-    padding: 0 12px;
-    color: #8f1731;
-    background: rgba(143, 23, 49, 0.08);
-    border: 1px solid rgba(143, 23, 49, 0.12);
-  }
-
-  .variants-list {
-    display: grid;
-    gap: 14px;
-  }
-
-  .variant-card {
-    padding: 14px;
-    border: 1px solid rgba(143, 23, 49, 0.12);
-    border-radius: 18px;
-    background: #fff;
-    box-shadow: 0 8px 22px rgba(70, 28, 35, 0.045);
-  }
-
-  .variant-card__top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 14px;
-  }
-
-  .variant-card__title {
-    color: var(--text);
-    font-size: 14px;
-    font-weight: 900;
-  }
-
-  .variant-grid {
-    display: grid;
-    grid-template-columns: minmax(140px, 190px) 1fr;
-    gap: 14px;
-    align-items: start;
-  }
-
-  .variant-upload {
-    aspect-ratio: 1 / 1.12;
-    min-height: 150px;
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    gap: 7px;
-  }
-
-  .variant-fields {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-  }
-
-  .color-row {
-    display: grid;
-    grid-template-columns: 1fr 90px;
-    gap: 10px;
-  }
-
-
-  .upload-limit-note {
-    margin-top: 8px;
-    color: #8f1731;
-    background: rgba(143, 23, 49, 0.07);
-    border: 1px solid rgba(143, 23, 49, 0.12);
-    border-radius: 12px;
-    padding: 8px 10px;
-    font-size: 12px;
-    font-weight: 800;
-    line-height: 1.35;
-  }
-
-  .saving-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    background: rgba(63, 29, 37, 0.42);
-    backdrop-filter: blur(8px);
-  }
-
-  .saving-overlay.is-visible {
-    display: flex;
-  }
-
-  .saving-box {
-    width: min(420px, 100%);
-    padding: 22px;
-    border-radius: 22px;
-    background: #fff;
-    box-shadow: 0 20px 60px rgba(63, 29, 37, 0.22);
-    text-align: center;
-  }
-
-  .saving-spinner {
-    width: 44px;
-    height: 44px;
-    margin: 0 auto 14px;
-    border-radius: 999px;
-    border: 4px solid rgba(143, 23, 49, 0.14);
-    border-top-color: var(--primary);
-    animation: savingSpin 0.9s linear infinite;
-  }
-
-  .saving-title {
-    margin: 0 0 6px;
-    color: var(--text);
-    font-size: 18px;
-    font-weight: 900;
-  }
-
-  .saving-status {
-    margin: 0;
-    color: var(--muted);
-    font-size: 13px;
-    line-height: 1.45;
-  }
-
-  .client-error-box {
-    display: none;
-    margin-bottom: 16px;
-    padding: 12px 14px;
-    border-radius: 14px;
-    color: #7a1025;
-    background: rgba(143, 23, 49, 0.08);
-    border: 1px solid rgba(143, 23, 49, 0.16);
-    font-size: 13px;
-    line-height: 1.5;
-  }
-
-  .client-error-box.is-visible {
-    display: block;
-  }
-
-  @keyframes savingSpin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  @media (max-width: 900px) {
-    .upload-section {
-      grid-template-columns: 1fr;
-    }
-
-    .catalog-upload {
-      min-height: 280px;
-    }
-
-    .variant-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .variant-upload {
-      max-width: 240px;
-    }
-  }
-
-  @media (max-width: 767px) {
-    .owner-header {
-      min-height: 66px;
-      padding: 11px 14px;
-    }
-
-    .brand span {
-      display: none;
-    }
-
-    .two-col,
-    .three-col,
-    .variant-fields {
-      grid-template-columns: 1fr;
-    }
-
-    .category-title-row {
-      align-items: flex-start;
-    }
-
-    .add-category-link {
-      min-height: 30px;
-      padding: 0 10px;
-      font-size: 11.5px;
-    }
-
-    .side-upload-stack {
-      grid-template-columns: repeat(2, minmax(0, 170px));
-      justify-content: start;
-      gap: 12px;
-    }
-
-    .sub-upload-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 8px;
-    }
-
-    .catalog-upload {
-      min-height: 240px;
-      border-radius: 18px;
-    }
-
-    .arrival-upload,
-    .top-showcase-upload {
-      max-width: 170px;
-      height: 145px;
-      min-height: unset;
-      border-radius: 14px;
-    }
-
-    .arrival-upload span,
-    .top-showcase-upload span {
-      width: 28px;
-      height: 28px;
-      font-size: 19px;
-    }
-
-    .arrival-upload strong,
-    .top-showcase-upload strong {
-      font-size: 12px;
-    }
-
-    .arrival-upload small,
-    .top-showcase-upload small {
-      max-width: 130px;
-      font-size: 11px;
-    }
-
-    .sub-upload {
-      min-height: 98px;
-      border-radius: 14px;
-    }
-
-    .section-head {
-      flex-direction: column;
-    }
-
-    .add-variant-btn {
-      width: 100%;
-    }
-
-    .form-actions {
-      justify-content: stretch;
-    }
-
-    .save-btn {
-      width: 100%;
-    }
-  }
-
-  @media (max-width: 420px) {
-    .side-upload-stack {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .sub-upload-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .arrival-upload,
-    .top-showcase-upload {
-      max-width: 150px;
-      height: 125px;
-      min-height: unset;
-    }
-
-    .arrival-upload small,
-    .top-showcase-upload small {
-      max-width: 112px;
-      font-size: 10.5px;
-    }
-
-    .sub-upload {
-      min-height: 88px;
-    }
-
-    .color-row {
-      grid-template-columns: 1fr;
-    }
-
-    .category-title-row {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 8px;
-    }
-
-    .add-category-link {
-      width: 100%;
-    }
-
-    .variant-upload {
-      max-width: none;
-    }
-  }
-
-  @media (max-width: 340px) {
-    .side-upload-stack {
-      grid-template-columns: 1fr;
-    }
-
-    .arrival-upload,
-    .top-showcase-upload {
-      max-width: 160px;
-    }
-  }
-</style>
+  <link rel="stylesheet" href="{% static 'store/owner/css/owner_add_product_form.css' %}">
+  <script src="{% static 'store/owner/js/owner_add_product_form.js' %}" defer></script>
 </head>
 
 <body>
@@ -913,7 +28,7 @@
   <main class="wrap">
     <section class="form-card">
       <h1>Add Products</h1>
-      <p>Select category first. Then upload product images, color, price, material, and optional variants.</p>
+      <p>Select category first. Then upload product images, color, price, size, stock, highlights, and optional variants.</p>
 
       <form class="product-form" method="post" enctype="multipart/form-data" action="{% url 'store_owner:owner_product_add' %}" data-upload-url-template="{% url 'store_owner:owner_product_upload_image' 0 %}" data-success-url="{% url 'store_owner:owner_dashboard' %}">
         {% csrf_token %}
@@ -1111,6 +226,34 @@
             </div>
 
             <div class="field">
+              <label for="productSize">Product Size</label>
+              <input
+                type="text"
+                id="productSize"
+                name="product_size"
+                value="{{ request.POST.product_size|default:'' }}"
+                placeholder="Example: Free Size / 38 / M / 30 / 4-5Y"
+              >
+              <small>Useful for sarees, blouse, jeans, kids wear, and other categories.</small>
+              {{ form.product_size.errors }}
+            </div>
+
+            <div class="field">
+              <label for="stockQuantity">Available Pieces</label>
+              <input
+                type="number"
+                id="stockQuantity"
+                name="stock_quantity"
+                value="{{ request.POST.stock_quantity|default:'1' }}"
+                placeholder="Example: 5"
+                min="0"
+                step="1"
+              >
+              <small>Set 0 if this product is out of stock.</small>
+              {{ form.stock_quantity.errors }}
+            </div>
+
+            <div class="field">
               <label for="actualPrice">Actual Price *</label>
               <input
                 type="number"
@@ -1149,6 +292,96 @@
               placeholder="Write product details, fabric feel, border design, and occasion."
             >{{ request.POST.description|default:'' }}</textarea>
             {{ form.description.errors }}
+          </div>
+
+          <div class="section-panel highlights-panel">
+            <div class="section-head">
+              <div>
+                <h2>Highlights</h2>
+                <p>
+                  Add flexible product details like Occasion, Blouse, Care, Fit, Age Group, Length, or any custom point.
+                  Empty highlight rows will be ignored while saving.
+                </p>
+              </div>
+
+              <button type="button" class="add-highlight-btn" id="addHighlightBtn">
+                + Add highlight
+              </button>
+            </div>
+
+            <div class="highlights-list" id="highlightsList">
+              <div class="highlight-row">
+                <div class="field">
+                  <label>Highlight Label</label>
+                  <input
+                    type="text"
+                    name="highlight_labels"
+                    placeholder="Example: Occasion"
+                  >
+                </div>
+
+                <div class="field">
+                  <label>Highlight Value</label>
+                  <input
+                    type="text"
+                    name="highlight_values"
+                    placeholder="Example: Daily Wear / Office Wear"
+                  >
+                </div>
+
+                <button type="button" class="remove-highlight-btn" aria-label="Remove highlight">
+                  Remove
+                </button>
+              </div>
+
+              <div class="highlight-row">
+                <div class="field">
+                  <label>Highlight Label</label>
+                  <input
+                    type="text"
+                    name="highlight_labels"
+                    placeholder="Example: Blouse"
+                  >
+                </div>
+
+                <div class="field">
+                  <label>Highlight Value</label>
+                  <input
+                    type="text"
+                    name="highlight_values"
+                    placeholder="Example: Running Blouse / Unstitched"
+                  >
+                </div>
+
+                <button type="button" class="remove-highlight-btn" aria-label="Remove highlight">
+                  Remove
+                </button>
+              </div>
+
+              <div class="highlight-row">
+                <div class="field">
+                  <label>Highlight Label</label>
+                  <input
+                    type="text"
+                    name="highlight_labels"
+                    placeholder="Example: Care"
+                  >
+                </div>
+
+                <div class="field">
+                  <label>Highlight Value</label>
+                  <input
+                    type="text"
+                    name="highlight_values"
+                    placeholder="Example: Hand Wash / Mild Wash"
+                  >
+                </div>
+
+                <button type="button" class="remove-highlight-btn" aria-label="Remove highlight">
+                  Remove
+                </button>
+              </div>
+            </div>
           </div>
 
           <div class="form-grid two-col">
@@ -1255,503 +488,6 @@
     </div>
   </div>
 
-<script>
-  const categorySelect = document.getElementById("category");
-  const productDetails = document.getElementById("productDetails");
-
-  function toggleProductDetails() {
-    if (categorySelect.value) {
-      productDetails.classList.add("is-open");
-    } else {
-      productDetails.classList.remove("is-open");
-    }
-  }
-
-  categorySelect.addEventListener("change", toggleProductDetails);
-  toggleProductDetails();
-
-  function setupImagePreview(inputId) {
-    const input = document.getElementById(inputId);
-    if (!input) return;
-
-    const box = input.closest(".catalog-upload, .arrival-upload, .top-showcase-upload, .sub-upload, .variant-upload");
-    if (!box) return;
-
-    input.addEventListener("change", function () {
-      const file = this.files && this.files[0];
-      if (!file) return;
-
-      if (!file.type.startsWith("image/")) {
-        alert("Please select an image file only.");
-        this.value = "";
-        return;
-      }
-
-      let previewImg = box.querySelector(".upload-preview-img");
-      if (!previewImg) {
-        previewImg = document.createElement("img");
-        previewImg.className = "upload-preview-img";
-        previewImg.alt = "Selected image preview";
-        box.appendChild(previewImg);
-      }
-
-      let fileName = box.querySelector(".upload-preview-layer");
-      if (!fileName) {
-        fileName = document.createElement("div");
-        fileName.className = "upload-preview-layer";
-        box.appendChild(fileName);
-      }
-
-      previewImg.src = URL.createObjectURL(file);
-      fileName.textContent = file.name;
-      box.classList.add("has-preview");
-    });
-  }
-
-  setupImagePreview("mainImage");
-  setupImagePreview("arrivalCardImage");
-  setupImagePreview("topShowcaseImage");
-  setupImagePreview("subImage1");
-  setupImagePreview("subImage2");
-  setupImagePreview("subImage3");
-
-  const isNewArrivalCheckbox = document.getElementById("isNewArrivalCheckbox");
-  const arrivalCardField = document.getElementById("arrivalCardField");
-  const arrivalCardInput = document.getElementById("arrivalCardImage");
-
-  function clearUploadPreview(input) {
-    if (!input) return;
-
-    const box = input.closest(".catalog-upload, .arrival-upload, .top-showcase-upload, .sub-upload, .variant-upload");
-    if (!box) return;
-
-    input.value = "";
-
-    const previewImg = box.querySelector(".upload-preview-img");
-    const fileName = box.querySelector(".upload-preview-layer");
-
-    if (previewImg) {
-      previewImg.remove();
-    }
-
-    if (fileName) {
-      fileName.remove();
-    }
-
-    box.classList.remove("has-preview");
-  }
-
-  function toggleArrivalCardField() {
-    if (!isNewArrivalCheckbox || !arrivalCardField) return;
-
-    if (isNewArrivalCheckbox.checked) {
-      arrivalCardField.classList.add("is-visible");
-    } else {
-      arrivalCardField.classList.remove("is-visible");
-      clearUploadPreview(arrivalCardInput);
-    }
-  }
-
-  if (isNewArrivalCheckbox) {
-    isNewArrivalCheckbox.addEventListener("change", toggleArrivalCardField);
-  }
-
-  toggleArrivalCardField();
-
-  const topShowcaseField = document.getElementById("topShowcaseField");
-  const topShowcaseInput = document.getElementById("topShowcaseImage");
-  const topShowcaseCheckboxes = document.querySelectorAll(".top-showcase-checkbox");
-
-  function hasAnyTopShowcaseChecked() {
-    return Array.from(topShowcaseCheckboxes).some((checkbox) => checkbox.checked);
-  }
-
-  function toggleTopShowcaseField() {
-    if (!topShowcaseField) return;
-
-    if (hasAnyTopShowcaseChecked()) {
-      topShowcaseField.classList.add("is-visible");
-    } else {
-      topShowcaseField.classList.remove("is-visible");
-      clearUploadPreview(topShowcaseInput);
-    }
-  }
-
-  topShowcaseCheckboxes.forEach((checkbox) => {
-    checkbox.addEventListener("change", toggleTopShowcaseField);
-  });
-
-  toggleTopShowcaseField();
-
-  const colorPicker = document.getElementById("colorCode");
-  const colorText = document.getElementById("colorCodeText");
-
-  if (colorPicker && colorText) {
-    colorPicker.addEventListener("input", function () {
-      colorText.value = this.value;
-    });
-
-    colorText.addEventListener("input", function () {
-      if (/^#[0-9A-Fa-f]{6}$/.test(this.value.trim())) {
-        colorPicker.value = this.value.trim();
-      }
-    });
-  }
-
-  const addVariantBtn = document.getElementById("addVariantBtn");
-  const variantsList = document.getElementById("variantsList");
-  let variantCount = 0;
-
-  function createVariantCard() {
-    variantCount += 1;
-
-    const card = document.createElement("div");
-    card.className = "variant-card";
-    card.dataset.variantIndex = String(variantCount);
-
-    const variantImageId = `variantImage${variantCount}`;
-    const variantColorPickerId = `variantColorCode${variantCount}`;
-    const variantColorTextId = `variantColorText${variantCount}`;
-
-    card.innerHTML = `
-      <div class="variant-card__top">
-        <div class="variant-card__title">Variant ${variantCount}</div>
-
-        <button type="button" class="remove-variant-btn">
-          Remove
-        </button>
-      </div>
-
-      <div class="variant-grid">
-        <div class="field">
-          <label for="${variantImageId}">Variant Image</label>
-
-          <label class="variant-upload" for="${variantImageId}">
-            <input
-              type="file"
-              id="${variantImageId}"
-              name="variant_images"
-              accept="image/*"
-            >
-            <span>+</span>
-            <small>Upload variant image</small>
-          </label>
-        </div>
-
-        <div class="variant-fields">
-          <div class="field">
-            <label>Variant Color Name</label>
-            <input
-              type="text"
-              name="variant_color_names"
-              placeholder="Example: Pink"
-            >
-          </div>
-
-          <div class="field">
-            <label>Variant Color Code</label>
-            <div class="color-row">
-              <input
-                type="text"
-                id="${variantColorTextId}"
-                name="variant_color_codes"
-                value="#8f1731"
-                placeholder="#8f1731"
-              >
-              <input
-                type="color"
-                id="${variantColorPickerId}"
-                value="#8f1731"
-                aria-label="Pick variant color"
-              >
-            </div>
-          </div>
-
-          <div class="field">
-            <label>Actual Price</label>
-            <input
-              type="number"
-              name="variant_actual_prices"
-              placeholder="Example: 2499"
-              min="0"
-              step="0.01"
-            >
-          </div>
-
-          <div class="field">
-            <label>Offer Price</label>
-            <input
-              type="number"
-              name="variant_offer_prices"
-              placeholder="Example: 1999"
-              min="0"
-              step="0.01"
-            >
-          </div>
-
-          <label class="check-field">
-            <input type="checkbox" name="variant_is_available" value="${variantCount}" checked>
-            <span>Variant Available</span>
-          </label>
-        </div>
-      </div>
-    `;
-
-    variantsList.appendChild(card);
-
-    setupImagePreview(variantImageId);
-
-    const variantColorPicker = document.getElementById(variantColorPickerId);
-    const variantColorText = document.getElementById(variantColorTextId);
-
-    if (variantColorPicker && variantColorText) {
-      variantColorPicker.addEventListener("input", function () {
-        variantColorText.value = this.value;
-      });
-
-      variantColorText.addEventListener("input", function () {
-        if (/^#[0-9A-Fa-f]{6}$/.test(this.value.trim())) {
-          variantColorPicker.value = this.value.trim();
-        }
-      });
-    }
-
-    const removeBtn = card.querySelector(".remove-variant-btn");
-    removeBtn.addEventListener("click", function () {
-      card.remove();
-      refreshVariantTitles();
-    });
-  }
-
-  function refreshVariantTitles() {
-    const cards = variantsList.querySelectorAll(".variant-card");
-
-    cards.forEach((card, index) => {
-      const title = card.querySelector(".variant-card__title");
-      if (title) {
-        title.textContent = `Variant ${index + 1}`;
-      }
-    });
-  }
-
-  addVariantBtn.addEventListener("click", createVariantCard);
-
-  const productForm = document.querySelector(".product-form");
-  const saveBtn = document.querySelector(".save-btn");
-  const savingOverlay = document.getElementById("savingOverlay");
-  const savingStatus = document.getElementById("savingStatus");
-  const clientErrorBox = document.getElementById("clientErrorBox");
-
-  const sequentialImageInputs = [
-    { inputId: "arrivalCardImage", fieldName: "arrival_card_image", label: "New Arrival image" },
-    { inputId: "topShowcaseImage", fieldName: "top_showcase_image", label: "Top carousel image" },
-    { inputId: "subImage1", fieldName: "sub_image_1", label: "Sub image 1" },
-    { inputId: "subImage2", fieldName: "sub_image_2", label: "Sub image 2" },
-    { inputId: "subImage3", fieldName: "sub_image_3", label: "Sub image 3" }
-  ];
-
-  function showClientError(message, errors) {
-    if (!clientErrorBox) {
-      alert(message);
-      return;
-    }
-
-    let html = `<strong>${message}</strong>`;
-
-    if (errors) {
-      html += "<ul>";
-
-      Object.keys(errors).forEach((fieldName) => {
-        const fieldErrors = errors[fieldName] || [];
-        fieldErrors.forEach((error) => {
-          html += `<li><strong>${fieldName}:</strong> ${error}</li>`;
-        });
-      });
-
-      html += "</ul>";
-    }
-
-    clientErrorBox.innerHTML = html;
-    clientErrorBox.classList.add("is-visible");
-    clientErrorBox.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
-  function clearClientError() {
-    if (!clientErrorBox) return;
-
-    clientErrorBox.innerHTML = "";
-    clientErrorBox.classList.remove("is-visible");
-  }
-
-  function setSavingStatus(message) {
-    if (savingStatus) {
-      savingStatus.textContent = message;
-    }
-  }
-
-  function showSavingOverlay(message) {
-    setSavingStatus(message);
-
-    if (savingOverlay) {
-      savingOverlay.classList.add("is-visible");
-      savingOverlay.setAttribute("aria-hidden", "false");
-    }
-
-    if (saveBtn) {
-      saveBtn.disabled = true;
-      saveBtn.textContent = "Saving...";
-    }
-  }
-
-  function hideSavingOverlay() {
-    if (savingOverlay) {
-      savingOverlay.classList.remove("is-visible");
-      savingOverlay.setAttribute("aria-hidden", "true");
-    }
-
-    if (saveBtn) {
-      saveBtn.disabled = false;
-      saveBtn.textContent = "Save Product";
-    }
-  }
-
-  function validateSelectedImagesBeforeUpload() {
-    const maxBytes = 5 * 1024 * 1024;
-    const inputsToCheck = ["mainImage", "arrivalCardImage", "topShowcaseImage", "subImage1", "subImage2", "subImage3"];
-
-    for (const inputId of inputsToCheck) {
-      const input = document.getElementById(inputId);
-      const file = input && input.files && input.files[0];
-
-      if (!file) continue;
-
-      if (!file.type.startsWith("image/")) {
-        throw new Error("Please select image files only.");
-      }
-
-      if (file.size > maxBytes) {
-        throw new Error(`${file.name} is above 5MB. Please upload an image below 5MB.`);
-      }
-    }
-  }
-
-  function getSelectedSequentialImages() {
-    return sequentialImageInputs
-      .map((item) => {
-        const input = document.getElementById(item.inputId);
-        const file = input && input.files && input.files[0];
-
-        if (!file) return null;
-
-        return {
-          ...item,
-          file
-        };
-      })
-      .filter(Boolean);
-  }
-
-  function buildProductCreateFormData() {
-    const formData = new FormData(productForm);
-
-    sequentialImageInputs.forEach((item) => {
-      formData.delete(item.fieldName);
-    });
-
-    // Variant image handling can be connected later with separate variant upload flow.
-    formData.delete("variant_images");
-
-    return formData;
-  }
-
-  async function createProductFirst() {
-    const response = await fetch(productForm.action, {
-      method: "POST",
-      body: buildProductCreateFormData(),
-      headers: {
-        "X-Requested-With": "XMLHttpRequest"
-      }
-    });
-
-    let data = null;
-
-    try {
-      data = await response.json();
-    } catch (error) {
-      throw new Error("Server returned an invalid response. Please try again.");
-    }
-
-    if (!response.ok || !data.ok) {
-      const error = new Error(data.message || "Product save failed.");
-      error.errors = data.errors;
-      throw error;
-    }
-
-    return data.product_id;
-  }
-
-  async function uploadSingleImage(productId, imageItem, index, total) {
-    const uploadUrlTemplate = productForm.dataset.uploadUrlTemplate;
-    const uploadUrl = uploadUrlTemplate.replace("/0/", `/${productId}/`);
-
-    const formData = new FormData();
-    formData.append("csrfmiddlewaretoken", document.querySelector("[name=csrfmiddlewaretoken]").value);
-    formData.append("field_name", imageItem.fieldName);
-    formData.append("image", imageItem.file);
-
-    setSavingStatus(`Uploading ${imageItem.label} (${index + 1}/${total})...`);
-
-    const response = await fetch(uploadUrl, {
-      method: "POST",
-      body: formData,
-      headers: {
-        "X-Requested-With": "XMLHttpRequest"
-      }
-    });
-
-    let data = null;
-
-    try {
-      data = await response.json();
-    } catch (error) {
-      throw new Error(`${imageItem.label} upload failed. Invalid server response.`);
-    }
-
-    if (!response.ok || !data.ok) {
-      throw new Error(data.message || `${imageItem.label} upload failed.`);
-    }
-
-    return data;
-  }
-
-  if (productForm) {
-    productForm.addEventListener("submit", async function (event) {
-      event.preventDefault();
-      clearClientError();
-
-      try {
-        validateSelectedImagesBeforeUpload();
-
-        showSavingOverlay("Saving product details and main image...");
-
-        const selectedImages = getSelectedSequentialImages();
-        const productId = await createProductFirst();
-
-        for (let index = 0; index < selectedImages.length; index += 1) {
-          await uploadSingleImage(productId, selectedImages[index], index, selectedImages.length);
-        }
-
-        setSavingStatus("Product saved successfully. Redirecting...");
-        window.location.href = productForm.dataset.successUrl;
-
-      } catch (error) {
-        hideSavingOverlay();
-        showClientError(error.message || "Something went wrong. Please try again.", error.errors);
-      }
-    });
-  }
-
-</script>
 
 </body>
 </html>

@@ -15,9 +15,6 @@
   <link rel="canonical" href="https://pallavipapacollections.online/">
 {% endblock %}
 
-{% block extra_css %}
-  <link rel="stylesheet" href="{% static 'store/css/user_home.css' %}">
-{% endblock %}
 
 
 {% block content %}
@@ -29,9 +26,9 @@
 
   {# Shop by Collection section #}
   {% include "store/user_homepage/partials/collection_discovery.html" with collection_page_url=collection_page_url collection_focus="shop" %}
+  {% include "store/user_homepage/partials/popular_items.html" %}
 
   {% include "store/user_homepage/partials/shop_by_price.html" %}
-
   {# New Arrivals section #}
   {% include "store/user_homepage/partials/new_arrivals_preview.html" with collection_page_url=collection_page_url collection_focus="new" %}
 
@@ -42,7 +39,8 @@
 
 
   {% include "store/user_homepage/partials/top_sale_products.html" %}
-  {% include "store/user_homepage/partials/watch_and_buy_slider.html" %}
+  {% include "store/user_homepage/partials/homepage_promo_banner.html" %}
+  {% include "store/user_homepage/partials/special_offers.html" %}
   {% include "store/user_homepage/partials/how_to_order.html" %}
   {% include "store/user_homepage/partials/why_choose_pallavi.html" %}
   {% include "store/user_homepage/partials/featured_collection_slider.html" %}

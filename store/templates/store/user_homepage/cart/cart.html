@@ -1,0 +1,726 @@
+{% load static %}
+{% url 'store:collections' as collections_url %}
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your Cart | Pallavi Papa Sarees Collections</title>
+</head>
+
+<body class="cart-template">
+  {% include "store/partials/header.html" %}
+
+  <main class="cart-page">
+    <section class="cart-wrap">
+
+      <div class="cart-head">
+        <span>Shopping Cart</span>
+        <h1>Your Cart</h1>
+        <p>Review your selected products before ordering on WhatsApp.</p>
+      </div>
+
+      <div class="cart-layout">
+
+        <div class="cart-main">
+          <div class="cart-items" data-cart-items></div>
+
+          <div class="cart-empty" data-cart-empty hidden>
+            <h2>Your cart is empty</h2>
+            <p>Add sarees from collections and come back here to order on WhatsApp.</p>
+            <a href="{{ collections_url }}">Start Shopping</a>
+          </div>
+        </div>
+
+        <aside class="cart-summary">
+          <h2>Order Summary</h2>
+
+          <div class="cart-summary-row">
+            <span>Items</span>
+            <strong data-cart-summary-count>0</strong>
+          </div>
+
+          <div class="cart-summary-row">
+            <span>Subtotal</span>
+            <strong>₹<span data-cart-subtotal>0</span></strong>
+          </div>
+
+          <div class="cart-summary-note">
+            Delivery charges and final availability will be confirmed on WhatsApp.
+          </div>
+
+          <a
+            href="#"
+            target="_blank"
+            rel="noopener"
+            class="cart-whatsapp is-disabled"
+            data-cart-whatsapp
+          >
+            Order on WhatsApp
+          </a>
+
+          <a href="{{ collections_url }}" class="cart-continue">
+            Continue Shopping
+          </a>
+        </aside>
+
+      </div>
+
+    </section>
+  </main>
+
+  {% include "store/user_homepage/partials/site_footer.html" %}
+
+  <style>
+    .cart-template {
+      margin: 0;
+      background: #fffaf5;
+      color: #261c1f;
+    }
+
+    .cart-page,
+    .cart-page * {
+      box-sizing: border-box;
+    }
+
+    .cart-page {
+      min-height: 70vh;
+      padding: clamp(16px, 3vw, 28px) 0 20px;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(23, 107, 77, .08), transparent 28%),
+        radial-gradient(circle at 90% 10%, rgba(189, 75, 105, .08), transparent 26%),
+        linear-gradient(180deg, #fffaf5 0%, #f7eee8 100%);
+      overflow-x: hidden;
+    }
+
+    .cart-wrap {
+      width: min(100% - clamp(16px, 4vw, 56px), 1120px);
+      margin-inline: auto;
+    }
+
+    .cart-head {
+      margin-bottom: 16px;
+    }
+
+    .cart-head span {
+      display: inline-flex;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(23, 107, 77, .10);
+      color: #0d4c36;
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .cart-head h1 {
+      margin: 10px 0 6px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(30px, 5vw, 52px);
+      line-height: .98;
+      letter-spacing: -.04em;
+      color: #24191b;
+    }
+
+    .cart-head p {
+      margin: 0;
+      max-width: 620px;
+      color: #6b6062;
+      font-size: clamp(13px, 1.3vw, 15px);
+      line-height: 1.5;
+    }
+
+    .cart-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .cart-main,
+    .cart-items {
+      min-width: 0;
+    }
+
+    .cart-items {
+      display: grid;
+      gap: 12px;
+    }
+
+    .cart-item {
+      position: relative;
+      display: grid;
+      grid-template-columns: 116px minmax(0, 1fr);
+      gap: 14px;
+      padding: 12px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(35,35,35,.08);
+      box-shadow: 0 10px 24px rgba(46,30,26,.07);
+    }
+
+    .cart-item-img {
+      width: 100%;
+      aspect-ratio: 4 / 5;
+      border-radius: 16px;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 15%, rgba(255,255,255,.62), transparent 22%),
+        linear-gradient(135deg, #cfe8d7, #176b4d);
+    }
+
+    .cart-item-img img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center top;
+    }
+
+    .cart-item-info {
+      min-width: 0;
+      padding: 4px 32px 4px 0;
+    }
+
+    .cart-item-info h2 {
+      margin: 0 0 5px;
+      color: #24191b;
+      font-size: clamp(15px, 1.6vw, 19px);
+      line-height: 1.15;
+      font-weight: 750;
+    }
+
+    .cart-item-title {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .cart-item-title:hover {
+      color: #176b4d;
+    }
+
+    .cart-item-info p {
+      margin: 0;
+      color: #6f6568;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .cart-item-bottom {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .cart-item-bottom strong {
+      color: #0d4c36;
+      font-size: 18px;
+      line-height: 1;
+      font-weight: 850;
+    }
+
+    .cart-qty {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      border-radius: 999px;
+      background: #f6eee8;
+      border: 1px solid rgba(35,35,35,.08);
+      overflow: hidden;
+    }
+
+    .cart-qty button {
+      width: 32px;
+      height: 32px;
+      border: 0;
+      background: transparent;
+      color: #24191b;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .cart-qty span {
+      min-width: 26px;
+      text-align: center;
+      color: #24191b;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .cart-remove {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 28px;
+      height: 28px;
+      border: 0;
+      border-radius: 999px;
+      background: rgba(189,75,105,.10);
+      color: #8d2945;
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .cart-summary {
+      position: sticky;
+      top: 82px;
+      padding: 18px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.90);
+      border: 1px solid rgba(35,35,35,.08);
+      box-shadow: 0 12px 28px rgba(46,30,26,.08);
+    }
+
+    .cart-summary h2 {
+      margin: 0 0 14px;
+      color: #24191b;
+      font-size: 20px;
+      line-height: 1.1;
+    }
+
+    .cart-summary-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(35,35,35,.08);
+      color: #62595b;
+      font-size: 14px;
+    }
+
+    .cart-summary-row strong {
+      color: #24191b;
+      font-weight: 850;
+    }
+
+    .cart-summary-note {
+      margin: 14px 0;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(23,107,77,.08);
+      color: #0d4c36;
+      font-size: 12px;
+      line-height: 1.45;
+      font-weight: 600;
+    }
+
+    .cart-whatsapp,
+    .cart-continue {
+      min-height: 42px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .cart-whatsapp {
+      background: linear-gradient(135deg, #176b4d, #0d4c36);
+      color: #ffffff;
+      box-shadow: 0 10px 20px rgba(23,107,77,.18);
+    }
+
+    .cart-whatsapp.is-disabled {
+      opacity: .55;
+      pointer-events: none;
+    }
+
+    .cart-continue {
+      margin-top: 10px;
+      background: #ffffff;
+      color: #0d4c36;
+      border: 1px solid rgba(23,107,77,.16);
+    }
+
+    .cart-empty {
+      padding: 30px 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,.88);
+      border: 1px solid rgba(35,35,35,.08);
+      box-shadow: 0 10px 24px rgba(46,30,26,.07);
+      text-align: center;
+    }
+
+    .cart-empty h2 {
+      margin: 0 0 8px;
+      color: #24191b;
+      font-size: clamp(22px, 3vw, 28px);
+      line-height: 1.1;
+    }
+
+    .cart-empty p {
+      max-width: 420px;
+      margin: 0 auto 16px;
+      color: #6b6062;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .cart-empty a {
+      min-height: 40px;
+      padding: 0 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      background: linear-gradient(135deg, #176b4d, #0d4c36);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    @media (max-width: 820px) {
+      .cart-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .cart-summary {
+        position: static;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .cart-wrap {
+        width: min(100% - 14px, 620px);
+      }
+
+      .cart-head h1 {
+        font-size: clamp(32px, 12vw, 46px);
+      }
+
+      .cart-item {
+        grid-template-columns: 92px minmax(0, 1fr);
+        gap: 11px;
+        padding: 10px;
+        border-radius: 18px;
+      }
+
+      .cart-item-img {
+        border-radius: 14px;
+      }
+
+      .cart-item-info {
+        padding-right: 28px;
+      }
+
+      .cart-item-bottom {
+        margin-top: 12px;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .cart-summary {
+        padding: 15px;
+        border-radius: 20px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      .cart-item {
+        grid-template-columns: 82px minmax(0, 1fr);
+      }
+
+      .cart-item-info h2 {
+        font-size: 14px;
+      }
+
+      .cart-item-bottom strong {
+        font-size: 16px;
+      }
+
+      .cart-qty button {
+        width: 29px;
+        height: 29px;
+      }
+    }
+  </style>
+
+  <script>
+    (function () {
+      const cartItemsEl = document.querySelector("[data-cart-items]");
+      const emptyEl = document.querySelector("[data-cart-empty]");
+      const countEl = document.querySelector("[data-cart-summary-count]");
+      const subtotalEl = document.querySelector("[data-cart-subtotal]");
+      const whatsappEl = document.querySelector("[data-cart-whatsapp]");
+
+      const WHATSAPP_NUMBER = "918333895789";
+
+      function getCart() {
+        try {
+          const cart = JSON.parse(localStorage.getItem("pp_cart") || "[]");
+          return Array.isArray(cart) ? cart : [];
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function saveCart(cart) {
+        localStorage.setItem("pp_cart", JSON.stringify(cart));
+        window.dispatchEvent(new Event("pp-cart-updated"));
+      }
+
+      function money(value) {
+        return Number(value || 0).toLocaleString("en-IN");
+      }
+
+      function safeText(value) {
+        return String(value || "");
+      }
+
+      function getProductLink(url) {
+        const rawUrl = safeText(url);
+
+        if (!rawUrl) return "";
+
+        if (rawUrl.startsWith("http://") || rawUrl.startsWith("https://")) {
+          return rawUrl;
+        }
+
+        if (rawUrl.startsWith("/")) {
+          return window.location.origin + rawUrl;
+        }
+
+        return window.location.origin + "/" + rawUrl;
+      }
+
+      function getAbsoluteUrl(url) {
+        const rawUrl = safeText(url);
+
+        if (!rawUrl) return "";
+
+        if (rawUrl.startsWith("http://") || rawUrl.startsWith("https://")) {
+          return rawUrl;
+        }
+
+        if (rawUrl.startsWith("/")) {
+          return window.location.origin + rawUrl;
+        }
+
+        return window.location.origin + "/" + rawUrl;
+      }
+
+      function buildWhatsappLink(cart, subtotal) {
+        const lines = [
+          "Hi Pallavi Papa Collections,",
+          "I want to order these products from your website cart:",
+          ""
+        ];
+
+        cart.forEach(function (item, index) {
+          const name = safeText(item.name || "Product");
+          const category = safeText(item.category || "Pallavi Papa Collection");
+          const qty = Number(item.qty || 1);
+          const price = Number(item.price || 0);
+          const productLink = getAbsoluteUrl(item.url);
+          const imageLink = getAbsoluteUrl(item.image);
+
+          lines.push(`${index + 1}. ${name}`);
+          lines.push(`Category: ${category}`);
+          lines.push(`Qty: ${qty}`);
+          lines.push(`Price: ₹${money(price)}`);
+
+          if (productLink) {
+            lines.push(`Product Link: ${productLink}`);
+          }
+
+          if (imageLink) {
+            lines.push(`Image: ${imageLink}`);
+          }
+
+          lines.push("");
+        });
+
+        lines.push(`Subtotal: ₹${money(subtotal)}`);
+        lines.push("Source: Website Cart");
+
+        return `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(lines.join("\n"))}`;
+      }
+      
+      
+      function createCartItem(item) {
+        const article = document.createElement("article");
+        article.className = "cart-item";
+        article.dataset.id = safeText(item.id);
+        article.dataset.price = Number(item.price || 0);
+
+        const imageWrap = document.createElement("div");
+        imageWrap.className = "cart-item-img";
+
+        if (item.image) {
+          const img = document.createElement("img");
+          img.src = item.image;
+          img.alt = safeText(item.name || "Cart product");
+          img.loading = "lazy";
+          imageWrap.appendChild(img);
+        }
+
+        const info = document.createElement("div");
+        info.className = "cart-item-info";
+
+        const title = document.createElement("h2");
+
+        if (item.url) {
+          const titleLink = document.createElement("a");
+          titleLink.href = item.url;
+          titleLink.className = "cart-item-title";
+          titleLink.textContent = safeText(item.name || "Product");
+          title.appendChild(titleLink);
+        } else {
+          title.textContent = safeText(item.name || "Product");
+        }
+
+        const category = document.createElement("p");
+        category.textContent = safeText(item.category || "Pallavi Papa Collection");
+
+        const bottom = document.createElement("div");
+        bottom.className = "cart-item-bottom";
+
+        const price = document.createElement("strong");
+        price.textContent = "₹" + money(item.price);
+
+        const qtyBox = document.createElement("div");
+        qtyBox.className = "cart-qty";
+
+        const minusBtn = document.createElement("button");
+        minusBtn.type = "button";
+        minusBtn.textContent = "-";
+        minusBtn.setAttribute("data-qty-minus", "");
+
+        const qtyValue = document.createElement("span");
+        qtyValue.textContent = Number(item.qty || 1);
+        qtyValue.setAttribute("data-qty-value", "");
+
+        const plusBtn = document.createElement("button");
+        plusBtn.type = "button";
+        plusBtn.textContent = "+";
+        plusBtn.setAttribute("data-qty-plus", "");
+
+        qtyBox.appendChild(minusBtn);
+        qtyBox.appendChild(qtyValue);
+        qtyBox.appendChild(plusBtn);
+
+        bottom.appendChild(price);
+        bottom.appendChild(qtyBox);
+
+        info.appendChild(title);
+        info.appendChild(category);
+        info.appendChild(bottom);
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "cart-remove";
+        removeBtn.setAttribute("aria-label", "Remove item");
+        removeBtn.textContent = "×";
+
+        article.appendChild(imageWrap);
+        article.appendChild(info);
+        article.appendChild(removeBtn);
+
+        minusBtn.addEventListener("click", function () {
+          updateQty(item.id, -1);
+        });
+
+        plusBtn.addEventListener("click", function () {
+          updateQty(item.id, 1);
+        });
+
+        removeBtn.addEventListener("click", function () {
+          removeItem(item.id);
+        });
+
+        return article;
+      }
+
+      function updateQty(productId, change) {
+        const cart = getCart();
+
+        const updatedCart = cart.reduce(function (acc, item) {
+          if (String(item.id) === String(productId)) {
+            const currentQty = Math.max(1, Number(item.qty || 1));
+            const nextQty = currentQty + change;
+
+            if (nextQty <= 0) {
+              return acc;
+            }
+
+            acc.push({
+              ...item,
+              qty: nextQty
+            });
+
+            return acc;
+          }
+
+          acc.push(item);
+          return acc;
+        }, []);
+
+        saveCart(updatedCart);
+        renderCart();
+      }
+
+      function removeItem(productId) {
+        const cart = getCart().filter(function (item) {
+          return String(item.id) !== String(productId);
+        });
+
+        saveCart(cart);
+        renderCart();
+      }
+
+      function renderCart() {
+        const cart = getCart();
+
+        if (!cartItemsEl) return;
+
+        cartItemsEl.innerHTML = "";
+
+        let totalQty = 0;
+        let subtotal = 0;
+
+        cart.forEach(function (item) {
+          const qty = Number(item.qty || 1);
+          const price = Number(item.price || 0);
+
+          totalQty += qty;
+          subtotal += price * qty;
+
+          cartItemsEl.appendChild(createCartItem(item));
+        });
+
+        if (countEl) countEl.textContent = totalQty;
+        if (subtotalEl) subtotalEl.textContent = money(subtotal);
+
+        if (emptyEl) {
+          emptyEl.hidden = cart.length > 0;
+        }
+
+        cartItemsEl.hidden = cart.length === 0;
+
+        if (whatsappEl) {
+          if (cart.length > 0) {
+            whatsappEl.href = buildWhatsappLink(cart, subtotal);
+            whatsappEl.classList.remove("is-disabled");
+          } else {
+            whatsappEl.href = "#";
+            whatsappEl.classList.add("is-disabled");
+          }
+        }
+      }
+
+      renderCart();
+    })();
+  </script>
+</body>
+</html>

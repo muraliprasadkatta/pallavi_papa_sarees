@@ -1,6 +1,8 @@
+{% url 'store:product_detail' p.id as product_detail_url %}
+
 <article class="product-card">
   <a
-    href="{% url 'store:product_detail' p.id %}"
+    href="{{ product_detail_url }}"
     class="product-card-click"
     aria-label="View {{ p.name }}"
   ></a>
@@ -20,7 +22,18 @@
       <span class="product-offer">New</span>
     {% endif %}
 
-    <button class="product-heart" type="button" aria-label="Add to wishlist">
+    <button
+      class="product-heart"
+      type="button"
+      aria-label="Add to wishlist"
+      data-favorite-toggle
+      data-product-id="{{ p.id }}"
+      data-product-name="{{ p.name }}"
+      data-product-category="{{ p.get_category_display }}"
+      data-product-price="{% if p.offer_price %}{{ p.offer_price|floatformat:0 }}{% else %}{{ p.actual_price|floatformat:0 }}{% endif %}"
+      data-product-image="{% if p.main_image %}{{ p.main_image.url }}{% endif %}"
+      data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
+    >
       ♥
     </button>
   </div>
@@ -29,7 +42,7 @@
     <h3>{{ p.name }}</h3>
 
     <p class="product-category">
-      {% if p.category %}{{ p.category.name }}{% endif %}
+      {{ p.get_category_display }}
     </p>
 
     <div class="product-price">
