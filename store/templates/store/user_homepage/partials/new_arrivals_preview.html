@@ -18,19 +18,19 @@
         {% for p in new_arrivals %}
           <a
             class="arrival-product"
-            href="{{ collections_url }}?focus=new"
+            href="{% url 'store:product_detail' p.id %}"
             style="--card-bg: url('{% static 'store/user_home/new_arrivals/arrival_card_bg.webp' %}');"
           >
-          {% if p.arrival_card_image or p.main_image %}
-            <div class="arrival-image-box">
-              <img
-                src="{% if p.arrival_card_image %}{{ p.arrival_card_image.url }}{% else %}{{ p.main_image.url }}{% endif %}"
-                alt="{{ p.name }}"
-                loading="lazy"
-                decoding="async"
-              >
-            </div>
-          {% endif %}
+            {% if p.arrival_card_image or p.main_image %}
+              <div class="arrival-image-box">
+                <img
+                  src="{% if p.arrival_card_image %}{{ p.arrival_card_image.url }}{% else %}{{ p.main_image.url }}{% endif %}"
+                  alt="{{ p.name }}"
+                  loading="lazy"
+                  decoding="async"
+                >
+              </div>
+            {% endif %}
 
             <div class="arrival-panel">
               <span class="arrival-pill">New ✨</span>
@@ -39,7 +39,13 @@
 
               <i class="arrival-line" aria-hidden="true"></i>
 
-              <p>{{ p.get_category_display }}</p>
+              <p>
+                {% if p.category %}
+                  {{ p.category.name }}
+                {% else %}
+                  Collection
+                {% endif %}
+              </p>
 
               <span class="arrival-cta">
                 View Now <b>›</b>
@@ -47,7 +53,6 @@
             </div>
           </a>
         {% endfor %}
-
       </div>
     {% else %}
       <div class="arrival-empty">

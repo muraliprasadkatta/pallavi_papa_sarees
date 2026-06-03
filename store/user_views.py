@@ -1,16 +1,13 @@
 from decimal import Decimal
-from urllib import request
 
 from django.db.models import Q
 from django.db.models.functions import Coalesce
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
-from django.http import HttpResponse
-
-
 
 from .models import Category, Product
+
 
 def user_home_view(request):
     new_arrivals = (
@@ -45,14 +42,16 @@ def user_home_view(request):
             "actual_price",
             "offer_price",
             "main_image",
+            "arrival_card_image",
             "created_at",
         )
         .order_by("-created_at")[:8]
     )
 
-    # Homepage starting lo low-budget 4 sarees chupinchadaniki.
+    # Popular Items section:
     # offer_price unte offer_price base, lekapothe actual_price base.
-    featured_sarees = (
+    # Low price + latest products first 4 chupisthundhi.
+    popular_items = (
         Product.objects
         .select_related("category")
         .filter(is_available=True)
@@ -67,6 +66,7 @@ def user_home_view(request):
             "actual_price",
             "offer_price",
             "main_image",
+            "arrival_card_image",
             "created_at",
         )
         .order_by("display_price", "-created_at")[:4]
@@ -114,14 +114,13 @@ def user_home_view(request):
     context = {
         "new_arrivals": new_arrivals,
         "latest_products": latest_products,
-        "featured_sarees": featured_sarees,
+        "popular_items": popular_items,
         "top_selling_products": top_selling_products,
         "most_liked_products": most_liked_products,
         "most_carted_products": most_carted_products,
     }
 
     return render(request, "store/user_homepage/user_home.html", context)
-
 
 
 def collections_page(request):
@@ -192,9 +191,14 @@ def collections_page(request):
             "category__slug",
             "material",
             "description",
+            "color_name",
+            "color_code",
+            "product_size",
+            "stock_quantity",
             "actual_price",
             "offer_price",
             "main_image",
+            "arrival_card_image",
             "is_available",
             "is_new_arrival",
             "created_at",
@@ -288,6 +292,8 @@ def collections_page(request):
             "actual_price",
             "offer_price",
             "main_image",
+            "arrival_card_image",
+            "is_new_arrival",
             "created_at",
         )
         .order_by("-created_at")[:4]
@@ -382,6 +388,7 @@ def product_detail_view(request, product_id):
         "actual_price",
         "offer_price",
         "main_image",
+        "arrival_card_image",
         "is_new_arrival",
         "created_at",
     )
@@ -424,7 +431,6 @@ def about_contact_page(request):
         request,
         "store/user_homepage/partials/about_contact/about_contact.html",
     )
-
 
 
 def cart_page(request):

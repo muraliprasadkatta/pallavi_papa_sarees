@@ -1,57 +1,137 @@
 {% url 'store:product_detail' p.id as product_detail_url %}
 
-<article class="product-card">
-  <a
-    href="{{ product_detail_url }}"
-    class="product-card-click"
-    aria-label="View {{ p.name }}"
-  ></a>
+{% if p.arrival_card_image %}
+  {% with card_image=p.arrival_card_image %}
+    <article class="product-card">
+      <a
+        href="{{ product_detail_url }}"
+        class="product-card-click"
+        aria-label="View {{ p.name }}"
+      ></a>
 
-  <div class="product-media">
-    {% if p.main_image %}
-      <img
-        src="{{ p.main_image.url }}"
-        alt="{{ p.name }}"
-        loading="lazy"
-      >
-    {% endif %}
+      <div class="product-media">
+        <img
+          src="{{ card_image.url }}"
+          alt="{{ p.name }}"
+          loading="lazy"
+        >
 
-    {% if p.offer_price %}
-      <span class="product-offer">Offer</span>
-    {% elif p.is_new_arrival %}
-      <span class="product-offer">New</span>
-    {% endif %}
+        {% if p.has_offer %}
+          <span class="product-offer">
+            {% if p.discount_percentage %}
+              {{ p.discount_percentage }}% Off
+            {% else %}
+              Offer
+            {% endif %}
+          </span>
+        {% elif p.is_new_arrival %}
+          <span class="product-offer">New</span>
+        {% endif %}
 
-    <button
-      class="product-heart"
-      type="button"
-      aria-label="Add to wishlist"
-      data-favorite-toggle
-      data-product-id="{{ p.id }}"
-      data-product-name="{{ p.name }}"
-      data-product-category="{{ p.get_category_display }}"
-      data-product-price="{% if p.offer_price %}{{ p.offer_price|floatformat:0 }}{% else %}{{ p.actual_price|floatformat:0 }}{% endif %}"
-      data-product-image="{% if p.main_image %}{{ p.main_image.url }}{% endif %}"
-      data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
-    >
-      ♥
-    </button>
-  </div>
+        <button
+          class="product-heart"
+          type="button"
+          aria-label="Add to wishlist"
+          data-favorite-toggle
+          data-product-id="{{ p.id }}"
+          data-product-name="{{ p.name }}"
+          data-product-category="{% if p.category %}{{ p.category.name }}{% endif %}"
+          data-product-price="{% if p.offer_price %}{{ p.offer_price|floatformat:0 }}{% else %}{{ p.actual_price|floatformat:0 }}{% endif %}"
+          data-product-image="{{ card_image.url }}"
+          data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
+        >
+          ♥
+        </button>
+      </div>
 
-  <div class="product-info">
-    <h3>{{ p.name }}</h3>
+      <div class="product-info">
+        <h3>{{ p.name }}</h3>
 
-    <p class="product-category">
-      {{ p.get_category_display }}
-    </p>
+        <p class="product-category">
+          {% if p.category %}
+            {{ p.category.name }}
+          {% else %}
+            Collection
+          {% endif %}
+        </p>
 
-    <div class="product-price">
-      {% if p.offer_price %}
-        <strong>₹{{ p.offer_price|floatformat:0 }}</strong>
-        <del>₹{{ p.actual_price|floatformat:0 }}</del>
-      {% else %}
-        <strong>₹{{ p.actual_price|floatformat:0 }}</strong>
-      {% endif %}
-    </div>
-  </div>
-</article>
+        <div class="product-price">
+          {% if p.has_offer %}
+            <strong>₹{{ p.offer_price|floatformat:0 }}</strong>
+            <del>₹{{ p.actual_price|floatformat:0 }}</del>
+          {% else %}
+            <strong>₹{{ p.actual_price|floatformat:0 }}</strong>
+          {% endif %}
+        </div>
+      </div>
+    </article>
+  {% endwith %}
+{% else %}
+  {% with card_image=p.main_image %}
+    <article class="product-card">
+      <a
+        href="{{ product_detail_url }}"
+        class="product-card-click"
+        aria-label="View {{ p.name }}"
+      ></a>
+
+      <div class="product-media">
+        {% if card_image %}
+          <img
+            src="{{ card_image.url }}"
+            alt="{{ p.name }}"
+            loading="lazy"
+          >
+        {% endif %}
+
+        {% if p.has_offer %}
+          <span class="product-offer">
+            {% if p.discount_percentage %}
+              {{ p.discount_percentage }}% Off
+            {% else %}
+              Offer
+            {% endif %}
+          </span>
+        {% elif p.is_new_arrival %}
+          <span class="product-offer">New</span>
+        {% endif %}
+
+        <button
+          class="product-heart"
+          type="button"
+          aria-label="Add to wishlist"
+          data-favorite-toggle
+          data-product-id="{{ p.id }}"
+          data-product-name="{{ p.name }}"
+          data-product-category="{% if p.category %}{{ p.category.name }}{% endif %}"
+          data-product-price="{% if p.offer_price %}{{ p.offer_price|floatformat:0 }}{% else %}{{ p.actual_price|floatformat:0 }}{% endif %}"
+          data-product-image="{% if card_image %}{{ card_image.url }}{% endif %}"
+          data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
+        >
+          ♥
+        </button>
+      </div>
+
+      <div class="product-info">
+        <h3>{{ p.name }}</h3>
+
+        <p class="product-category">
+          {% if p.category %}
+            {{ p.category.name }}
+          {% else %}
+            Collection
+          {% endif %}
+        </p>
+
+        <div class="product-price">
+          {% if p.has_offer %}
+            <strong>₹{{ p.offer_price|floatformat:0 }}</strong>
+            <del>₹{{ p.actual_price|floatformat:0 }}</del>
+          {% else %}
+            <strong>₹{{ p.actual_price|floatformat:0 }}</strong>
+          {% endif %}
+        </div>
+      </div>
+    </article>
+  {% endwith %}
+{% endif %}

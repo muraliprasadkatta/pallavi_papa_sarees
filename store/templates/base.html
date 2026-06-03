@@ -20,20 +20,23 @@
     <link rel="canonical" href="https://pallavipapacollections.online/">
   {% endblock %}
 
+  {% include "store/partials/page_loader_head.html" %}
+
   {% block extra_css %}{% endblock %}
 </head>
 
-<body>
-  <div class="page">
+<body class="{% block body_class %}{% endblock %}">
+  {% include "store/partials/page_loader.html" %}
 
+  <div class="page">
     {% include "store/partials/header.html" %}
 
-    <main class="main">
+    <main class="{% block main_class %}main{% endblock %}">
       {% block content %}{% endblock %}
     </main>
-
   </div>
 
+  {% block footer %}{% endblock %}
   {% block extra_js %}{% endblock %}
 </body>
 </html>

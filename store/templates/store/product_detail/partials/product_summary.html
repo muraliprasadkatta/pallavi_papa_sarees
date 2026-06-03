@@ -1,5 +1,10 @@
-<span class="pd-kicker">{{ product.get_category_display }}</span>
-
+<span class="pd-kicker">
+  {% if product.category %}
+    {{ product.category.name }}
+  {% else %}
+    Collection
+  {% endif %}
+</span>
 <h1 class="pd-title">{{ product.name }}</h1>
 
 <div class="pd-review-line">

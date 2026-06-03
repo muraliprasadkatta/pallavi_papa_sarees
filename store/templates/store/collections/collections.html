@@ -1,13 +1,12 @@
+{% extends "base.html" %}
 {% load static %}
 
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Collections • Pallavi Papa Sarees</title>
+{% block title %}Collections • Pallavi Papa Sarees{% endblock %}
 
-  <link rel="stylesheet" href="{% static 'store/css/collections.css' %}">
+{% block body_class %}collections-template{% endblock %}
+{% block main_class %}collections-page{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" href="{% static 'store/css/collections/product_card.css' %}">
 
   <style>
     html,
@@ -121,112 +120,9 @@
       stroke-linejoin: round;
     }
   </style>
-</head>
+{% endblock %}
 
-<body class="collections-template">
-  {% include "store/partials/header.html" %}
-<style>
-  /* Collections page only - scroll changing header for new header design */
-  body.collections-template {
-    --collectionHeaderFade: 0;
-  }
-
-  body.collections-template .site-header {
-    background:
-      radial-gradient(circle at 78% 22%, rgba(230, 157, 57, 0.18), transparent 25%),
-      radial-gradient(circle at 18% 16%, rgba(165, 33, 46, 0.26), transparent 24%),
-      linear-gradient(115deg, #37070a 0%, #5b0d12 42%, #260506 100%) !important;
-
-    border-bottom: none !important;
-    box-shadow:
-      0 8px 24px rgba(86, 8, 22, calc(var(--collectionHeaderFade) * 0.08)) !important;
-
-    overflow: hidden;
-    isolation: isolate;
-  }
-
-  /* Original light header overlay */
-  body.collections-template .site-header::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    opacity: var(--collectionHeaderFade);
-    background: rgba(255, 250, 247, 0.96);
-    backdrop-filter: blur(14px);
-    pointer-events: none;
-    transition: opacity 0.12s linear;
-  }
-
-  body.collections-template .header-inner {
-    position: relative;
-    z-index: 1;
-  }
-
-  body.collections-template .brand-center strong,
-  body.collections-template .brand-center small,
-  body.collections-template .header-icon,
-  body.collections-template .bag-count {
-    transition:
-      color 0.18s ease,
-      background 0.18s ease,
-      border-color 0.18s ease;
-  }
-
-  /* Card area lo unnappudu - white/cream header text */
-  body.collections-template .brand-center strong {
-    color: #fff8ef !important;
-  }
-
-  body.collections-template .brand-center small {
-    color: rgba(255, 248, 239, 0.78) !important;
-  }
-
-  body.collections-template .header-icon {
-    color: #fff8ef !important;
-  }
-
-  body.collections-template .bag-count {
-    color: #6d1518 !important;
-    background: #fff0bd !important;
-    border-color: rgba(255, 248, 239, 0.92) !important;
-  }
-
-  /* Hero card almost finish ayyaka - original header text */
-  body.collections-template .site-header.is-original-tone .brand-center strong {
-    color: #32191b !important;
-  }
-
-  body.collections-template .site-header.is-original-tone .brand-center small {
-    color: rgba(50, 25, 27, 0.70) !important;
-  }
-
-  body.collections-template .site-header.is-original-tone .header-icon {
-    color: #32191b !important;
-  }
-
-  body.collections-template .site-header.is-original-tone .bag-count {
-    color: #fff8ef !important;
-    background: #8f182d !important;
-    border-color: #fffaf7 !important;
-  }
-
-  /* Collections page only - menu icon ni back arrow la use cheyyadam */
-    body.collections-template .header-back svg {
-    width: clamp(25px, 4.4vw, 32px);
-    height: clamp(25px, 4.4vw, 32px);
-    }
-
-    body.collections-template .header-back svg path {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2.1;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    }
-</style>
-
-<main class="collections-page">
+{% block content %}
   {% include "store/collections/partials/collections_hero.html" %}
 
   {% if focus == "new" %}
@@ -250,179 +146,179 @@
     {% if products and new_arrivals %}
       {% include "store/collections/partials/new_arrivals.html" with new_arrivals=new_arrivals %}
     {% endif %}
+
   {% endif %}
-</main>
-{% include "store/user_homepage/partials/site_footer.html" %}
+{% endblock %}
 
+{% block footer %}
+  {% include "store/user_homepage/partials/site_footer.html" %}
+{% endblock %}
 
-
-<!-- add to favorites script - this script is added here because it is required in collections page and also in product details page. Adding it here ensures that it is available in both pages without needing to add it separately in product details page. This way we can maintain the favorite products functionality across the site with a single script. Also, since this script is not dependent on any specific HTML structure of the collections page, it can be safely included here without causing any issues in other parts of the site. -->
-<script>
-  (function () {
-    function getFavorites() {
-      try {
-        const favorites = JSON.parse(localStorage.getItem("pp_favorites") || "[]");
-        return Array.isArray(favorites) ? favorites : [];
-      } catch (error) {
-        return [];
-      }
-    }
-
-    function saveFavorites(favorites) {
-      localStorage.setItem("pp_favorites", JSON.stringify(favorites));
-      window.dispatchEvent(new Event("pp-favorites-updated"));
-    }
-
-    function isFavorite(productId) {
-      return getFavorites().some(function (item) {
-        return String(item.id) === String(productId);
-      });
-    }
-
-    function syncButton(button) {
-      const productId = String(button.dataset.productId || "");
-      const active = isFavorite(productId);
-
-      button.classList.toggle("is-favorited", active);
-      button.setAttribute("aria-pressed", active ? "true" : "false");
-      button.setAttribute("aria-label", active ? "Remove from wishlist" : "Add to wishlist");
-    }
-
-    function bindFavoriteButtons(root) {
-      const scope = root || document;
-      const favButtons = scope.querySelectorAll("[data-favorite-toggle]");
-
-      favButtons.forEach(function (button) {
-        if (button.dataset.favoriteBound === "1") {
-          syncButton(button);
-          return;
+{% block extra_js %}
+  <!-- add to favorites script -->
+  <script>
+    (function () {
+      function getFavorites() {
+        try {
+          const favorites = JSON.parse(localStorage.getItem("pp_favorites") || "[]");
+          return Array.isArray(favorites) ? favorites : [];
+        } catch (error) {
+          return [];
         }
+      }
 
-        button.dataset.favoriteBound = "1";
-        syncButton(button);
+      function saveFavorites(favorites) {
+        localStorage.setItem("pp_favorites", JSON.stringify(favorites));
+        window.dispatchEvent(new Event("pp-favorites-updated"));
+      }
 
-        button.addEventListener("click", function (event) {
-          event.preventDefault();
-          event.stopPropagation();
+      function isFavorite(productId) {
+        return getFavorites().some(function (item) {
+          return String(item.id) === String(productId);
+        });
+      }
 
-          const productId = String(button.dataset.productId || "").trim();
-          if (!productId) return;
+      function syncButton(button) {
+        const productId = String(button.dataset.productId || "");
+        const active = isFavorite(productId);
 
-          const favorites = getFavorites();
+        button.classList.toggle("is-favorited", active);
+        button.setAttribute("aria-pressed", active ? "true" : "false");
+        button.setAttribute("aria-label", active ? "Remove from wishlist" : "Add to wishlist");
+      }
 
-          const existingIndex = favorites.findIndex(function (item) {
-            return String(item.id) === productId;
-          });
+      function bindFavoriteButtons(root) {
+        const scope = root || document;
+        const favButtons = scope.querySelectorAll("[data-favorite-toggle]");
 
-          if (existingIndex >= 0) {
-            favorites.splice(existingIndex, 1);
-          } else {
-            favorites.push({
-              id: productId,
-              name: button.dataset.productName || "Product",
-              category: button.dataset.productCategory || "",
-              price: Number(button.dataset.productPrice || 0),
-              image: button.dataset.productImage || "",
-              url: button.dataset.productUrl || ""
-            });
+        favButtons.forEach(function (button) {
+          if (button.dataset.favoriteBound === "1") {
+            syncButton(button);
+            return;
           }
 
-          saveFavorites(favorites);
+          button.dataset.favoriteBound = "1";
           syncButton(button);
+
+          button.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const productId = String(button.dataset.productId || "").trim();
+            if (!productId) return;
+
+            const favorites = getFavorites();
+
+            const existingIndex = favorites.findIndex(function (item) {
+              return String(item.id) === productId;
+            });
+
+            if (existingIndex >= 0) {
+              favorites.splice(existingIndex, 1);
+            } else {
+              favorites.push({
+                id: productId,
+                name: button.dataset.productName || "Product",
+                category: button.dataset.productCategory || "",
+                price: Number(button.dataset.productPrice || 0),
+                image: button.dataset.productImage || "",
+                url: button.dataset.productUrl || ""
+              });
+            }
+
+            saveFavorites(favorites);
+            syncButton(button);
+          });
         });
-      });
-    }
-
-    bindFavoriteButtons(document);
-
-    const ajaxContent = document.getElementById("collectionsAjaxContent");
-    if (ajaxContent) {
-      const observer = new MutationObserver(function () {
-        bindFavoriteButtons(ajaxContent);
-      });
-
-      observer.observe(ajaxContent, {
-        childList: true,
-        subtree: true
-      });
-    }
-  })();
-</script>
-
-
-<!-- menuicon to back iconconverter -->
-  <script>
-  (function () {
-    const menuBtn = document.querySelector("body.collections-template .header-menu");
-    if (!menuBtn) return;
-
-    menuBtn.setAttribute("aria-label", "Back to home");
-    menuBtn.classList.add("header-back");
-
-    menuBtn.innerHTML = `
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M15 5L8 12l7 7"></path>
-      </svg>
-    `;
-
-    menuBtn.addEventListener("click", function (event) {
-      event.preventDefault();
-
-      /* exact navigation location */
-      window.location.href = "{% url 'store:user_home' %}";
-    });
-  })();
-</script>
-
-<script>
-  (function () {
-    const header = document.querySelector(".site-header");
-    const heroCard = document.querySelector(".collections-hero-card");
-
-    if (!header || !heroCard) return;
-
-    function clamp(value, min, max) {
-      return Math.min(Math.max(value, min), max);
-    }
-
-    function updateCollectionsHeader() {
-      const heroRect = heroCard.getBoundingClientRect();
-      const headerHeight = header.offsetHeight || 64;
-      const heroHeight = heroCard.offsetHeight || 260;
-
-      /*
-        Logic:
-        - Hero card header kinda unnappudu hero color
-        - Hero card ending ki last 15% remaining appudu transition start
-        - Card end header bottom ki reach avvaka mundhe full original color
-      */
-      const fadeZone = Math.max(45, heroHeight * 0.15);
-
-      /* 12px early finish = card end ki mundhe transform complete */
-      const finishEarlyPx = 12;
-
-      const remainingUnderHeader = heroRect.bottom - headerHeight;
-      const fade = clamp(
-        (fadeZone - (remainingUnderHeader - finishEarlyPx)) / fadeZone,
-        0,
-        1
-      );
-
-      document.body.style.setProperty("--collectionHeaderFade", fade.toFixed(3));
-
-      if (fade > 0.55) {
-        header.classList.add("is-original-tone");
-      } else {
-        header.classList.remove("is-original-tone");
       }
-    }
 
-    updateCollectionsHeader();
+      bindFavoriteButtons(document);
 
-    window.addEventListener("scroll", updateCollectionsHeader, { passive: true });
-    window.addEventListener("resize", updateCollectionsHeader);
-  })();
-</script>
-  
-</body>
-</html>
+      const ajaxContent = document.getElementById("collectionsAjaxContent");
+      if (ajaxContent) {
+        const observer = new MutationObserver(function () {
+          bindFavoriteButtons(ajaxContent);
+        });
+
+        observer.observe(ajaxContent, {
+          childList: true,
+          subtree: true
+        });
+      }
+    })();
+  </script>
+
+  <!-- menu icon to back icon converter -->
+  <script>
+    (function () {
+      const menuBtn = document.querySelector("body.collections-template .header-menu");
+      if (!menuBtn) return;
+
+      menuBtn.setAttribute("aria-label", "Back to home");
+      menuBtn.classList.add("header-back");
+
+      menuBtn.innerHTML = `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 5L8 12l7 7"></path>
+        </svg>
+      `;
+
+      menuBtn.addEventListener("click", function (event) {
+        event.preventDefault();
+
+        const loader = document.getElementById("ppPageLoader");
+        if (loader) {
+          loader.classList.remove("is-hidden");
+          document.body.classList.add("pp-page-busy");
+        }
+
+        window.setTimeout(function () {
+          window.location.href = "{% url 'store:user_home' %}";
+        }, 90);
+      });
+    })();
+  </script>
+
+  <!-- collections header fade script -->
+  <script>
+    (function () {
+      const header = document.querySelector(".site-header");
+      const heroCard = document.querySelector(".collections-hero-card");
+
+      if (!header || !heroCard) return;
+
+      function clamp(value, min, max) {
+        return Math.min(Math.max(value, min), max);
+      }
+
+      function updateCollectionsHeader() {
+        const heroRect = heroCard.getBoundingClientRect();
+        const headerHeight = header.offsetHeight || 64;
+        const heroHeight = heroCard.offsetHeight || 260;
+
+        const fadeZone = Math.max(45, heroHeight * 0.15);
+        const finishEarlyPx = 12;
+
+        const remainingUnderHeader = heroRect.bottom - headerHeight;
+        const fade = clamp(
+          (fadeZone - (remainingUnderHeader - finishEarlyPx)) / fadeZone,
+          0,
+          1
+        );
+
+        document.body.style.setProperty("--collectionHeaderFade", fade.toFixed(3));
+
+        if (fade > 0.55) {
+          header.classList.add("is-original-tone");
+        } else {
+          header.classList.remove("is-original-tone");
+        }
+      }
+
+      updateCollectionsHeader();
+
+      window.addEventListener("scroll", updateCollectionsHeader, { passive: true });
+      window.addEventListener("resize", updateCollectionsHeader);
+    })();
+  </script>
+{% endblock %}

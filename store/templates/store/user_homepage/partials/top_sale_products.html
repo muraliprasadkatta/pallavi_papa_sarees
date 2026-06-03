@@ -90,11 +90,12 @@
 
                 <a
                   class="trend-whatsapp trend-whatsapp--solid"
-                  href="https://wa.me/918333895789?text=Hi%20Pallavi%20Papa%20Collections%2C%20I%20am%20interested%20in%20{{ product.name|urlencode }}"
+                  href="https://wa.me/918333895789?text=Hi%20Pallavi%20Papa%20Collections%2C%0A%0AI%20am%20interested%20in%20this%20product%3A%0A%0AProduct%3A%20{{ product.name|urlencode }}%0APrice%3A%20{% if product.offer_price %}₹{{ product.offer_price|floatformat:0 }}{% else %}₹{{ product.actual_price|floatformat:0 }}{% endif %}%0A{% if product.category %}Category%3A%20{{ product.category.name|urlencode }}%0A{% endif %}{% if product.top_showcase_image %}Image%3A%20{{ product.top_showcase_image.url|urlencode }}%0A{% elif product.main_image %}Image%3A%20{{ product.main_image.url|urlencode }}%0A{% endif %}Product%20Link%3A%20{{ request.scheme }}%3A//{{ request.get_host }}{% url 'store:product_detail' product.id %}"
                   target="_blank"
                   rel="noopener"
                   aria-label="Ask about {{ product.name }} on WhatsApp"
                 >
+
                   WhatsApp
                 </a>
               {% else %}
@@ -159,12 +160,13 @@
                 </p>
 
                 <a
-                  class="trend-whatsapp"
-                  href="https://wa.me/918333895789?text=Hi%20Pallavi%20Papa%20Collections%2C%20I%20am%20interested%20in%20{{ product.name|urlencode }}"
+                  class="trend-whatsapp trend-whatsapp--solid"
+                  href="https://wa.me/918333895789?text=Hi%20Pallavi%20Papa%20Collections%2C%0A%0AI%20am%20interested%20in%20this%20product%3A%0A%0AProduct%3A%20{{ product.name|urlencode }}%0APrice%3A%20{% if product.offer_price %}₹{{ product.offer_price|floatformat:0 }}{% else %}₹{{ product.actual_price|floatformat:0 }}{% endif %}%0A{% if product.category %}Category%3A%20{{ product.category.name|urlencode }}%0A{% endif %}{% if product.top_showcase_image %}Image%3A%20{{ product.top_showcase_image.url|urlencode }}%0A{% elif product.main_image %}Image%3A%20{{ product.main_image.url|urlencode }}%0A{% endif %}Product%20Link%3A%20{{ request.scheme }}%3A//{{ request.get_host }}{% url 'store:product_detail' product.id %}"
                   target="_blank"
                   rel="noopener"
                   aria-label="Ask about {{ product.name }} on WhatsApp"
                 >
+
                   WhatsApp
                 </a>
               {% else %}
@@ -229,12 +231,13 @@
                 </p>
 
                 <a
-                  class="trend-whatsapp"
-                  href="https://wa.me/918333895789?text=Hi%20Pallavi%20Papa%20Collections%2C%20I%20am%20interested%20in%20{{ product.name|urlencode }}"
+                  class="trend-whatsapp trend-whatsapp--solid"
+                  href="https://wa.me/918333895789?text=Hi%20Pallavi%20Papa%20Collections%2C%0A%0AI%20am%20interested%20in%20this%20product%3A%0A%0AProduct%3A%20{{ product.name|urlencode }}%0APrice%3A%20{% if product.offer_price %}₹{{ product.offer_price|floatformat:0 }}{% else %}₹{{ product.actual_price|floatformat:0 }}{% endif %}%0A{% if product.category %}Category%3A%20{{ product.category.name|urlencode }}%0A{% endif %}{% if product.top_showcase_image %}Image%3A%20{{ product.top_showcase_image.url|urlencode }}%0A{% elif product.main_image %}Image%3A%20{{ product.main_image.url|urlencode }}%0A{% endif %}Product%20Link%3A%20{{ request.scheme }}%3A//{{ request.get_host }}{% url 'store:product_detail' product.id %}"
                   target="_blank"
                   rel="noopener"
                   aria-label="Ask about {{ product.name }} on WhatsApp"
                 >
+
                   WhatsApp
                 </a>
               {% else %}
@@ -508,6 +511,28 @@
     text-overflow: ellipsis;
   }
 
+  .trend-title-link {
+    display: block;
+    max-width: 100%;
+    color: inherit !important;
+    text-decoration: none !important;
+    font: inherit;
+    line-height: inherit;
+    font-weight: inherit;
+    letter-spacing: inherit;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .trend-title-link:hover,
+  .trend-title-link:focus,
+  .trend-title-link:visited,
+  .trend-title-link:active {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
   .trend-price {
     min-height: 20px;
     display: flex;
@@ -525,9 +550,12 @@
   }
 
   .trend-price del {
-    color: #9a8b90;
+    color: #b66b73;
+    text-decoration-color: #b66b73;
+    text-decoration-thickness: 1.35px;
     font-size: clamp(8px, 0.78vw, 11px);
-    font-weight: 480;
+    font-weight: 650;
+    opacity: 0.82;
   }
 
   .trend-price span {
@@ -556,20 +584,33 @@
     height: clamp(27px, 2.35vw, 33px);
     border-radius: 50%;
     border: 1px solid rgba(143, 23, 49, 0.28);
-    display: grid;
-    place-items: center;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     color: transparent;
     font-size: 0;
+    line-height: 1;
     background: #fff;
     text-decoration: none;
   }
 
   .trend-whatsapp::before {
     content: "☎";
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     color: var(--trend-maroon);
+    font-family: Arial, Helvetica, sans-serif;
     font-size: clamp(12px, 1.05vw, 15px);
-    font-weight: 800;
+    font-weight: 900;
     line-height: 1;
+    transform: translateY(-1px);
   }
 
   .trend-whatsapp--solid {
@@ -953,6 +994,7 @@
     }
   }
 </style>
+
 
 <script>
   (() => {

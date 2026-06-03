@@ -8,7 +8,7 @@
     rel="noopener"
     data-direct-whatsapp
     data-product-name="{{ product.name }}"
-    data-product-category="{{ product.get_category_display }}"
+    data-product-category="{% if product.category %}{{ product.category.name }}{% endif %}"
     data-product-price="{% if product.offer_price %}{{ product.offer_price|floatformat:0 }}{% else %}{{ product.actual_price|floatformat:0 }}{% endif %}"
     data-product-image="{% if product.main_image %}{{ product.main_image.url }}{% endif %}"
     data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
@@ -28,7 +28,7 @@
     data-cart-add
     data-product-id="{{ product.id }}"
     data-product-name="{{ product.name }}"
-    data-product-category="{{ product.get_category_display }}"
+    data-product-category="{% if product.category %}{{ product.category.name }}{% endif %}"
     data-product-price="{% if product.offer_price %}{{ product.offer_price|floatformat:0 }}{% else %}{{ product.actual_price|floatformat:0 }}{% endif %}"
     data-product-image="{% if product.main_image %}{{ product.main_image.url }}{% endif %}"
     data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"

@@ -1,0 +1,113 @@
+<!-- E:\pallavi_papa_sarees\store\templates\store\partials\page_loader.html -->
+<div class="pp-page-loader" id="ppPageLoader" aria-live="polite" aria-label="Page loading">
+  <div class="pp-page-loader__mark" aria-hidden="true">
+    <div class="pp-page-loader__crescent"></div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const loader = document.getElementById("ppPageLoader");
+
+    if (!loader) return;
+
+    const body = document.body;
+    const startedAt = Date.now();
+
+    const minVisible = 250;
+    const maxVisible = 2200;
+    const navDelay = 90;
+
+    function showLoader() {
+      loader.classList.remove("is-hidden");
+      body.classList.add("pp-page-busy");
+    }
+
+    function hideLoader() {
+      const elapsed = Date.now() - startedAt;
+      const wait = Math.max(0, minVisible - elapsed);
+
+      window.setTimeout(function () {
+        loader.classList.add("is-hidden");
+        body.classList.remove("pp-page-busy");
+        body.classList.remove("pp-page-navigating");
+        body.classList.remove("pp-form-submitting");
+      }, wait);
+    }
+
+    function isModifiedClick(event) {
+      return event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0;
+    }
+
+    function shouldIgnoreLink(link, href) {
+      return (
+        link.target === "_blank" ||
+        link.hasAttribute("download") ||
+        link.dataset.noLoader === "true" ||
+        href === "" ||
+        href.startsWith("#") ||
+        href.startsWith("javascript:") ||
+        href.startsWith("tel:") ||
+        href.startsWith("mailto:") ||
+        href.includes("wa.me") ||
+        href.includes("whatsapp.com")
+      );
+    }
+
+    showLoader();
+
+    window.addEventListener("load", hideLoader, { once: true });
+    window.setTimeout(hideLoader, maxVisible);
+
+    window.addEventListener("pageshow", function () {
+      loader.classList.add("is-hidden");
+      body.classList.remove("pp-page-busy");
+      body.classList.remove("pp-page-navigating");
+      body.classList.remove("pp-form-submitting");
+    });
+
+    document.addEventListener("click", function (event) {
+      const link = event.target.closest("a");
+      if (!link || isModifiedClick(event)) return;
+
+      const href = link.getAttribute("href") || "";
+
+      if (shouldIgnoreLink(link, href)) return;
+
+      if (body.classList.contains("pp-page-navigating")) {
+        event.preventDefault();
+        return;
+      }
+
+      event.preventDefault();
+
+      body.classList.add("pp-page-navigating");
+      showLoader();
+
+      window.setTimeout(function () {
+        window.location.href = link.href;
+      }, navDelay);
+    }, true);
+
+    document.addEventListener("submit", function (event) {
+      const form = event.target;
+      if (!form || form.dataset.allowMultipleSubmit === "true") return;
+
+      if (body.classList.contains("pp-form-submitting")) {
+        event.preventDefault();
+        return;
+      }
+
+      body.classList.add("pp-form-submitting");
+
+      const submitButton = form.querySelector("[type='submit']");
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.dataset.oldText = submitButton.textContent || "";
+        submitButton.textContent = "Please wait...";
+      }
+
+      showLoader();
+    }, true);
+  })();
+</script>
