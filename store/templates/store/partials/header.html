@@ -32,6 +32,11 @@
 </header>
 
 <style>
+:root {
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: Georgia, "Times New Roman", serif;
+}
+
 /* =========================
    SITE HEADER - SCOPED ONLY
 ========================= */
@@ -50,7 +55,7 @@
   background: rgba(255, 250, 247, 0.96) !important;
   backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(43, 23, 24, 0.10) !important;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-family: var(--font-sans) !important;
 }
 
 .site-header a {
@@ -96,7 +101,7 @@
 .site-header .brand-center strong {
   display: block !important;
   color: #32191b !important;
-  font-family: Georgia, "Times New Roman", serif !important;
+  font-family: var(--font-serif) !important;
   font-size: clamp(21px, 3.6vw, 34px) !important;
   font-weight: 500 !important;
   line-height: 0.88 !important;
@@ -109,7 +114,7 @@
   display: block !important;
   margin-top: clamp(3px, 0.8vw, 5px) !important;
   color: rgba(50, 25, 27, 0.70) !important;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-family: var(--font-sans) !important;
   font-size: clamp(7px, 1.15vw, 10px) !important;
   font-weight: 700 !important;
   line-height: 1 !important;

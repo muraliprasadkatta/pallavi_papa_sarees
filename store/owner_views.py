@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
 from .forms import CategoryForm, ProductForm
-from .models import Product, ProductVariant
+from .models import Product, ProductHighlight, ProductVariant
 from .services.product_image_service import (
     ARRIVAL_CARD_MAX_SIZE_KB,
     ARRIVAL_CARD_TARGET_HEIGHT,
@@ -260,6 +260,52 @@ def _save_product_variants(product, request):
         )
 
 
+def _save_product_highlights(product, request):
+    highlight_labels = request.POST.getlist("highlight_labels")
+    highlight_values = request.POST.getlist("highlight_values")
+
+    ProductHighlight.objects.filter(product=product).delete()
+
+    highlight_objects = []
+
+    for index, (raw_label, raw_value) in enumerate(
+        zip(highlight_labels, highlight_values),
+        start=1,
+    ):
+        label = (raw_label or "").strip()
+        value = (raw_value or "").strip()
+
+        if not label and not value:
+            continue
+
+        if not label or not value:
+            raise ValidationError(
+                f"Highlight {index}: both label and value are required."
+            )
+
+        if len(label) > 80:
+            raise ValidationError(
+                f"Highlight {index}: label should be under 80 characters."
+            )
+
+        if len(value) > 180:
+            raise ValidationError(
+                f"Highlight {index}: value should be under 180 characters."
+            )
+
+        highlight_objects.append(
+            ProductHighlight(
+                product=product,
+                label=label,
+                value=value,
+                sort_order=index,
+            )
+        )
+
+    if highlight_objects:
+        ProductHighlight.objects.bulk_create(highlight_objects)
+
+
 def owner_login_view(request):
     if request.user.is_authenticated and request.user.is_staff:
         return redirect("store_owner:owner_dashboard")
@@ -366,6 +412,7 @@ def owner_product_add_view(request):
             try:
                 with transaction.atomic():
                     product = form.save()
+                    _save_product_highlights(product, request)
                     _save_product_variants(product, request)
 
                 if _is_ajax_request(request):
