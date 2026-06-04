@@ -87,9 +87,15 @@ WSGI_APPLICATION = "config.wsgi.application"
 DATABASES = {
     "default": dj_database_url.config(
         default=config("DATABASE_URL"),
-        conn_max_age=600,
+        conn_max_age=0,
+        conn_health_checks=True,
     )
 }
+
+# Extra safety for Neon / Render stale SSL connections.
+# This avoids reusing closed PostgreSQL connections.
+DATABASES["default"]["CONN_MAX_AGE"] = 0
+DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
 
 
 # Password validation

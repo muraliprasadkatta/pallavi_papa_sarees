@@ -950,3 +950,71 @@
       align-self: stretch;
     }
   }
+
+
+/* Validation + stronger owner form feedback */
+.field.is-invalid input,
+.field.is-invalid select,
+.field.is-invalid textarea,
+.category-field.is-invalid select {
+  border-color: rgba(220, 38, 38, 0.86) !important;
+  background: #fff7f7;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.10) !important;
+}
+
+.catalog-upload.is-invalid-upload,
+.arrival-upload.is-invalid-upload,
+.top-showcase-upload.is-invalid-upload,
+.sub-upload.is-invalid-upload,
+.variant-upload.is-invalid-upload {
+  border-color: rgba(220, 38, 38, 0.9) !important;
+  background: #fff1f2 !important;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.10);
+  animation: ownerFieldShake 0.28s ease;
+}
+
+.field-error-text {
+  margin-top: 7px;
+  color: #b42318;
+  font-size: 12px;
+  line-height: 1.35;
+  font-weight: 900;
+}
+
+.variant-required-note {
+  margin-top: 4px;
+  color: #8f1731;
+  font-size: 11.5px;
+  line-height: 1.25;
+  font-weight: 800;
+}
+
+.save-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+  box-shadow: none;
+}
+
+.client-error-box strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.client-error-box ul {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+@keyframes ownerFieldShake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-4px);
+  }
+
+  75% {
+    transform: translateX(4px);
+  }
+}

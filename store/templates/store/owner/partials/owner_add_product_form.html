@@ -6,8 +6,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Add Products</title>
-  <link rel="stylesheet" href="{% static 'store/owner/css/owner_add_product_form.css' %}">
-  <script src="{% static 'store/owner/js/owner_add_product_form.js' %}" defer></script>
+  <link rel="stylesheet" href="{% static 'store/owner/css/owner_add_product_form.css' %}?v=20260604-variant-validation">
+  <script src="{% static 'store/owner/js/owner_add_product_form.js' %}?v=20260604-variant-validation" defer></script>
 </head>
 
 <body>
@@ -30,7 +30,7 @@
       <h1>Add Products</h1>
       <p>Select category first. Then upload product images, color, price, size, stock, highlights, and optional variants.</p>
 
-      <form class="product-form" method="post" enctype="multipart/form-data" action="{% url 'store_owner:owner_product_add' %}" data-upload-url-template="{% url 'store_owner:owner_product_upload_image' 0 %}" data-success-url="{% url 'store_owner:owner_dashboard' %}">
+      <form class="product-form" method="post" enctype="multipart/form-data" action="{% url 'store_owner:owner_product_add' %}" data-upload-url-template="{% url 'store_owner:owner_product_upload_image' 0 %}" data-success-url="{% url 'store_owner:owner_dashboard' %}" data-max-image-mb="5" data-max-total-mb="12" novalidate>
         {% csrf_token %}
 
         <div class="client-error-box" id="clientErrorBox"></div>
@@ -458,7 +458,7 @@
                 <h2>Colors / Variants</h2>
                 <p>
                   Same saree design ki different colors unte ikkada add cheyyi.
-                  Backend save logic next step lo connect cheddam.
+                  Variant image is required whenever you add a variant.
                 </p>
               </div>
 
