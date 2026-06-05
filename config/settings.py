@@ -8,6 +8,7 @@ from pathlib import Path
 
 from decouple import config
 import dj_database_url
+import cloudinary
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -45,7 +46,7 @@ INSTALLED_APPS = [
 
     "cloudinary",
     "cloudinary_storage",
-    "store",
+    "store.apps.StoreConfig",
 ]
 
 
@@ -141,6 +142,18 @@ CLOUDINARY_STORAGE = {
     "API_KEY": config("CLOUDINARY_API_KEY", default=""),
     "API_SECRET": config("CLOUDINARY_API_SECRET", default=""),
 }
+
+if (
+    CLOUDINARY_STORAGE["CLOUD_NAME"]
+    and CLOUDINARY_STORAGE["API_KEY"]
+    and CLOUDINARY_STORAGE["API_SECRET"]
+):
+    cloudinary.config(
+        cloud_name=CLOUDINARY_STORAGE["CLOUD_NAME"],
+        api_key=CLOUDINARY_STORAGE["API_KEY"],
+        api_secret=CLOUDINARY_STORAGE["API_SECRET"],
+        secure=True,
+    )
 
 CLOUDINARY_UPLOAD_FOLDER = config("CLOUDINARY_UPLOAD_FOLDER", default="local")
 
