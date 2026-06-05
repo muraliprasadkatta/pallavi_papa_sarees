@@ -1,7 +1,13 @@
 <div class="pd-gallery">
   <div class="pd-main-media" id="productSwipeArea">
-    {% if product.offer_price %}
-      <span class="pd-badge">Offer</span>
+    {% if product.has_offer %}
+      <span class="pd-badge">
+        {% if product.discount_percentage %}
+          {{ product.discount_percentage }}% Off
+        {% else %}
+          Offer
+        {% endif %}
+      </span>
     {% elif product.is_new_arrival %}
       <span class="pd-badge">New</span>
     {% endif %}

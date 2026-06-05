@@ -296,20 +296,22 @@
   }
 }
 
+
+
 @media (max-width: 360px) {
   .product-card {
-    min-height: 238px;
+    min-height: 224px;
   }
 
   .product-info {
-    padding: 8px 9px 9px;
-    min-height: 90px;
+    padding: 7px 9px 8px;
+    min-height: auto;
   }
 
   .product-info h3 {
     font-size: 13px;
-    min-height: 2.14em;
-    max-height: 2.14em;
+    min-height: 1.08em;
+    max-height: 1.08em;
   }
 
   .product-category {

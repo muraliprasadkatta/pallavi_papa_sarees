@@ -1,14 +1,23 @@
 {% if same_category_products %}
-  <section class="pd-related">
+  <section class="pd-related pd-related--slider" aria-label="Similar sarees from this collection">
     <div class="pd-related-head">
-      <span>Similar Picks</span>
-      <h2>More from this collection</h2>
+      <div>
+        <span class="pd-related-kicker">Similar Picks</span>
+        <h2>More from this collection</h2>
+        <p>Swipe to see similar sarees.</p>
+      </div>
+
+      <span class="pd-related-swipe">Swipe →</span>
     </div>
 
-    <div class="pd-related-grid pd-related-product-grid">
-      {% for item in same_category_products %}
-        {% include "store/collections/partials/product_card.html" with p=item %}
-      {% endfor %}
+    <div class="pd-related-rail-wrap">
+      <div class="pd-related-grid pd-related-product-grid pd-related-rail">
+        {% for item in same_category_products %}
+          <div class="pd-related-slide">
+            {% include "store/collections/partials/product_card.html" with p=item %}
+          </div>
+        {% endfor %}
+      </div>
     </div>
   </section>
 {% endif %}

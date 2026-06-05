@@ -1,0 +1,44 @@
+{% load static %}
+{% url 'store:collections' as collections_url %}
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Your Favorites | Pallavi Papa Sarees Collections</title>
+  <script src="{% static 'store/js/favorites.js' %}"></script>
+  <script src="{% static 'store/js/favorite_page.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'store/css/favorite_page/favorite_page.css' %}">
+
+</head>
+
+<body class="favorite-template">
+  {% include "store/partials/header.html" %}
+
+  <main class="fav-page">
+    <section class="fav-wrap">
+
+      <div class="fav-head">
+        <span>Wishlist</span>
+        <h1>Your Favorites</h1>
+        <p>Save sarees you love and add them to cart whenever you are ready.</p>
+      </div>
+
+      <div class="fav-grid" data-favorite-items></div>
+
+      <div class="fav-empty" data-favorite-empty hidden>
+        <h2>No favorites yet</h2>
+        <p>Tap the heart icon on products to save your favorite sarees here.</p>
+        <a href="{{ collections_url }}">Explore Collections</a>
+      </div>
+
+    </section>
+  </main>
+
+  {% include "store/user_homepage/partials/site_footer.html" %}
+
+
+
+</body>
+</html>
