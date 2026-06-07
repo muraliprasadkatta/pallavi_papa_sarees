@@ -16,4 +16,10 @@ urlpatterns = [
         owner_views.owner_product_upload_image_view,
         name="owner_product_upload_image",
     ),
+
+    path(
+        "products/<int:product_id>/upload-variant/",
+        owner_views.owner_product_upload_variant_view,
+        name="owner_product_upload_variant",
+    ),
 ]

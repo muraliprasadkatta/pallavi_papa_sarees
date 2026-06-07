@@ -54,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
       uploadBox.classList.add("is-invalid-upload");
     }
 
-    let errorTarget = wrapper || uploadBox || element.parentElement;
+    const errorTarget = wrapper || uploadBox || element.parentElement;
     if (!errorTarget) return;
 
     let errorText = errorTarget.querySelector(":scope > .field-error-text");
@@ -363,6 +363,87 @@ document.addEventListener("DOMContentLoaded", function () {
   const variantsList = document.getElementById("variantsList");
   let variantCount = 0;
 
+  function cleanPriceValue(value) {
+    const raw = String(value || "").trim();
+
+    // If browser/autofill/paste makes 999.98, keep only rupees before decimal.
+    const beforeDecimal = raw.split(".")[0];
+
+    return beforeDecimal.replace(/[^\d]/g, "");
+  }
+
+  function cleanPriceInput(input) {
+    if (!input) return;
+
+    const cleaned = cleanPriceValue(input.value);
+
+    if (input.value !== cleaned) {
+      input.value = cleaned;
+    }
+  }
+
+  function setupPriceInput(input) {
+    if (!input) return;
+
+    // Prevent duplicate listeners when new variants are added.
+    if (input.dataset.priceInputReady === "1") return;
+    input.dataset.priceInputReady = "1";
+
+    input.addEventListener("input", function () {
+      cleanPriceInput(input);
+    });
+
+    input.addEventListener("paste", function () {
+      window.setTimeout(() => {
+        cleanPriceInput(input);
+      }, 0);
+    });
+
+    input.addEventListener(
+      "wheel",
+      function (event) {
+        event.preventDefault();
+        input.blur();
+      },
+      { passive: false }
+    );
+  }
+
+  function setupAllPriceInputs(scope = document) {
+    setupPriceInput(document.getElementById("actualPrice"));
+    setupPriceInput(document.getElementById("offerPrice"));
+
+    scope
+      .querySelectorAll('input[name="variant_actual_prices"], input[name="variant_offer_prices"]')
+      .forEach((input) => {
+        setupPriceInput(input);
+      });
+  }
+
+  function cleanAllPriceInputs() {
+    document
+      .querySelectorAll('#actualPrice, #offerPrice, input[name="variant_actual_prices"], input[name="variant_offer_prices"]')
+      .forEach((input) => {
+        cleanPriceInput(input);
+      });
+  }
+
+  function numberValue(input) {
+    if (!input) return null;
+
+    cleanPriceInput(input);
+
+    const raw = String(input.value || "").trim();
+
+    if (!raw) return null;
+
+    const value = Number(raw);
+
+    if (!Number.isFinite(value)) return NaN;
+
+    return value;
+  }
+
   function createVariantCard() {
     if (!variantsList) return;
 
@@ -439,22 +520,24 @@ document.addEventListener("DOMContentLoaded", function () {
           <div class="field">
             <label>Actual Price</label>
             <input
-              type="number"
+              type="text"
               name="variant_actual_prices"
               placeholder="Example: 2499"
-              min="0"
-              step="0.01"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              autocomplete="off"
             >
           </div>
 
           <div class="field">
             <label>Offer Price</label>
             <input
-              type="number"
+              type="text"
               name="variant_offer_prices"
               placeholder="Example: 1999"
-              min="0"
-              step="0.01"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              autocomplete="off"
             >
           </div>
 
@@ -469,6 +552,7 @@ document.addEventListener("DOMContentLoaded", function () {
     variantsList.appendChild(card);
 
     setupImagePreview(variantImageId);
+    setupAllPriceInputs(card);
 
     const variantColorPicker = document.getElementById(variantColorPickerId);
     const variantColorText = document.getElementById(variantColorTextId);
@@ -569,19 +653,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   setupHighlightRemoveButtons();
-
-  function numberValue(input) {
-    if (!input) return null;
-    const raw = String(input.value || "").trim();
-
-    if (!raw) return null;
-
-    const value = Number(raw);
-
-    if (!Number.isFinite(value)) return NaN;
-
-    return value;
-  }
+  setupAllPriceInputs();
 
   function addError(errors, element, message) {
     errors.push({ element, message });
@@ -795,12 +867,52 @@ document.addEventListener("DOMContentLoaded", function () {
       .filter(Boolean);
   }
 
+  function getSelectedVariants() {
+    if (!variantsList) return [];
+
+    const cards = Array.from(variantsList.querySelectorAll(".variant-card"));
+
+    return cards.map((card, index) => {
+      const imageInput = card.querySelector('input[name="variant_images"]');
+      const colorNameInput = card.querySelector('input[name="variant_color_names"]');
+      const colorCodeInput = card.querySelector('input[name="variant_color_codes"]');
+      const actualPriceInput = card.querySelector('input[name="variant_actual_prices"]');
+      const offerPriceInput = card.querySelector('input[name="variant_offer_prices"]');
+      const availableInput = card.querySelector('input[name="variant_is_available"]');
+
+      cleanPriceInput(actualPriceInput);
+      cleanPriceInput(offerPriceInput);
+
+      return {
+        index,
+        label: `Variant ${index + 1}`,
+        file: imageInput && imageInput.files ? imageInput.files[0] : null,
+        colorName: String(colorNameInput?.value || "").trim(),
+        colorCode: String(colorCodeInput?.value || "").trim(),
+        actualPrice: String(actualPriceInput?.value || "").trim(),
+        offerPrice: String(offerPriceInput?.value || "").trim(),
+        isAvailable: availableInput && availableInput.checked ? "1" : "0"
+      };
+    });
+  }
+
   function buildProductCreateFormData() {
     const formData = new FormData(productForm);
 
+    // These optional images are uploaded later one by one.
     sequentialImageInputs.forEach((item) => {
       formData.delete(item.fieldName);
     });
+
+    // Important:
+    // Variants should NOT go in the first product create request.
+    // Otherwise all variant images upload/compress at once and server can timeout.
+    formData.delete("variant_images");
+    formData.delete("variant_color_names");
+    formData.delete("variant_color_codes");
+    formData.delete("variant_actual_prices");
+    formData.delete("variant_offer_prices");
+    formData.delete("variant_is_available");
 
     return formData;
   }
@@ -891,21 +1003,73 @@ document.addEventListener("DOMContentLoaded", function () {
     return data;
   }
 
+  async function uploadSingleVariant(productId, variantItem, index, total) {
+    const uploadUrlTemplate = productForm.dataset.variantUploadUrlTemplate;
+
+    if (!uploadUrlTemplate) {
+      throw new Error("Variant upload URL is missing. Please check product form template.");
+    }
+
+    const uploadUrl = uploadUrlTemplate.replace("/0/", `/${productId}/`);
+
+    const formData = new FormData();
+    const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]")?.value || "";
+
+    formData.append("csrfmiddlewaretoken", csrfToken);
+    formData.append("image", variantItem.file);
+    formData.append("color_name", variantItem.colorName);
+    formData.append("color_code", variantItem.colorCode);
+    formData.append("actual_price", variantItem.actualPrice);
+    formData.append("offer_price", variantItem.offerPrice);
+    formData.append("is_available", variantItem.isAvailable);
+
+    setSavingStatus(`Uploading ${variantItem.label} (${index + 1}/${total})...`);
+
+    const response = await fetchWithTimeout(uploadUrl, {
+      method: "POST",
+      body: formData,
+      headers: {
+        "X-Requested-With": "XMLHttpRequest"
+      }
+    });
+
+    let data = null;
+
+    try {
+      data = await response.json();
+    } catch (error) {
+      throw new Error(`${variantItem.label} upload failed. Server returned an invalid response.`);
+    }
+
+    if (!response.ok || !data.ok) {
+      throw new Error(data.message || `${variantItem.label} upload failed.`);
+    }
+
+    return data;
+  }
+
   if (productForm) {
     productForm.addEventListener("submit", async function (event) {
       event.preventDefault();
       clearClientError();
 
       try {
+        cleanAllPriceInputs();
         validateFormOrThrow();
 
         showSavingOverlay("Saving product details, main image, and variants...");
 
         const selectedImages = getSelectedSequentialImages();
+        const selectedVariants = getSelectedVariants();
+
         const productId = await createProductFirst();
 
         for (let index = 0; index < selectedImages.length; index += 1) {
           await uploadSingleImage(productId, selectedImages[index], index, selectedImages.length);
+        }
+
+        for (let index = 0; index < selectedVariants.length; index += 1) {
+          await uploadSingleVariant(productId, selectedVariants[index], index, selectedVariants.length);
         }
 
         setSavingStatus("Product saved successfully. Redirecting...");

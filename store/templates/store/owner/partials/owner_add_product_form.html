@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Add Products</title>
   <link rel="stylesheet" href="{% static 'store/owner/css/owner_add_product_form.css' %}?v=20260604-variant-validation">
-  <script src="{% static 'store/owner/js/owner_add_product_form.js' %}?v=20260604-variant-validation" defer></script>
+  <script src="{% static 'store/owner/js/owner_add_product_form.js' %}?v=20260607-price-fix" defer></script>
 </head>
 
 <body>
@@ -30,7 +30,18 @@
       <h1>Add Products</h1>
       <p>Select category first. Then upload product images, color, price, size, stock, highlights, and optional variants.</p>
 
-      <form class="product-form" method="post" enctype="multipart/form-data" action="{% url 'store_owner:owner_product_add' %}" data-upload-url-template="{% url 'store_owner:owner_product_upload_image' 0 %}" data-success-url="{% url 'store_owner:owner_dashboard' %}" data-max-image-mb="5" data-max-total-mb="12" novalidate>
+      <form
+        class="product-form"
+        method="post"
+        enctype="multipart/form-data"
+        action="{% url 'store_owner:owner_product_add' %}"
+        data-upload-url-template="{% url 'store_owner:owner_product_upload_image' 0 %}"
+        data-variant-upload-url-template="{% url 'store_owner:owner_product_upload_variant' 0 %}"
+        data-success-url="{% url 'store_owner:owner_dashboard' %}"
+        data-max-image-mb="5"
+        data-max-total-mb="12"
+        novalidate
+      >
         {% csrf_token %}
 
         <div class="client-error-box" id="clientErrorBox"></div>
@@ -256,13 +267,14 @@
             <div class="field">
               <label for="actualPrice">Actual Price *</label>
               <input
-                type="number"
+                type="text"
                 id="actualPrice"
                 name="actual_price"
                 value="{{ request.POST.actual_price|default:'' }}"
                 placeholder="Example: 2499"
-                min="0"
-                step="0.01"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                autocomplete="off"
                 required
               >
               {{ form.actual_price.errors }}
@@ -271,13 +283,14 @@
             <div class="field">
               <label for="offerPrice">Offer Price</label>
               <input
-                type="number"
+                type="text"
                 id="offerPrice"
                 name="offer_price"
                 value="{{ request.POST.offer_price|default:'' }}"
                 placeholder="Example: 1999"
-                min="0"
-                step="0.01"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                autocomplete="off"
               >
               {{ form.offer_price.errors }}
             </div>
@@ -487,7 +500,5 @@
       <p class="saving-status" id="savingStatus">Please do not close this page.</p>
     </div>
   </div>
-
-
 </body>
 </html>

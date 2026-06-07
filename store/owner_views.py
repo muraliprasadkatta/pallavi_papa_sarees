@@ -1,7 +1,7 @@
 from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 from django.db import transaction
@@ -126,8 +126,8 @@ def _convert_extra_product_image(field_name, uploaded_file, product):
 def _remove_extra_images_for_ajax_first_save(files):
     """
     AJAX first request should process only main_image.
-    Extra images are uploaded one-by-one after product is created.
-    This prevents Render worker RAM spike.
+    Extra images and variant images are uploaded one-by-one after product is created.
+    This prevents Render/free-server RAM spike and timeout.
     """
     cleaned_files = files.copy()
 
@@ -191,6 +191,10 @@ def _clean_color_code(value):
 
 
 def _save_product_variants(product, request):
+    """
+    Non-AJAX fallback only.
+    In normal JS/AJAX flow, variants are uploaded separately by owner_product_upload_variant_view().
+    """
     variant_color_names = request.POST.getlist("variant_color_names")
     variant_color_codes = request.POST.getlist("variant_color_codes")
     variant_actual_prices = request.POST.getlist("variant_actual_prices")
@@ -225,24 +229,32 @@ def _save_product_variants(product, request):
             else None
         )
 
-        has_any_data = any([
-            color_name,
-            color_code,
-            actual_price,
-            offer_price,
-            variant_image,
-        ])
+        has_any_data = any(
+            [
+                color_name,
+                color_code,
+                actual_price,
+                offer_price,
+                variant_image,
+            ]
+        )
 
         if not has_any_data:
             continue
+
+        if not color_name:
+            raise ValidationError(f"Variant {index + 1}: color name is required.")
+
+        if not variant_image:
+            raise ValidationError(f"Variant {index + 1}: image is required.")
 
         cleaned_color_code = _clean_color_code(color_code)
         cleaned_actual_price = _optional_decimal(actual_price, "Variant actual price")
         cleaned_offer_price = _optional_decimal(offer_price, "Variant offer price")
 
         if (
-            cleaned_actual_price
-            and cleaned_offer_price
+            cleaned_actual_price is not None
+            and cleaned_offer_price is not None
             and cleaned_offer_price > cleaned_actual_price
         ):
             raise ValidationError(
@@ -413,14 +425,21 @@ def owner_product_add_view(request):
                 with transaction.atomic():
                     product = form.save()
                     _save_product_highlights(product, request)
-                    _save_product_variants(product, request)
+
+                    # AJAX flow:
+                    # First request saves only product details + main image.
+                    # Variants are uploaded later one-by-one using owner_product_upload_variant_view().
+                    if not _is_ajax_request(request):
+                        _save_product_variants(product, request)
 
                 if _is_ajax_request(request):
-                    return JsonResponse({
-                        "ok": True,
-                        "product_id": product.id,
-                        "message": "Product details saved.",
-                    })
+                    return JsonResponse(
+                        {
+                            "ok": True,
+                            "product_id": product.id,
+                            "message": "Product details saved.",
+                        }
+                    )
 
                 messages.success(request, "Product added successfully.")
                 return redirect("store_owner:owner_dashboard")
@@ -487,11 +506,13 @@ def owner_product_upload_image_view(request, product_id):
 
         product.save(update_fields=[model_field_name])
 
-        return JsonResponse({
-            "ok": True,
-            "field_name": model_field_name,
-            "message": f"{model_field_name} uploaded successfully.",
-        })
+        return JsonResponse(
+            {
+                "ok": True,
+                "field_name": model_field_name,
+                "message": f"{model_field_name} uploaded successfully.",
+            }
+        )
 
     except ValidationError as error:
         error_message = (
@@ -504,5 +525,80 @@ def owner_product_upload_image_view(request, product_id):
     except Exception as error:
         return _json_error(
             f"Image upload failed. Please try again. Error: {error}",
+            status=500,
+        )
+
+
+@require_POST
+@login_required(login_url="store_owner:owner_login")
+def owner_product_upload_variant_view(request, product_id):
+    if not request.user.is_staff:
+        return _json_error("You do not have owner access.", status=403)
+
+    product = get_object_or_404(Product, id=product_id)
+
+    uploaded_file = request.FILES.get("image")
+    color_name = (request.POST.get("color_name") or "").strip()
+    color_code = (request.POST.get("color_code") or "").strip()
+    actual_price = request.POST.get("actual_price", "")
+    offer_price = request.POST.get("offer_price", "")
+    is_available = request.POST.get("is_available") == "1"
+
+    if not uploaded_file:
+        return _json_error("Variant image is required.")
+
+    if not color_name:
+        return _json_error("Variant color name is required.")
+
+    try:
+        _validate_extra_image(uploaded_file)
+
+        cleaned_color_code = _clean_color_code(color_code)
+        cleaned_actual_price = _optional_decimal(actual_price, "Variant actual price")
+        cleaned_offer_price = _optional_decimal(offer_price, "Variant offer price")
+
+        if (
+            cleaned_actual_price is not None
+            and cleaned_offer_price is not None
+            and cleaned_offer_price > cleaned_actual_price
+        ):
+            raise ValidationError(
+                "Variant offer price cannot be greater than actual price."
+            )
+
+        converted_file = convert_sub_product_image_to_webp(
+            uploaded_file=uploaded_file,
+            base_name=f"{product.name or 'product'}-{color_name}-variant",
+        )
+
+        variant = ProductVariant.objects.create(
+            product=product,
+            color_name=color_name,
+            color_code=cleaned_color_code,
+            variant_image=converted_file,
+            actual_price=cleaned_actual_price,
+            offer_price=cleaned_offer_price,
+            is_available=is_available,
+        )
+
+        return JsonResponse(
+            {
+                "ok": True,
+                "variant_id": variant.id,
+                "message": "Variant uploaded successfully.",
+            }
+        )
+
+    except ValidationError as error:
+        error_message = (
+            " ".join(error.messages)
+            if hasattr(error, "messages")
+            else str(error)
+        )
+        return _json_error(error_message)
+
+    except Exception as error:
+        return _json_error(
+            f"Variant upload failed. Please try again. Error: {error}",
             status=500,
         )
