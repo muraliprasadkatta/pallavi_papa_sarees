@@ -47,13 +47,13 @@
     width: 100%;
     max-width: 100%;
     margin: 0 auto;
-    padding: clamp(18px, 3vw, 42px) clamp(10px, 3vw, 28px) clamp(24px, 4vw, 52px);
+    padding: clamp(16px, 2.4vw, 34px) clamp(10px, 3vw, 28px) clamp(20px, 3.2vw, 42px);
     overflow: hidden;
   }
 
   .shop-price__head {
     width: min(100%, 720px);
-    margin: 0 auto clamp(14px, 2.4vw, 26px);
+    margin: 0 auto clamp(14px, 2.2vw, 22px);
     text-align: center;
   }
 
@@ -77,7 +77,7 @@
   .shop-price__head h2 {
     margin: 0;
     font-family: var(--font-serif);
-    font-size: clamp(25px, 4.4vw, 46px);
+    font-size: clamp(25px, 4vw, 42px);
     line-height: 1.02;
     color: #17351f;
     font-weight: 750;
@@ -92,13 +92,12 @@
     color: #71766f;
   }
 
-  /* Auto extend on desktop, auto fit on smaller screens */
   .shop-price__grid {
-    width: min(100%, 1080px);
+    width: min(100%, 920px);
     margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(10px, 2vw, 22px);
+    gap: clamp(10px, 1.6vw, 18px);
   }
 
   .price-card {
@@ -107,25 +106,25 @@
     width: 100%;
     min-width: 0;
     overflow: hidden;
-    border-radius: clamp(16px, 2.5vw, 30px);
-    aspect-ratio: 0.84 / 1;
+    border-radius: clamp(16px, 2.1vw, 26px);
+    aspect-ratio: 0.95 / 1;
     background: #f8efdf;
-    border: clamp(2px, 0.55vw, 5px) solid #f1dfc8;
+    border: clamp(2px, 0.45vw, 4px) solid #f1dfc8;
     text-decoration: none;
-    box-shadow: 0 16px 36px rgba(71, 44, 20, 0.12);
+    box-shadow: 0 14px 30px rgba(71, 44, 20, 0.11);
     transform: translateZ(0);
     transition: transform 0.22s ease, box-shadow 0.22s ease;
   }
 
   .price-card--wide {
     grid-column: 1 / -1;
-    aspect-ratio: 2.25 / 1;
-    border-radius: clamp(17px, 2.8vw, 32px);
+    aspect-ratio: 2.75 / 1;
+    border-radius: clamp(17px, 2.3vw, 28px);
   }
 
   .price-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 22px 44px rgba(71, 44, 20, 0.17);
+    transform: translateY(-4px);
+    box-shadow: 0 18px 38px rgba(71, 44, 20, 0.15);
   }
 
   .price-card img {
@@ -141,23 +140,37 @@
     transform: scale(1.025);
   }
 
+  @media (min-width: 1200px) {
+    .shop-price__grid {
+      width: min(100%, 960px);
+    }
+
+    .price-card {
+      aspect-ratio: 0.98 / 1;
+    }
+
+    .price-card--wide {
+      aspect-ratio: 2.85 / 1;
+    }
+  }
+
   /* Medium laptops / tablets */
   @media (max-width: 900px) {
     .shop-price__grid {
-      width: min(100%, 760px);
+      width: min(100%, 740px);
       gap: 14px;
     }
 
     .price-card {
-      aspect-ratio: 0.82 / 1;
+      aspect-ratio: 0.9 / 1;
     }
 
     .price-card--wide {
-      aspect-ratio: 2.14 / 1;
+      aspect-ratio: 2.45 / 1;
     }
   }
 
-  /* Mobile */
+  /* Mobile - same feel as before */
   @media (max-width: 560px) {
     .shop-price {
       padding: 18px 12px 24px;

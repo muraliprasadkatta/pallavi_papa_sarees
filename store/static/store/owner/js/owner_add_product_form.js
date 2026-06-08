@@ -11,6 +11,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const MAX_IMAGE_BYTES = MAX_IMAGE_MB * 1024 * 1024;
   const FETCH_TIMEOUT_MS = 120000;
 
+  const PRODUCT_NAME_MIN_CHARS = Number(productForm?.dataset.productNameMin || 3);
+  const PRODUCT_NAME_MAX_CHARS = Number(productForm?.dataset.productNameMax || 80);
+  const PRODUCT_NAME_MAX_SINGLE_WORD_CHARS = Number(productForm?.dataset.productNameMaxWord || 32);
+
   const uploadSelector = ".catalog-upload, .arrival-upload, .top-showcase-upload, .sub-upload, .variant-upload";
 
   const sequentialImageInputs = [
@@ -66,6 +70,23 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     errorText.textContent = message;
+  }
+
+  function clearFieldError(element) {
+    if (!element) return;
+
+    const wrapper = getFieldWrapper(element);
+    const uploadBox = getUploadBox(element);
+
+    if (wrapper) {
+      wrapper.classList.remove("is-invalid");
+      const errorText = wrapper.querySelector(":scope > .field-error-text");
+      if (errorText) errorText.remove();
+    }
+
+    if (uploadBox) {
+      uploadBox.classList.remove("is-invalid-upload");
+    }
   }
 
   function clearValidationState() {
@@ -185,6 +206,59 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   toggleProductDetails();
+
+  function cleanProductNameValue(value) {
+    return String(value || "").trim().replace(/\s+/g, " ");
+  }
+
+  function validateProductNameValue(value) {
+    const name = cleanProductNameValue(value);
+
+    if (!name) {
+      return "Please enter product name.";
+    }
+
+    if (name.length < PRODUCT_NAME_MIN_CHARS) {
+      return `Product name should be at least ${PRODUCT_NAME_MIN_CHARS} characters.`;
+    }
+
+    if (name.length > PRODUCT_NAME_MAX_CHARS) {
+      return `Product name should be under ${PRODUCT_NAME_MAX_CHARS} characters.`;
+    }
+
+    const longestWordLength = name
+      .split(" ")
+      .reduce((maxLength, word) => Math.max(maxLength, word.length), 0);
+
+    if (longestWordLength > PRODUCT_NAME_MAX_SINGLE_WORD_CHARS) {
+      return "Product name has a very long word. Please use proper spacing.";
+    }
+
+    return "";
+  }
+
+  function setupProductNameInput() {
+    const productName = document.getElementById("productName");
+    if (!productName) return;
+
+    productName.addEventListener("blur", function () {
+      productName.value = cleanProductNameValue(productName.value);
+
+      const message = validateProductNameValue(productName.value);
+      if (message) {
+        setFieldError(productName, message);
+      } else {
+        clearFieldError(productName);
+      }
+    });
+
+    productName.addEventListener("input", function () {
+      clearFieldError(productName);
+      clearClientError();
+    });
+  }
+
+  setupProductNameInput();
 
   function validateImageFile(file, label) {
     if (!file) return;
@@ -366,7 +440,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function cleanPriceValue(value) {
     const raw = String(value || "").trim();
 
-    // If browser/autofill/paste makes 999.98, keep only rupees before decimal.
     const beforeDecimal = raw.split(".")[0];
 
     return beforeDecimal.replace(/[^\d]/g, "");
@@ -385,7 +458,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function setupPriceInput(input) {
     if (!input) return;
 
-    // Prevent duplicate listeners when new variants are added.
     if (input.dataset.priceInputReady === "1") return;
     input.dataset.priceInputReady = "1";
 
@@ -682,8 +754,14 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    if (!productName || !String(productName.value || "").trim()) {
-      addError(errors, productName, "Please enter product name.");
+    if (productName) {
+      productName.value = cleanProductNameValue(productName.value);
+    }
+
+    const productNameError = validateProductNameValue(productName?.value);
+
+    if (productNameError) {
+      addError(errors, productName, productNameError);
     }
 
     const actual = numberValue(actualPrice);
@@ -899,14 +977,10 @@ document.addEventListener("DOMContentLoaded", function () {
   function buildProductCreateFormData() {
     const formData = new FormData(productForm);
 
-    // These optional images are uploaded later one by one.
     sequentialImageInputs.forEach((item) => {
       formData.delete(item.fieldName);
     });
 
-    // Important:
-    // Variants should NOT go in the first product create request.
-    // Otherwise all variant images upload/compress at once and server can timeout.
     formData.delete("variant_images");
     formData.delete("variant_color_names");
     formData.delete("variant_color_codes");

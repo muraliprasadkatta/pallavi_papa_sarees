@@ -22,9 +22,9 @@ PRODUCT_TARGET_HEIGHT = 2000
 SUB_PRODUCT_TARGET_WIDTH = 900
 SUB_PRODUCT_TARGET_HEIGHT = 1125
 
-# New arrival card image: 1:1 square
+# New arrival card image: 4:5 portrait card
 ARRIVAL_CARD_TARGET_WIDTH = 900
-ARRIVAL_CARD_TARGET_HEIGHT = 900
+ARRIVAL_CARD_TARGET_HEIGHT = 1125
 
 # Top carousel image: 9:10 portrait card
 TOP_SHOWCASE_TARGET_WIDTH = 900
@@ -39,7 +39,7 @@ MIN_WEBP_QUALITY = 58
 
 PRODUCT_MAX_SIZE_KB = 350
 SUB_PRODUCT_MAX_SIZE_KB = 180
-ARRIVAL_CARD_MAX_SIZE_KB = 160
+ARRIVAL_CARD_MAX_SIZE_KB = 220
 TOP_SHOWCASE_MAX_SIZE_KB = 180
 CATEGORY_MAX_SIZE_KB = 180
 
@@ -129,7 +129,7 @@ def _save_webp_under_size(img, max_size_kb, start_quality=DEFAULT_WEBP_QUALITY):
             output,
             format="WEBP",
             quality=quality,
-            method=4,       # lighter than method=6 on small servers
+            method=4,   # lighter than method=6 on small servers
             optimize=True,
         )
 
@@ -263,6 +263,54 @@ def convert_sub_product_image_to_webp(uploaded_file, base_name="sub-product"):
         target_width=SUB_PRODUCT_TARGET_WIDTH,
         target_height=SUB_PRODUCT_TARGET_HEIGHT,
         max_size_kb=SUB_PRODUCT_MAX_SIZE_KB,
+        quality=DEFAULT_WEBP_QUALITY,
+        keep_alpha=False,
+    )
+
+
+def convert_arrival_card_image_to_webp(uploaded_file, base_name="arrival-card"):
+    """
+    Use this for homepage New Arrival image cards.
+    4:5 portrait output matches frontend card height.
+    """
+    return convert_product_image_to_webp(
+        uploaded_file=uploaded_file,
+        base_name=base_name,
+        target_width=ARRIVAL_CARD_TARGET_WIDTH,
+        target_height=ARRIVAL_CARD_TARGET_HEIGHT,
+        max_size_kb=ARRIVAL_CARD_MAX_SIZE_KB,
+        quality=DEFAULT_WEBP_QUALITY,
+        keep_alpha=False,
+    )
+
+
+def convert_top_showcase_image_to_webp(uploaded_file, base_name="top-showcase"):
+    """
+    Use this for top sale / popular / carousel images.
+    9:10 portrait output.
+    """
+    return convert_product_image_to_webp(
+        uploaded_file=uploaded_file,
+        base_name=base_name,
+        target_width=TOP_SHOWCASE_TARGET_WIDTH,
+        target_height=TOP_SHOWCASE_TARGET_HEIGHT,
+        max_size_kb=TOP_SHOWCASE_MAX_SIZE_KB,
+        quality=DEFAULT_WEBP_QUALITY,
+        keep_alpha=False,
+    )
+
+
+def convert_category_image_to_webp(uploaded_file, base_name="category"):
+    """
+    Use this for category tab/card images.
+    Landscape output.
+    """
+    return convert_product_image_to_webp(
+        uploaded_file=uploaded_file,
+        base_name=base_name,
+        target_width=CATEGORY_TARGET_WIDTH,
+        target_height=CATEGORY_TARGET_HEIGHT,
+        max_size_kb=CATEGORY_MAX_SIZE_KB,
         quality=DEFAULT_WEBP_QUALITY,
         keep_alpha=False,
     )

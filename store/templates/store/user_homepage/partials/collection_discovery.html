@@ -8,18 +8,6 @@
         <h2>Shop by Collection</h2>
         <p>Browse popular saree styles</p>
       </div>
-
-      <div class="collection-head-actions">
-        <a class="collection-view-all" href="{% url 'store:collections' %}?category=all&focus=shop">
-          View All <span>›</span>
-        </a>
-
-        <div class="collection-deco" aria-hidden="true">
-          <span></span>
-          <i>✦</i>
-        </div>
-      </div>
-
     </div>
 
     <div class="collection-grid">
@@ -91,9 +79,16 @@
       </a>
 
     </div>
+
+    <div class="collection-bottom-actions">
+      <a class="collection-view-all" href="{% url 'store:collections' %}?category=all&focus=shop">
+        View All <span>›</span>
+      </a>
+    </div>
   </div>
 
 </section>
+
 <style>
   :root {
     --pp-bg: #fff7f1;
@@ -114,17 +109,14 @@
 
   .collection-discovery {
     --collection-overlap: 58px;
-
     position: relative;
     z-index: 20;
     isolation: isolate;
-
     width: 100%;
     max-width: 100%;
     margin-left: 0;
     margin-right: 0;
     margin-top: calc(-1 * var(--collection-overlap));
-
     background: transparent;
     padding: 0 0 10px;
     overflow: visible;
@@ -138,7 +130,6 @@
     right: 0;
     top: var(--collection-overlap);
     bottom: 0;
-
     background:
       radial-gradient(circle at 10% 0%, rgba(199, 146, 67, 0.09), transparent 26%),
       linear-gradient(180deg, #fff6ef 0%, #fffaf6 52%, #fff7f1 100%);
@@ -148,10 +139,8 @@
     width: min(100% - clamp(8px, 2vw, 28px), 1600px);
     max-width: none;
     margin-inline: auto;
-
     position: relative;
     z-index: 25;
-
     background:
       linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(255, 250, 245, 0.95));
     border: 1px solid rgba(143, 23, 49, 0.10);
@@ -162,10 +151,7 @@
   }
 
   .collection-head {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: start;
-    gap: 10px;
+    display: block;
     padding: 10px 10px 0;
     margin-bottom: 9px;
   }
@@ -192,96 +178,31 @@
     font-weight: 400;
   }
 
-  .collection-head-actions {
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 8px;
-    flex: 0 0 auto;
-    padding-top: 3px;
-    min-width: max-content;
-  }
-
-  .collection-view-all {
-    min-height: 24px;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    color: var(--pp-maroon);
-    background: transparent;
-    box-shadow: none;
-    text-decoration: none;
-    font-size: clamp(10px, 2.6vw, 12px);
-    font-weight: 680;
-    line-height: 1;
-    white-space: nowrap;
-  }
-
-  .collection-view-all span {
-    color: var(--pp-gold);
-    font-size: 14px;
-    line-height: 1;
-    transform: translateY(-1px);
-  }
-
-  .collection-view-all:hover {
-    color: var(--pp-maroon-dark);
-  }
-
-  .collection-deco {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 54px;
-    color: var(--pp-gold);
-  }
-
-  .collection-deco span {
-    display: block;
-    height: 1px;
-    flex: 1;
-    background: linear-gradient(90deg, transparent, var(--pp-gold));
-  }
-
-  .collection-deco i {
-    font-style: normal;
-    font-size: 13px;
-    line-height: 1;
-  }
-
   .collection-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 8px;
-    padding: 0 8px 12px;
+    padding: 0 8px 10px;
   }
 
   .collection-tile {
     min-width: 0;
     min-height: clamp(128px, 39vw, 158px);
     position: relative;
-
     display: flex;
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
     gap: 4px;
-
     padding: 5px 5px 4px;
     text-decoration: none;
     color: var(--pp-maroon-dark);
-
     background:
       linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(255, 247, 241, 0.94));
     border: 1px solid var(--pp-line);
     border-radius: 14px;
     box-shadow: 0 7px 18px rgba(80, 36, 40, 0.07);
     overflow: hidden;
-
     -webkit-tap-highlight-color: transparent;
     transition:
       transform 180ms ease,
@@ -389,11 +310,9 @@
     width: 100%;
     min-width: 0;
     min-height: 20px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     padding: 0 10px 0 2px;
     text-align: center;
   }
@@ -406,7 +325,6 @@
     line-height: 1;
     letter-spacing: -0.008em;
     font-weight: 650;
-
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -416,10 +334,91 @@
     position: absolute;
     right: 6px;
     bottom: 7px;
-
     color: var(--pp-gold);
     font-size: 12px;
     line-height: 1;
+  }
+
+  .collection-bottom-actions {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px 8px 17px;
+    isolation: isolate;
+  }
+
+  .collection-bottom-actions::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    left: 8px;
+    right: 8px;
+    top: 19px;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(199, 146, 67, 0.55) 11%,
+      rgba(143, 23, 49, 0.20) 45%,
+      rgba(199, 146, 67, 0.55) 89%,
+      transparent 100%
+    );
+  }
+
+  .collection-bottom-actions::after {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    left: 18px;
+    right: 18px;
+    bottom: 7px;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(143, 23, 49, 0.10) 15%,
+      rgba(143, 23, 49, 0.18) 50%,
+      rgba(143, 23, 49, 0.10) 85%,
+      transparent 100%
+    );
+  }
+
+  .collection-view-all {
+    position: relative;
+    z-index: 2;
+    min-height: 34px;
+    padding: 0 20px;
+    border: 0;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    color: #fff;
+    background: linear-gradient(135deg, var(--pp-maroon), var(--pp-maroon-dark));
+    box-shadow:
+      0 8px 18px rgba(143, 23, 49, 0.20),
+      0 0 0 8px rgba(255, 250, 245, 0.96);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 850;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .collection-view-all span {
+    color: var(--pp-gold);
+    font-size: 16px;
+    line-height: 1;
+    transform: translateY(-1px);
+  }
+
+  .collection-view-all:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 10px 22px rgba(143, 23, 49, 0.24),
+      0 0 0 8px rgba(255, 250, 245, 0.96);
   }
 
   @media (min-width: 768px) {
@@ -435,7 +434,6 @@
     .collection-head {
       padding: 18px 20px 0;
       margin-bottom: 14px;
-      align-items: center;
     }
 
     .collection-head h2 {
@@ -447,19 +445,10 @@
       font-size: clamp(13px, 1.05vw, 15px);
     }
 
-    .collection-view-all {
-      font-size: 12.5px;
-      font-weight: 680;
-    }
-
-    .collection-view-all span {
-      font-size: 15px;
-    }
-
     .collection-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: clamp(10px, 1.4vw, 18px);
-      padding: 0 20px 20px;
+      padding: 0 20px 14px;
     }
 
     .collection-tile {
@@ -467,7 +456,6 @@
       grid-template-columns: clamp(110px, 9vw, 150px) 1fr 14px;
       align-items: center;
       gap: clamp(10px, 1vw, 14px);
-
       min-height: clamp(84px, 7vw, 106px);
       padding: clamp(7px, 0.8vw, 10px);
       border-radius: 16px;
@@ -497,12 +485,38 @@
       margin-right: 0;
       font-size: 18px;
     }
+
+    .collection-bottom-actions {
+      padding: 5px 20px 22px;
+    }
+
+    .collection-bottom-actions::before {
+      left: 20px;
+      right: 20px;
+      top: 21px;
+    }
+
+    .collection-bottom-actions::after {
+      left: 34px;
+      right: 34px;
+      bottom: 10px;
+    }
+
+    .collection-view-all {
+      min-height: 36px;
+      padding: 0 24px;
+      font-size: 12.5px;
+    }
+
+    .collection-view-all span {
+      font-size: 17px;
+    }
   }
 
   @media (max-width: 480px) {
     .collection-head {
-      gap: 8px;
       padding: 10px 9px 0;
+      margin-bottom: 9px;
     }
 
     .collection-head h2 {
@@ -516,29 +530,9 @@
       font-size: clamp(11px, 3.1vw, 13px);
     }
 
-    .collection-head-actions {
-      gap: 0;
-      padding-top: 4px;
-    }
-
-    .collection-deco {
-      display: none;
-    }
-
-    .collection-view-all {
-      min-height: 22px;
-      font-size: clamp(9.6px, 2.7vw, 10.8px);
-      font-weight: 680;
-      gap: 3px;
-    }
-
-    .collection-view-all span {
-      font-size: 13px;
-    }
-
     .collection-grid {
       gap: 7px;
-      padding: 0 7px 11px;
+      padding: 0 7px 9px;
     }
 
     .collection-tile {
@@ -568,6 +562,35 @@
       bottom: 7px;
       font-size: 11px;
     }
+
+    .collection-bottom-actions {
+      padding: 3px 7px 15px;
+    }
+
+    .collection-bottom-actions::before {
+      left: 7px;
+      right: 7px;
+      top: 18px;
+    }
+
+    .collection-bottom-actions::after {
+      left: 16px;
+      right: 16px;
+      bottom: 7px;
+    }
+
+    .collection-view-all {
+      min-height: 32px;
+      padding: 0 18px;
+      font-size: 11px;
+      box-shadow:
+        0 8px 18px rgba(143, 23, 49, 0.20),
+        0 0 0 7px rgba(255, 250, 245, 0.96);
+    }
+
+    .collection-view-all span {
+      font-size: 15px;
+    }
   }
 
   @media (max-width: 380px) {
@@ -581,7 +604,7 @@
 
     .collection-head {
       padding: 9px 8px 0;
-      gap: 6px;
+      margin-bottom: 8px;
     }
 
     .collection-head h2 {
@@ -593,18 +616,9 @@
       font-size: 11px;
     }
 
-    .collection-view-all {
-      font-size: 9.4px;
-      font-weight: 670;
-    }
-
-    .collection-view-all span {
-      font-size: 12px;
-    }
-
     .collection-grid {
       gap: 6px;
-      padding: 0 6px 10px;
+      padding: 0 6px 9px;
     }
 
     .collection-tile {
@@ -635,6 +649,16 @@
       bottom: 6px;
       font-size: 10.5px;
     }
+
+    .collection-bottom-actions {
+      padding: 3px 6px 14px;
+    }
+
+    .collection-view-all {
+      min-height: 31px;
+      padding: 0 16px;
+      font-size: 10.5px;
+    }
   }
 
   @media (max-width: 340px) {
@@ -650,14 +674,11 @@
       font-size: 10.5px;
     }
 
-    .collection-view-all {
-      font-size: 8.8px;
-    }
-
     .collection-grid {
       gap: 5px;
       padding-left: 5px;
       padding-right: 5px;
+      padding-bottom: 8px;
     }
 
     .collection-tile {
@@ -684,6 +705,12 @@
     .tile-arrow {
       right: 4px;
       bottom: 5px;
+      font-size: 10px;
+    }
+
+    .collection-view-all {
+      min-height: 30px;
+      padding: 0 15px;
       font-size: 10px;
     }
   }

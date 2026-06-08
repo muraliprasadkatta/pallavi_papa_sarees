@@ -45,11 +45,13 @@
       </div>
 
       <div class="product-info">
-        <h3>{{ p.name }}</h3>
+        <h3 class="product-name" title="{{ p.name }}">
+          {{ p.name|truncatechars:28 }}
+        </h3>
 
-        <p class="product-category">
+        <p class="product-category" title="{% if p.category %}{{ p.category.name }}{% else %}Collection{% endif %}">
           {% if p.category %}
-            {{ p.category.name }}
+            {{ p.category.name|truncatechars:18 }}
           {% else %}
             Collection
           {% endif %}
@@ -113,11 +115,13 @@
       </div>
 
       <div class="product-info">
-        <h3>{{ p.name }}</h3>
+        <h3 class="product-name" title="{{ p.name }}">
+          {{ p.name|truncatechars:28 }}
+        </h3>
 
-        <p class="product-category">
+        <p class="product-category" title="{% if p.category %}{{ p.category.name }}{% else %}Collection{% endif %}">
           {% if p.category %}
-            {{ p.category.name }}
+            {{ p.category.name|truncatechars:18 }}
           {% else %}
             Collection
           {% endif %}

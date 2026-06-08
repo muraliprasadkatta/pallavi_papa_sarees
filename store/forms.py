@@ -9,11 +9,52 @@ PRODUCT_EXTRA_IMAGE_MAX_MB = 5
 PRODUCT_SUB_IMAGE_MAX_MB = 5
 PRODUCT_TOTAL_UPLOAD_MAX_MB = 12
 
+CATEGORY_NAME_MIN_CHARS = 2
+CATEGORY_NAME_MAX_CHARS = 50
+CATEGORY_NAME_MAX_SINGLE_WORD_CHARS = 24
+
+PRODUCT_NAME_MIN_CHARS = 3
+PRODUCT_NAME_MAX_CHARS = 80
+PRODUCT_NAME_MAX_SINGLE_WORD_CHARS = 32
+
 
 def _validate_image_size(image, max_mb, label):
     if image and image.size > max_mb * 1024 * 1024:
         raise forms.ValidationError(f"{label} should be under {max_mb}MB.")
     return image
+
+
+def _clean_name_value(
+    value,
+    label,
+    min_chars,
+    max_chars,
+    max_single_word_chars,
+):
+    name = (value or "").strip()
+    name = " ".join(name.split())
+
+    if not name:
+        raise forms.ValidationError(f"{label} is required.")
+
+    if len(name) < min_chars:
+        raise forms.ValidationError(
+            f"{label} should be at least {min_chars} characters."
+        )
+
+    if len(name) > max_chars:
+        raise forms.ValidationError(
+            f"{label} should be under {max_chars} characters."
+        )
+
+    longest_word_length = max((len(word) for word in name.split()), default=0)
+
+    if longest_word_length > max_single_word_chars:
+        raise forms.ValidationError(
+            f"{label} has a very long word. Please use proper spacing."
+        )
+
+    return name
 
 
 class CategoryForm(forms.ModelForm):
@@ -28,6 +69,10 @@ class CategoryForm(forms.ModelForm):
         widgets = {
             "name": forms.TextInput(attrs={
                 "placeholder": "Example: Womens Dresses",
+                "minlength": str(CATEGORY_NAME_MIN_CHARS),
+                "maxlength": str(CATEGORY_NAME_MAX_CHARS),
+                "autocomplete": "off",
+                "spellcheck": "true",
             }),
             "image": forms.ClearableFileInput(attrs={
                 "accept": "image/*",
@@ -35,12 +80,13 @@ class CategoryForm(forms.ModelForm):
         }
 
     def clean_name(self):
-        name = (self.cleaned_data.get("name") or "").strip()
-
-        if not name:
-            raise forms.ValidationError("Category name is required.")
-
-        return name
+        return _clean_name_value(
+            value=self.cleaned_data.get("name"),
+            label="Category name",
+            min_chars=CATEGORY_NAME_MIN_CHARS,
+            max_chars=CATEGORY_NAME_MAX_CHARS,
+            max_single_word_chars=CATEGORY_NAME_MAX_SINGLE_WORD_CHARS,
+        )
 
     def clean_image(self):
         image = self.cleaned_data.get("image")
@@ -99,6 +145,13 @@ class ProductForm(forms.ModelForm):
         ]
 
         widgets = {
+            "name": forms.TextInput(attrs={
+                "placeholder": "Example: Soft Silk Saree",
+                "minlength": str(PRODUCT_NAME_MIN_CHARS),
+                "maxlength": str(PRODUCT_NAME_MAX_CHARS),
+                "autocomplete": "off",
+                "spellcheck": "true",
+            }),
             "main_image": forms.ClearableFileInput(attrs={"accept": "image/*"}),
             "arrival_card_image": forms.ClearableFileInput(attrs={"accept": "image/*"}),
             "top_showcase_image": forms.ClearableFileInput(attrs={"accept": "image/*"}),
@@ -113,6 +166,15 @@ class ProductForm(forms.ModelForm):
         self.fields["category"].queryset = Category.objects.filter(
             is_active=True
         ).order_by("sort_order", "name")
+
+    def clean_name(self):
+        return _clean_name_value(
+            value=self.cleaned_data.get("name"),
+            label="Product name",
+            min_chars=PRODUCT_NAME_MIN_CHARS,
+            max_chars=PRODUCT_NAME_MAX_CHARS,
+            max_single_word_chars=PRODUCT_NAME_MAX_SINGLE_WORD_CHARS,
+        )
 
     def clean_main_image(self):
         image = self.cleaned_data.get("main_image")

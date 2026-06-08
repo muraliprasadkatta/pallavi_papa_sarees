@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Add Products</title>
   <link rel="stylesheet" href="{% static 'store/owner/css/owner_add_product_form.css' %}?v=20260604-variant-validation">
-  <script src="{% static 'store/owner/js/owner_add_product_form.js' %}?v=20260607-price-fix" defer></script>
+  <script src="{% static 'store/owner/js/owner_add_product_form.js' %}?v=20260608-name-validation" defer></script>
 </head>
 
 <body>
@@ -40,6 +40,9 @@
         data-success-url="{% url 'store_owner:owner_dashboard' %}"
         data-max-image-mb="5"
         data-max-total-mb="12"
+        data-product-name-min="3"
+        data-product-name-max="80"
+        data-product-name-max-word="32"
         novalidate
       >
         {% csrf_token %}
@@ -125,7 +128,7 @@
                   <strong>Upload card image</strong>
                   <small>Only for products marked as New Arrival.</small>
                 </label>
-                <div class="upload-limit-note">Max 5MB. Final output: 900 × 900 WebP.</div>
+                <div class="upload-limit-note">Max 5MB. Final output: 900 × 1125 WebP.</div>
 
                 {{ form.arrival_card_image.errors }}
               </div>
@@ -185,8 +188,17 @@
                 name="name"
                 value="{{ request.POST.name|default:'' }}"
                 placeholder="Example: Soft Silk Saree"
+                minlength="3"
+                maxlength="80"
+                autocomplete="off"
+                spellcheck="true"
+                aria-describedby="productNameHelp"
+                data-product-name-input="true"
                 required
               >
+              <small id="productNameHelp">
+                Use 3–80 characters. Add spaces properly; don’t enter one long word.
+              </small>
               {{ form.name.errors }}
             </div>
 
