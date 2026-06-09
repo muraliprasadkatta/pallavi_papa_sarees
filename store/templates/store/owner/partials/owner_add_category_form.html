@@ -14,6 +14,8 @@
       --primary: #8f1731;
       --primary-dark: #681021;
       --danger: #b00020;
+      --danger-soft: rgba(176, 0, 32, 0.08);
+      --danger-border: rgba(176, 0, 32, 0.22);
       --border: rgba(143, 23, 49, 0.14);
       --shadow: 0 14px 42px rgba(70, 28, 35, 0.10);
     }
@@ -135,6 +137,7 @@
       background: #fff;
       color: var(--text);
       font-size: 14px;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
     }
 
     .field input[type="file"] {
@@ -158,6 +161,12 @@
       line-height: 1.4;
     }
 
+    .field.has-error input {
+      border-color: var(--danger);
+      background: rgba(176, 0, 32, 0.035);
+      box-shadow: 0 0 0 4px rgba(176, 0, 32, 0.07);
+    }
+
     .upload-limit-note {
       margin-top: 8px;
       color: #8f1731;
@@ -170,21 +179,46 @@
       line-height: 1.35;
     }
 
+    .field-error,
     .image-error {
       display: none;
       margin-top: 8px;
       color: var(--danger);
-      background: rgba(176, 0, 32, 0.08);
-      border: 1px solid rgba(176, 0, 32, 0.22);
-      border-radius: 12px;
-      padding: 9px 10px;
+      background: var(--danger-soft);
+      border: 1px solid var(--danger-border);
+      border-radius: 10px;
+      padding: 7px 9px;
       font-size: 12px;
-      font-weight: 900;
+      font-weight: 800;
       line-height: 1.35;
     }
 
+    .field-error.is-visible,
     .image-error.is-visible {
       display: block;
+    }
+
+    .errorlist {
+      list-style: none;
+      margin: 8px 0 0;
+      padding: 0;
+      color: var(--danger);
+      background: var(--danger-soft);
+      border: 1px solid var(--danger-border);
+      border-radius: 10px;
+      overflow: hidden;
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .errorlist li {
+      margin: 0;
+      padding: 7px 9px;
+    }
+
+    .errorlist li + li {
+      border-top: 1px solid rgba(176, 0, 32, 0.12);
     }
 
     .field.has-file-error input[type="file"] {
@@ -200,15 +234,14 @@
     }
 
     .shake {
-      animation: shakeBox 0.34s ease-in-out;
+      animation: shakeBox 0.28s ease-in-out;
     }
 
     @keyframes shakeBox {
       0%, 100% { transform: translateX(0); }
-      20% { transform: translateX(-7px); }
-      40% { transform: translateX(7px); }
-      60% { transform: translateX(-5px); }
-      80% { transform: translateX(5px); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-3px); }
     }
 
     .category-image-preview {
@@ -251,13 +284,14 @@
 
     .error-box {
       margin-bottom: 16px;
-      padding: 12px 14px;
-      border-radius: 14px;
+      padding: 10px 12px;
+      border-radius: 12px;
       color: #7a1025;
       background: rgba(143, 23, 49, 0.08);
       border: 1px solid rgba(143, 23, 49, 0.16);
-      font-size: 13px;
-      line-height: 1.5;
+      font-size: 12.5px;
+      font-weight: 800;
+      line-height: 1.45;
     }
 
     .form-actions {
@@ -278,6 +312,10 @@
       font-weight: 900;
       cursor: pointer;
       box-shadow: 0 10px 24px rgba(143, 23, 49, 0.18);
+    }
+
+    .save-btn:active {
+      transform: translateY(1px);
     }
 
     @media (max-width: 767px) {
@@ -322,7 +360,13 @@
       <h1>Add Category</h1>
       <p>Create a category with image. It will appear in Add Product dropdown and Collections tabs.</p>
 
-      <form method="post" enctype="multipart/form-data" action="{% url 'store_owner:owner_category_add' %}">
+      <form
+        method="post"
+        enctype="multipart/form-data"
+        action="{% url 'store_owner:owner_category_add' %}"
+        novalidate
+        id="categoryAddForm"
+      >
         {% csrf_token %}
 
         {% if form.errors %}
@@ -331,10 +375,11 @@
           </div>
         {% endif %}
 
-        <div class="field">
+        <div class="field" id="categoryNameField">
           <label for="id_name">Category Name *</label>
           {{ form.name }}
           <small>Use 2–50 characters. Example: Womens Dresses, Lehengas, Kids Wear.</small>
+          <div class="field-error" id="categoryNameError"></div>
           {{ form.name.errors }}
         </div>
 
@@ -373,59 +418,231 @@
 
   <script>
     (() => {
+      const form = document.getElementById("categoryAddForm");
+
+      const nameInput = document.getElementById("id_name");
+      const nameField = document.getElementById("categoryNameField");
+      const nameError = document.getElementById("categoryNameError");
+
       const imageInput = document.getElementById("id_image");
       const imageField = document.getElementById("categoryImageField");
       const imageError = document.getElementById("categoryImageError");
       const previewBox = document.getElementById("categoryImagePreview");
       const previewImg = previewBox ? previewBox.querySelector("img") : null;
-      const maxBytes = 3 * 1024 * 1024;
 
-      if (!imageInput || !imageField || !imageError || !previewBox || !previewImg) return;
+      const maxImageBytes = 3 * 1024 * 1024;
+      const minNameChars = 2;
+      const maxNameChars = 50;
+      const maxSingleWordChars = 24;
+
+      let nameTouched = false;
+      let previewUrl = "";
+
+      function restartShake(field) {
+        if (!field) return;
+        field.classList.remove("shake");
+        void field.offsetWidth;
+        field.classList.add("shake");
+      }
+
+      function normalizeName(value) {
+        return (value || "").trim().replace(/\s+/g, " ");
+      }
+
+      function clearNameError() {
+        if (!nameField || !nameError) return;
+        nameField.classList.remove("has-error", "shake");
+        nameError.classList.remove("is-visible");
+        nameError.textContent = "";
+      }
+
+      function showNameError(message, shouldShake = false) {
+        if (!nameField || !nameError) return;
+        nameField.classList.add("has-error");
+        nameError.textContent = message;
+        nameError.classList.add("is-visible");
+
+        if (shouldShake) {
+          restartShake(nameField);
+        }
+      }
+
+      function validateName({ showRequired = false, shouldShake = false } = {}) {
+        if (!nameInput) return true;
+
+        const normalized = normalizeName(nameInput.value);
+        const words = normalized.split(" ").filter(Boolean);
+        const longestWord = words.reduce((longest, word) => Math.max(longest, word.length), 0);
+
+        clearNameError();
+
+        if (!normalized) {
+          if (showRequired) {
+            showNameError("Category name is required.", shouldShake);
+          }
+          return false;
+        }
+
+        if (normalized.length < minNameChars) {
+          showNameError(`Category name should be at least ${minNameChars} characters.`, shouldShake);
+          return false;
+        }
+
+        if (normalized.length > maxNameChars) {
+          showNameError(`Category name should be under ${maxNameChars} characters.`, shouldShake);
+          return false;
+        }
+
+        if (longestWord > maxSingleWordChars) {
+          showNameError("Category name has a very long word. Please use proper spacing.", shouldShake);
+          return false;
+        }
+
+        return true;
+      }
 
       function clearImageError() {
-        imageField.classList.remove("has-file-error", "shake");
+        if (!imageField || !imageError) return;
+        imageField.classList.remove("has-file-error", "has-error", "shake");
         imageError.classList.remove("is-visible");
         imageError.textContent = "";
       }
 
-      function showImageError(message) {
-        imageField.classList.remove("shake");
-        void imageField.offsetWidth;
-        imageField.classList.add("has-file-error", "shake");
+      function showImageError(message, shouldShake = false) {
+        if (!imageField || !imageError) return;
 
+        imageField.classList.add("has-file-error", "has-error");
         imageError.textContent = message;
         imageError.classList.add("is-visible");
 
-        previewBox.style.display = "none";
-        previewImg.src = "";
+        if (previewBox && previewImg) {
+          previewBox.style.display = "none";
+          previewImg.src = "";
+        }
+
+        if (shouldShake) {
+          restartShake(imageField);
+        }
       }
 
-      imageInput.addEventListener("change", function () {
-        const file = this.files && this.files[0];
+      function clearPreviewUrl() {
+        if (previewUrl) {
+          URL.revokeObjectURL(previewUrl);
+          previewUrl = "";
+        }
+      }
+
+      function hidePreview() {
+        clearPreviewUrl();
+
+        if (previewBox && previewImg) {
+          previewBox.style.display = "none";
+          previewImg.src = "";
+        }
+      }
+
+      function validateImage({ shouldShake = false } = {}) {
+        if (!imageInput) return true;
+
+        const file = imageInput.files && imageInput.files[0];
 
         clearImageError();
 
         if (!file) {
-          previewBox.style.display = "none";
-          previewImg.src = "";
-          return;
+          hidePreview();
+          return true;
         }
 
-        if (!file.type.startsWith("image/")) {
-          showImageError("Please select an image file only.");
-          this.value = "";
-          return;
+        if (!file.type || !file.type.startsWith("image/")) {
+          showImageError("Please select an image file only.", shouldShake);
+          imageInput.value = "";
+          return false;
         }
 
-        if (file.size > maxBytes) {
-          showImageError(`${file.name} is above 3MB. Please upload an image below 3MB.`);
-          this.value = "";
-          return;
+        if (file.size > maxImageBytes) {
+          showImageError(`${file.name} is above 3MB. Please upload an image below 3MB.`, shouldShake);
+          imageInput.value = "";
+          return false;
         }
 
-        previewImg.src = URL.createObjectURL(file);
-        previewBox.style.display = "block";
-      });
+        clearPreviewUrl();
+
+        if (previewBox && previewImg) {
+          previewUrl = URL.createObjectURL(file);
+          previewImg.src = previewUrl;
+          previewBox.style.display = "block";
+        }
+
+        return true;
+      }
+
+      function markBackendErrors() {
+        document.querySelectorAll(".field .errorlist").forEach((errorList) => {
+          const field = errorList.closest(".field");
+          if (field && errorList.textContent.trim()) {
+            field.classList.add("has-error");
+          }
+        });
+      }
+
+      markBackendErrors();
+
+      if (nameInput) {
+        nameInput.addEventListener("input", function () {
+          if (!nameTouched && this.value.trim()) {
+            nameTouched = true;
+          }
+
+          if (nameTouched) {
+            validateName({ showRequired: false });
+          }
+        });
+
+        nameInput.addEventListener("blur", function () {
+          nameTouched = true;
+          this.value = normalizeName(this.value);
+          validateName({ showRequired: true });
+        });
+      }
+
+      if (imageInput) {
+        imageInput.addEventListener("change", function () {
+          validateImage({ shouldShake: true });
+        });
+      }
+
+      if (form) {
+        form.addEventListener("submit", function (event) {
+          nameTouched = true;
+
+          if (nameInput) {
+            nameInput.value = normalizeName(nameInput.value);
+          }
+
+          const isNameValid = validateName({
+            showRequired: true,
+            shouldShake: true
+          });
+
+          const isImageValid = validateImage({
+            shouldShake: true
+          });
+
+          if (!isNameValid || !isImageValid) {
+            event.preventDefault();
+
+            const firstError = document.querySelector(".field.has-error, .field.has-file-error");
+            if (firstError) {
+              firstError.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+              });
+            }
+          }
+        });
+      }
+
+      window.addEventListener("beforeunload", clearPreviewUrl);
     })();
   </script>
 </body>

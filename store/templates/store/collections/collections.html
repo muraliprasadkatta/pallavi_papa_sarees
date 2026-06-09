@@ -3,6 +3,29 @@
 
 {% block title %}Collections • Pallavi Papa Sarees{% endblock %}
 
+{% block meta %}
+  {% if request.GET.q %}
+    <meta name="robots" content="noindex, follow">
+  {% else %}
+    <meta name="robots" content="index, follow">
+  {% endif %}
+
+  <meta name="description" content="Browse Pallavi Papa Sarees Collections including pattu sarees, silk sarees, cotton sarees, designer sarees and new arrivals. Contact us on WhatsApp for orders.">
+
+  <meta property="og:title" content="Collections • Pallavi Papa Sarees">
+  <meta property="og:description" content="Explore saree collections, new arrivals and special picks from Pallavi Papa Sarees Collections.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://pallavipapacollections.online/collections/">
+
+  {% if request.GET.category %}
+    <link rel="canonical" href="https://pallavipapacollections.online{{ request.path }}?category={{ request.GET.category|urlencode }}">
+  {% elif request.GET.focus == "new" %}
+    <link rel="canonical" href="https://pallavipapacollections.online{{ request.path }}?focus=new">
+  {% else %}
+    <link rel="canonical" href="https://pallavipapacollections.online{{ request.path }}">
+  {% endif %}
+{% endblock %}
+
 {% block body_class %}collections-template{% endblock %}
 {% block main_class %}collections-page{% endblock %}
 {% block extra_css %}
