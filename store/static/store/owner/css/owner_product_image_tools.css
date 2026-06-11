@@ -266,3 +266,154 @@
 .color-code-field > small {
   display: none !important;
 }
+
+/* RESPONSIVE OWNER PRODUCT IMAGE TOOLS */
+.upload-preview-img,
+.owner-image-zoom__img {
+  max-width: 100%;
+}
+
+.upload-preview-layer {
+  left: clamp(6px, 1vw, 10px);
+  right: clamp(6px, 1vw, 10px);
+  bottom: clamp(6px, 1vw, 10px);
+  padding: clamp(5px, 0.7vw, 8px) clamp(7px, 1vw, 10px);
+  border-radius: clamp(8px, 1vw, 12px);
+  font-size: clamp(9.5px, 0.8vw, 11px);
+}
+
+.upload-preview-actions {
+  inset: clamp(6px, 1vw, 9px) clamp(6px, 1vw, 9px) auto clamp(6px, 1vw, 9px);
+  gap: clamp(5px, 0.8vw, 8px);
+}
+
+.upload-color-pick-btn {
+  min-height: clamp(25px, 2.5vw, 31px);
+  max-width: clamp(86px, 13vw, 130px);
+  padding: clamp(4px, 0.7vw, 7px) clamp(6px, 0.9vw, 10px);
+  font-size: clamp(9px, 0.8vw, 10.5px);
+  line-height: 1.1;
+}
+
+.upload-remove-btn {
+  width: clamp(27px, 3vw, 34px);
+  height: clamp(27px, 3vw, 34px);
+  min-width: clamp(27px, 3vw, 34px);
+  font-size: clamp(19px, 2vw, 24px);
+}
+
+.is-color-pick-mode::after {
+  left: clamp(8px, 1vw, 12px);
+  bottom: clamp(48px, 5vw, 58px);
+  padding: clamp(6px, 0.8vw, 9px) clamp(8px, 1vw, 12px);
+  font-size: clamp(9.5px, 0.85vw, 11px);
+}
+
+.owner-image-zoom {
+  padding: clamp(10px, 2vw, 24px);
+}
+
+.owner-image-zoom__frame {
+  width: min(96vw, 920px);
+  max-height: 90dvh;
+}
+
+.owner-image-zoom__img {
+  max-width: 100%;
+  max-height: 90dvh;
+  border-radius: clamp(10px, 1.4vw, 18px);
+}
+
+.owner-image-zoom__close {
+  top: max(10px, env(safe-area-inset-top));
+  right: max(10px, env(safe-area-inset-right));
+  width: clamp(38px, 4.5vw, 46px);
+  height: clamp(38px, 4.5vw, 46px);
+  font-size: clamp(25px, 3vw, 32px);
+}
+
+.image-color-tools {
+  gap: clamp(6px, 1vw, 10px);
+}
+
+.image-color-pick-btn {
+  min-height: clamp(30px, 3vw, 36px);
+  padding: 0 clamp(10px, 1vw, 14px);
+  font-size: clamp(10.5px, 0.9vw, 12px);
+}
+
+.image-color-status {
+  min-height: clamp(30px, 3vw, 36px);
+  padding: clamp(6px, 0.8vw, 9px) clamp(9px, 1vw, 12px);
+  font-size: clamp(10.5px, 0.9vw, 12px);
+}
+
+.variant-image-color-pick-btn {
+  min-height: clamp(36px, 3.5vw, 42px);
+  font-size: clamp(11px, 0.9vw, 12.5px);
+}
+
+@media (max-width: 767px) {
+  .upload-preview-layer {
+    font-size: 10px;
+    padding: 5px 7px;
+  }
+
+  .upload-preview-actions {
+    inset: 7px 7px auto 7px;
+  }
+
+  .upload-color-pick-btn {
+    min-height: 30px;
+    max-width: 122px;
+    padding: 5px 8px;
+    font-size: 9.5px;
+  }
+
+  .upload-remove-btn {
+    width: 33px;
+    height: 33px;
+    min-width: 33px;
+    font-size: 23px;
+  }
+
+  .owner-image-zoom {
+    padding: 10px;
+  }
+
+  .owner-image-zoom__img {
+    max-height: 86dvh;
+    border-radius: 12px;
+  }
+
+  .image-color-tools {
+    align-items: stretch;
+  }
+
+  .image-color-pick-btn,
+  .variant-image-color-pick-btn {
+    width: 100%;
+  }
+
+  .image-color-status {
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .upload-color-pick-btn {
+    max-width: 108px;
+    font-size: 9px;
+  }
+
+  .upload-remove-btn {
+    width: 31px;
+    height: 31px;
+    min-width: 31px;
+  }
+
+  .is-color-pick-mode::after {
+    bottom: 46px;
+    font-size: 9px;
+  }
+}
