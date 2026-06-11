@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+﻿document.addEventListener("DOMContentLoaded", function () {
   const categorySelect = document.getElementById("category");
   const productDetails = document.getElementById("productDetails");
   const productForm = document.querySelector(".product-form");
@@ -16,6 +16,21 @@ document.addEventListener("DOMContentLoaded", function () {
   const PRODUCT_NAME_MAX_SINGLE_WORD_CHARS = Number(productForm?.dataset.productNameMaxWord || 32);
 
   const uploadSelector = ".catalog-upload, .arrival-upload, .top-showcase-upload, .sub-upload, .variant-upload";
+  const imageTools = window.OwnerProductImageTools || null;
+
+  const OLD_UPLOAD_RESUME_KEY = "pp_owner_product_upload_resume";
+  let isUploadingProduct = false;
+  let activeColorPick = null;
+  let lastProductColorImageInput = null;
+try {
+    localStorage.removeItem(OLD_UPLOAD_RESUME_KEY);
+  } catch (error) {
+    // Ignore old resume cleanup errors.
+  }
+
+  function getDraftApi() {
+    return window.ProductDraftAutosave || null;
+  }
 
   const sequentialImageInputs = [
     { inputId: "arrivalCardImage", fieldName: "arrival_card_image", label: "New Arrival image" },
@@ -43,6 +58,55 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!input) return null;
     return input.closest(uploadSelector);
   }
+
+  function getEditUrlForProduct(productId) {
+    const editUrlTemplate = productForm?.dataset.editUrlTemplate || "";
+
+    if (!productId || !editUrlTemplate) return "";
+
+    return editUrlTemplate.replace("/0/", `/${productId}/`);
+  }
+
+  async function getFileFromDraftByInput(input) {
+    if (!input) return null;
+
+    const api = getDraftApi();
+    if (!api || !input.id) return null;
+
+    try {
+      return await api.getFileByInputId(input.id);
+    } catch (error) {
+      console.warn("Could not read draft image:", error);
+      return null;
+    }
+  }
+
+  async function getSelectedFileFromInput(input) {
+    if (!input) return null;
+
+    const browserFile = input.files && input.files[0];
+    if (browserFile) return browserFile;
+
+    return getFileFromDraftByInput(input);
+  }
+
+  async function getRequiredImageFile(input, label) {
+    const file = await getSelectedFileFromInput(input);
+
+    if (!file) {
+      throw new Error(`${label} is required.`);
+    }
+
+    validateImageFile(file, label);
+    return file;
+  }
+
+  window.addEventListener("beforeunload", function (event) {
+    if (!isUploadingProduct) return;
+
+    event.preventDefault();
+    event.returnValue = "";
+  });
 
   function setFieldError(element, message) {
     if (!element) return;
@@ -143,6 +207,22 @@ document.addEventListener("DOMContentLoaded", function () {
       html += "</ul>";
     }
 
+    const draftState = getDraftApi()?.getState?.();
+
+    if (draftState && draftState.status === "server_product_created" && draftState.productId) {
+      const editUrl = draftState.editUrl || getEditUrlForProduct(draftState.productId);
+
+      if (editUrl) {
+        html += `
+          <div style="margin-top: 10px;">
+            Product details are already saved.
+            <a href="${escapeHtml(editUrl)}">Continue from edit page</a>
+            and upload missing images again.
+          </div>
+        `;
+      }
+    }
+
     clientErrorBox.innerHTML = html;
     clientErrorBox.classList.add("is-visible");
     clientErrorBox.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -156,12 +236,16 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function setSavingStatus(message) {
+    const savingStatus = document.getElementById("savingStatus");
     if (savingStatus) {
       savingStatus.textContent = message;
     }
   }
 
   function showSavingOverlay(message) {
+    const savingOverlay = document.getElementById("savingOverlay");
+    const saveBtn = document.querySelector(".save-btn");
+
     setSavingStatus(message || "Saving product...");
 
     if (savingOverlay) {
@@ -176,6 +260,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function hideSavingOverlay() {
+    const savingOverlay = document.getElementById("savingOverlay");
+    const saveBtn = document.querySelector(".save-btn");
+
     if (savingOverlay) {
       savingOverlay.classList.remove("is-visible");
       savingOverlay.setAttribute("aria-hidden", "true");
@@ -272,82 +359,24 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function setupImagePreview(inputId) {
-    const input = document.getElementById(inputId);
+  function dispatchInputChange(input) {
     if (!input) return;
-
-    const box = getUploadBox(input);
-    if (!box) return;
-
-    input.addEventListener("change", function () {
-      clearClientError();
-
-      const file = this.files && this.files[0];
-
-      if (!file) {
-        clearUploadPreview(this);
-        return;
-      }
-
-      try {
-        validateImageFile(file, "Selected image");
-      } catch (error) {
-        clearUploadPreview(this);
-        setFieldError(this, error.message);
-        showClientError(error.message);
-        return;
-      }
-
-      const previewUrl = URL.createObjectURL(file);
-
-      let previewImg = box.querySelector(".upload-preview-img");
-      if (!previewImg) {
-        previewImg = document.createElement("img");
-        previewImg.className = "upload-preview-img";
-        previewImg.alt = "Selected image preview";
-        box.appendChild(previewImg);
-      }
-
-      let fileName = box.querySelector(".upload-preview-layer");
-      if (!fileName) {
-        fileName = document.createElement("div");
-        fileName.className = "upload-preview-layer";
-        box.appendChild(fileName);
-      }
-
-      previewImg.onload = function () {
-        URL.revokeObjectURL(previewUrl);
-      };
-
-      previewImg.src = previewUrl;
-      fileName.textContent = file.name;
-      box.classList.add("has-preview");
-      box.classList.remove("is-invalid-upload");
-
-      const wrapper = getFieldWrapper(input);
-      if (wrapper) {
-        wrapper.classList.remove("is-invalid");
-        const errorText = wrapper.querySelector(":scope > .field-error-text");
-        if (errorText) errorText.remove();
-      }
-    });
+    input.dispatchEvent(new Event("change", { bubbles: true }));
   }
 
-  function clearUploadPreview(input) {
+  function isVariantImageInput(input) {
+    if (!input) return false;
+    return input.matches('input[name="variant_images"], input[data-variant-image="true"]');
+  }
+
+  function removeSelectedUploadImage(input) {
     if (!input) return;
 
-    const box = getUploadBox(input);
-    if (!box) return;
-
+    stopActiveColorPickMode();
+    clearUploadPreview(input);
     input.value = "";
-
-    const previewImg = box.querySelector(".upload-preview-img");
-    const fileName = box.querySelector(".upload-preview-layer");
-
-    if (previewImg) previewImg.remove();
-    if (fileName) fileName.remove();
-
-    box.classList.remove("has-preview");
+    input.dataset.explicitRemove = "1";
+    dispatchInputChange(input);
   }
 
   setupImagePreview("mainImage");
@@ -368,7 +397,7 @@ document.addEventListener("DOMContentLoaded", function () {
       arrivalCardField.classList.add("is-visible");
     } else {
       arrivalCardField.classList.remove("is-visible");
-      clearUploadPreview(arrivalCardInput);
+      removeSelectedUploadImage(arrivalCardInput);
     }
   }
 
@@ -393,7 +422,7 @@ document.addEventListener("DOMContentLoaded", function () {
       topShowcaseField.classList.add("is-visible");
     } else {
       topShowcaseField.classList.remove("is-visible");
-      clearUploadPreview(topShowcaseInput);
+      removeSelectedUploadImage(topShowcaseInput);
     }
   }
 
@@ -433,183 +462,204 @@ document.addEventListener("DOMContentLoaded", function () {
 
   syncColorInputs(colorText, colorPicker);
 
+  const pickMainImageColorBtn = document.getElementById("pickMainImageColorBtn");
+  const imageColorPickStatus = document.getElementById("imageColorPickStatus");
+  const productColorImageInputIds = [
+    "mainImage",
+    "subImage1",
+    "subImage2",
+    "subImage3",
+    "arrivalCardImage",
+    "topShowcaseImage"
+  ];
 
-    const pickMainImageColorBtn = document.getElementById("pickMainImageColorBtn");
-    const imageColorPickStatus = document.getElementById("imageColorPickStatus");
-    let isMainImageColorPickMode = false;
 
-    function rgbToHex(r, g, b) {
-      return `#${[r, g, b]
-        .map((value) => value.toString(16).padStart(2, "0"))
-        .join("")}`;
+  if (pickMainImageColorBtn) {
+    pickMainImageColorBtn.textContent = "Pick color from uploaded image";
+  }
+
+  function setImageColorPickStatus(message) {
+    if (imageColorPickStatus) {
+      imageColorPickStatus.textContent = message;
+    }
+  }
+
+  function findFirstProductColorInputWithPreview() {
+    const lastBox = getUploadBox(lastProductColorImageInput);
+
+    if (lastProductColorImageInput && lastBox?.querySelector(".upload-preview-img")) {
+      return lastProductColorImageInput;
     }
 
-    function setPickedColor(hexValue, textInput, pickerInput) {
-      if (!hexValue || !textInput || !pickerInput) return;
+    for (const inputId of productColorImageInputIds) {
+      const input = document.getElementById(inputId);
+      const box = getUploadBox(input);
 
-      textInput.value = hexValue;
-      pickerInput.value = hexValue;
-      clearFieldError(textInput);
-      clearClientError();
-    }
-
-    function setImageColorPickStatus(message) {
-      if (imageColorPickStatus) {
-        imageColorPickStatus.textContent = message;
+      if (input && box?.querySelector(".upload-preview-img")) {
+        return input;
       }
     }
 
-    function stopMainImageColorPickMode(uploadBox) {
-      isMainImageColorPickMode = false;
+    return null;
+  }
 
-      if (uploadBox) {
-        uploadBox.classList.remove("is-color-pick-mode");
-      }
-    }
+  function setupProductColorPickButton() {
+    if (!pickMainImageColorBtn) return;
 
-    function getImagePixelPosition(event, image) {
-      const rect = image.getBoundingClientRect();
+    pickMainImageColorBtn.addEventListener("click", function () {
+      const input = findFirstProductColorInputWithPreview();
 
-      const clientX = event.clientX;
-      const clientY = event.clientY;
-
-      const style = window.getComputedStyle(image);
-      const objectFit = style.objectFit || "fill";
-
-      let drawnWidth = rect.width;
-      let drawnHeight = rect.height;
-      let offsetX = 0;
-      let offsetY = 0;
-
-      const naturalRatio = image.naturalWidth / image.naturalHeight;
-      const boxRatio = rect.width / rect.height;
-
-      if (objectFit === "cover") {
-        if (naturalRatio > boxRatio) {
-          drawnHeight = rect.height;
-          drawnWidth = rect.height * naturalRatio;
-          offsetX = (rect.width - drawnWidth) / 2;
-        } else {
-          drawnWidth = rect.width;
-          drawnHeight = rect.width / naturalRatio;
-          offsetY = (rect.height - drawnHeight) / 2;
-        }
+      if (!input) {
+        showClientError("Please upload main/sub image first, then pick color.");
+        scrollToElement(document.getElementById("mainImage"));
+        return;
       }
 
-      if (objectFit === "contain") {
-        if (naturalRatio > boxRatio) {
-          drawnWidth = rect.width;
-          drawnHeight = rect.width / naturalRatio;
-          offsetY = (rect.height - drawnHeight) / 2;
-        } else {
-          drawnHeight = rect.height;
-          drawnWidth = rect.height * naturalRatio;
-          offsetX = (rect.width - drawnWidth) / 2;
-        }
-      }
+      startImageColorPickFromInput(input);
+    });
 
-      const displayX = clientX - rect.left - offsetX;
-      const displayY = clientY - rect.top - offsetY;
+    document.addEventListener(
+      "click",
+      function (event) {
+        if (!activeColorPick) return;
 
-      const x = Math.max(
-        0,
-        Math.min(image.naturalWidth - 1, Math.round((displayX / drawnWidth) * image.naturalWidth))
-      );
+        if (event.target.closest(uploadSelector)) return;
+        if (event.target.closest("#ownerImageZoomModal")) return;
 
-      const y = Math.max(
-        0,
-        Math.min(image.naturalHeight - 1, Math.round((displayY / drawnHeight) * image.naturalHeight))
-      );
+        setImageColorPickStatus("Color pick mode is still active. Tap the highlighted image or press Esc to cancel.");
+      },
+      true
+    );
+  }
 
-      return { x, y };
-    }
+  setupProductColorPickButton();
 
-    function pickColorFromPreviewImage(event, image, textInput, pickerInput) {
-      if (!image || !image.complete || !image.naturalWidth || !image.naturalHeight) {
-        throw new Error("Image preview is not ready yet. Please try again.");
-      }
+  /* COMMON IMAGE TOOLS BRIDGE
+     Keep add-product save/upload logic here.
+     Route only preview, zoom, remove, and color-pick through owner_product_image_tools.js.
+  */
+  function getImageToolOptions() {
+    return {
+      uploadSelector,
+      maxImageMb: MAX_IMAGE_MB,
 
-      const { x, y } = getImagePixelPosition(event, image);
-
-      const canvas = document.createElement("canvas");
-      canvas.width = image.naturalWidth;
-      canvas.height = image.naturalHeight;
-
-      const context = canvas.getContext("2d", { willReadFrequently: true });
-      context.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-      const pixel = context.getImageData(x, y, 1, 1).data;
-      const hexValue = rgbToHex(pixel[0], pixel[1], pixel[2]);
-
-      setPickedColor(hexValue, textInput, pickerInput);
-
-      return hexValue;
-    }
-
-    function setupMainImageTapColorPicker() {
-      const mainImageInput = document.getElementById("mainImage");
-      const mainUploadBox = getUploadBox(mainImageInput);
-
-      if (!mainImageInput || !mainUploadBox || !pickMainImageColorBtn) return;
-
-      pickMainImageColorBtn.addEventListener("click", function () {
-        const previewImage = mainUploadBox.querySelector(".upload-preview-img");
-
-        if (!mainImageInput.files || !mainImageInput.files[0] || !previewImage) {
-          showClientError("Please upload the main catalog image first.");
-          scrollToElement(mainImageInput);
-          return;
+      onError(message, input) {
+        if (input) {
+          setFieldError(input, message);
+          scrollToElement(input);
         }
 
-        isMainImageColorPickMode = true;
-        mainUploadBox.classList.add("is-color-pick-mode");
-        setImageColorPickStatus("Now tap on the saree main color area. Avoid shadow/highlight.");
-      });
+        showClientError(message);
+      },
 
-      mainUploadBox.addEventListener(
-        "click",
-        function (event) {
-          if (!isMainImageColorPickMode) return;
+      onStatus(message) {
+        setImageColorPickStatus(message);
+      },
 
-          const previewImage = event.target.closest(".upload-preview-img");
-          if (!previewImage) return;
-
-          event.preventDefault();
-          event.stopPropagation();
-
-          try {
-            const pickedColor = pickColorFromPreviewImage(event, previewImage, colorText, colorPicker);
-            stopMainImageColorPickMode(mainUploadBox);
-            setImageColorPickStatus(`Selected ${pickedColor}. You can adjust manually if needed.`);
-          } catch (error) {
-            stopMainImageColorPickMode(mainUploadBox);
-            showClientError(error.message || "Could not pick color from image.");
-          }
-        },
-        true
-      );
-
-      mainImageInput.addEventListener("change", function () {
-        stopMainImageColorPickMode(mainUploadBox);
-        setImageColorPickStatus("After preview loads, tap button and then tap saree color area.");
-      });
-
-      document.addEventListener("keydown", function (event) {
-        if (event.key === "Escape") {
-          stopMainImageColorPickMode(mainUploadBox);
+      onPreviewRendered(input) {
+        if (!isVariantImageInput(input)) {
+          lastProductColorImageInput = input;
         }
-      });
+
+        const wrapper = getFieldWrapper(input);
+        if (wrapper) {
+          wrapper.classList.remove("is-invalid");
+
+          const errorText = wrapper.querySelector(":scope > .field-error-text");
+          if (errorText) errorText.remove();
+        }
+
+        const box = getUploadBox(input);
+        if (box) {
+          box.classList.remove("is-invalid-upload");
+        }
+
+        clearClientError();
+      },
+
+      onRemove(input) {
+        if (lastProductColorImageInput === input) {
+          lastProductColorImageInput = null;
+        }
+      },
+
+      onColorPicked(pickedColor, input) {
+        const card = input?.closest(".variant-card") || null;
+        const textInput = isVariantImageInput(input)
+          ? card?.querySelector('input[name="variant_color_codes"]')
+          : colorText;
+
+        if (textInput) {
+          clearFieldError(textInput);
+        }
+
+        clearClientError();
+      }
+    };
+  }
+
+  function renderUploadPreview(input, file) {
+    if (!imageTools) return;
+
+    imageTools.renderUploadPreviewFromFile(input, file, getImageToolOptions());
+  }
+
+  function clearUploadPreview(input) {
+    if (!imageTools) return;
+
+    imageTools.clearUploadPreview(input, getImageToolOptions());
+
+    if (lastProductColorImageInput === input) {
+      lastProductColorImageInput = null;
+    }
+  }
+
+  function setupImagePreview(inputId) {
+    if (!imageTools) return;
+
+    const input = typeof inputId === "string" ? document.getElementById(inputId) : inputId;
+    imageTools.setupImagePreview(input, getImageToolOptions());
+  }
+
+  function startImageColorPickFromInput(input) {
+    if (!imageTools) return;
+
+    if (!isVariantImageInput(input)) {
+      lastProductColorImageInput = input;
     }
 
-    setupMainImageTapColorPicker();
+    imageTools.startImageColorPickFromInput(input, getImageToolOptions());
+  }
 
+  function stopActiveColorPickMode(message = "") {
+    if (!imageTools) return;
+
+    imageTools.stopActiveColorPickMode(message, getImageToolOptions());
+  }
+
+  function handleImageColorPickClick(event, image, input) {
+    if (!imageTools) return false;
+
+    return imageTools.handleImageColorPickClick(event, image, input, getImageToolOptions());
+  }
+
+  function openImageZoom(image) {
+    if (!imageTools) return;
+
+    imageTools.openImageZoom(image);
+  }
+
+  function closeImageZoom() {
+    if (!imageTools) return;
+
+    imageTools.closeImageZoom();
+  }
   const addVariantBtn = document.getElementById("addVariantBtn");
   const variantsList = document.getElementById("variantsList");
   let variantCount = 0;
 
   function cleanPriceValue(value) {
     const raw = String(value || "").trim();
-
     const beforeDecimal = raw.split(".")[0];
 
     return beforeDecimal.replace(/[^\d]/g, "");
@@ -800,6 +850,22 @@ document.addEventListener("DOMContentLoaded", function () {
     const variantColorText = document.getElementById(variantColorTextId);
     syncColorInputs(variantColorText, variantColorPicker);
 
+    const variantColorCodeField = variantColorText?.closest(".field");
+    if (variantColorCodeField && !variantColorCodeField.querySelector("[data-variant-color-pick='true']")) {
+      const variantColorPickBtn = document.createElement("button");
+      variantColorPickBtn.type = "button";
+      variantColorPickBtn.className = "variant-image-color-pick-btn";
+      variantColorPickBtn.dataset.variantColorPick = "true";
+      variantColorPickBtn.textContent = "Pick color from variant image";
+
+      variantColorPickBtn.addEventListener("click", function () {
+        const imageInput = document.getElementById(variantImageId);
+        startImageColorPickFromInput(imageInput);
+      });
+
+      variantColorCodeField.appendChild(variantColorPickBtn);
+    }
+
     const removeBtn = card.querySelector(".remove-variant-btn");
     if (removeBtn) {
       removeBtn.addEventListener("click", function () {
@@ -902,7 +968,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setFieldError(element, message);
   }
 
-  function validateBaseProduct(errors) {
+  async function validateBaseProduct(errors) {
     const mainImage = document.getElementById("mainImage");
     const productName = document.getElementById("productName");
     const actualPrice = document.getElementById("actualPrice");
@@ -914,14 +980,10 @@ document.addEventListener("DOMContentLoaded", function () {
       addError(errors, categorySelect, "Please select a product category.");
     }
 
-    if (!mainImage || !mainImage.files || !mainImage.files[0]) {
-      addError(errors, mainImage, "Please upload the main catalog image.");
-    } else {
-      try {
-        validateImageFile(mainImage.files[0], "Main catalog image");
-      } catch (error) {
-        addError(errors, mainImage, error.message);
-      }
+    try {
+      await getRequiredImageFile(mainImage, "Main catalog image");
+    } catch (error) {
+      addError(errors, mainImage, error.message || "Please upload the main catalog image.");
     }
 
     if (productName) {
@@ -969,19 +1031,19 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function validateOptionalSequentialImages(errors) {
-    sequentialImageInputs.forEach((item) => {
+  async function validateOptionalSequentialImages(errors) {
+    for (const item of sequentialImageInputs) {
       const input = document.getElementById(item.inputId);
-      const file = input && input.files && input.files[0];
+      const file = await getSelectedFileFromInput(input);
 
-      if (!file) return;
+      if (!file) continue;
 
       try {
         validateImageFile(file, item.label);
       } catch (error) {
         addError(errors, input, error.message);
       }
-    });
+    }
   }
 
   function validateHighlights(errors) {
@@ -1016,19 +1078,19 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function validateVariants(errors) {
+  async function validateVariants(errors) {
     if (!variantsList) return;
 
     const cards = Array.from(variantsList.querySelectorAll(".variant-card"));
 
-    cards.forEach((card, index) => {
+    for (const [index, card] of cards.entries()) {
       const imageInput = card.querySelector('input[name="variant_images"]');
       const colorNameInput = card.querySelector('input[name="variant_color_names"]');
       const colorCodeInput = card.querySelector('input[name="variant_color_codes"]');
       const actualPriceInput = card.querySelector('input[name="variant_actual_prices"]');
       const offerPriceInput = card.querySelector('input[name="variant_offer_prices"]');
 
-      const imageFile = imageInput && imageInput.files && imageInput.files[0];
+      const imageFile = await getSelectedFileFromInput(imageInput);
       const colorName = String(colorNameInput?.value || "").trim();
       const colorCode = String(colorCodeInput?.value || "").trim();
 
@@ -1074,18 +1136,18 @@ document.addEventListener("DOMContentLoaded", function () {
           addError(errors, offerPriceInput, `Variant ${index + 1}: offer price cannot be greater than actual price.`);
         }
       }
-    });
+    }
   }
 
-  function validateFormOrThrow() {
+  async function validateFormOrThrow() {
     const errors = [];
 
     clearValidationState();
 
-    validateBaseProduct(errors);
-    validateOptionalSequentialImages(errors);
+    await validateBaseProduct(errors);
+    await validateOptionalSequentialImages(errors);
     validateHighlights(errors);
-    validateVariants(errors);
+    await validateVariants(errors);
 
     if (!errors.length) return;
 
@@ -1099,28 +1161,31 @@ document.addEventListener("DOMContentLoaded", function () {
     throw error;
   }
 
-  function getSelectedSequentialImages() {
-    return sequentialImageInputs
-      .map((item) => {
-        const input = document.getElementById(item.inputId);
-        const file = input && input.files && input.files[0];
+  async function getSelectedSequentialImages() {
+    const output = [];
 
-        if (!file) return null;
+    for (const item of sequentialImageInputs) {
+      const input = document.getElementById(item.inputId);
+      const file = await getSelectedFileFromInput(input);
 
-        return {
-          ...item,
-          file
-        };
-      })
-      .filter(Boolean);
+      if (!file) continue;
+
+      output.push({
+        ...item,
+        file
+      });
+    }
+
+    return output;
   }
 
-  function getSelectedVariants() {
+  async function getSelectedVariants() {
     if (!variantsList) return [];
 
     const cards = Array.from(variantsList.querySelectorAll(".variant-card"));
+    const output = [];
 
-    return cards.map((card, index) => {
+    for (const [index, card] of cards.entries()) {
       const imageInput = card.querySelector('input[name="variant_images"]');
       const colorNameInput = card.querySelector('input[name="variant_color_names"]');
       const colorCodeInput = card.querySelector('input[name="variant_color_codes"]');
@@ -1131,20 +1196,22 @@ document.addEventListener("DOMContentLoaded", function () {
       cleanPriceInput(actualPriceInput);
       cleanPriceInput(offerPriceInput);
 
-      return {
+      output.push({
         index,
         label: `Variant ${index + 1}`,
-        file: imageInput && imageInput.files ? imageInput.files[0] : null,
+        file: await getSelectedFileFromInput(imageInput),
         colorName: String(colorNameInput?.value || "").trim(),
         colorCode: String(colorCodeInput?.value || "").trim(),
         actualPrice: String(actualPriceInput?.value || "").trim(),
         offerPrice: String(offerPriceInput?.value || "").trim(),
         isAvailable: availableInput && availableInput.checked ? "1" : "0"
-      };
-    });
+      });
+    }
+
+    return output;
   }
 
-  function buildProductCreateFormData() {
+  async function buildProductCreateFormData() {
     const formData = new FormData(productForm);
 
     sequentialImageInputs.forEach((item) => {
@@ -1157,6 +1224,14 @@ document.addEventListener("DOMContentLoaded", function () {
     formData.delete("variant_actual_prices");
     formData.delete("variant_offer_prices");
     formData.delete("variant_is_available");
+
+    const mainImageInput = document.getElementById("mainImage");
+    const mainImageFile = await getSelectedFileFromInput(mainImageInput);
+
+    if (mainImageFile) {
+      formData.delete("main_image");
+      formData.append("main_image", mainImageFile, mainImageFile.name || "main-image");
+    }
 
     return formData;
   }
@@ -1188,7 +1263,7 @@ document.addEventListener("DOMContentLoaded", function () {
   async function createProductFirst() {
     const response = await fetchWithTimeout(productForm.action, {
       method: "POST",
-      body: buildProductCreateFormData(),
+      body: await buildProductCreateFormData(),
       headers: {
         "X-Requested-With": "XMLHttpRequest"
       }
@@ -1208,7 +1283,7 @@ document.addEventListener("DOMContentLoaded", function () {
       throw error;
     }
 
-    return data.product_id;
+    return data;
   }
 
   async function uploadSingleImage(productId, imageItem, index, total) {
@@ -1297,30 +1372,69 @@ document.addEventListener("DOMContentLoaded", function () {
       event.preventDefault();
       clearClientError();
 
+      let productId = null;
+      let editUrl = "";
+
       try {
         cleanAllPriceInputs();
-        validateFormOrThrow();
+        await validateFormOrThrow();
 
-        showSavingOverlay("Saving product details, main image, and variants...");
+        isUploadingProduct = true;
+        showSavingOverlay("Saving product details and main image...");
 
-        const selectedImages = getSelectedSequentialImages();
-        const selectedVariants = getSelectedVariants();
+        const selectedImages = await getSelectedSequentialImages();
+        const selectedVariants = await getSelectedVariants();
 
-        const productId = await createProductFirst();
+        const productCreateData = await createProductFirst();
+
+        productId = productCreateData.product_id;
+        editUrl = productCreateData.edit_url || getEditUrlForProduct(productId);
+
+        if (!productId) {
+          throw new Error("Product was saved, but product ID was not received. Please check dashboard.");
+        }
+
+        getDraftApi()?.markServerProductCreated?.({
+          productId,
+          editUrl,
+          productName: cleanProductNameValue(document.getElementById("productName")?.value)
+        });
+
+        if (selectedImages.length > 0) {
+          setSavingStatus("Uploading extra product images...");
+        }
 
         for (let index = 0; index < selectedImages.length; index += 1) {
           await uploadSingleImage(productId, selectedImages[index], index, selectedImages.length);
+        }
+
+        if (selectedVariants.length > 0) {
+          setSavingStatus("Uploading product variants...");
         }
 
         for (let index = 0; index < selectedVariants.length; index += 1) {
           await uploadSingleVariant(productId, selectedVariants[index], index, selectedVariants.length);
         }
 
+        await getDraftApi()?.clearDraft?.();
+        isUploadingProduct = false;
+
         setSavingStatus("Product saved successfully. Redirecting...");
         window.location.href = productForm.dataset.successUrl;
 
       } catch (error) {
+        isUploadingProduct = false;
         hideSavingOverlay();
+
+        if (productId) {
+          getDraftApi()?.markServerProductCreated?.({
+            productId,
+            editUrl: editUrl || getEditUrlForProduct(productId),
+            productName: cleanProductNameValue(document.getElementById("productName")?.value)
+          });
+        }
+
+        getDraftApi()?.renderDraftBanner?.();
 
         const message = error.message || "Something went wrong. Please try again.";
         showClientError(message, error.errors);
@@ -1332,3 +1446,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+
+
+
+
+
+
+
+
+
+
+

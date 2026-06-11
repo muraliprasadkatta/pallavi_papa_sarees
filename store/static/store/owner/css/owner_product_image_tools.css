@@ -1,0 +1,268 @@
+﻿/* Owner product image preview + color picker shared tools */
+
+.upload-preview-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+  z-index: 1;
+}
+
+.upload-preview-layer {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  z-index: 2;
+  padding: 6px 8px;
+  border-radius: 10px;
+  color: #fff;
+  background: rgba(63, 29, 37, 0.70);
+  backdrop-filter: blur(8px);
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.catalog-upload.has-preview .upload-plus,
+.catalog-upload.has-preview strong,
+.catalog-upload.has-preview small,
+.arrival-upload.has-preview span,
+.arrival-upload.has-preview strong,
+.arrival-upload.has-preview small,
+.top-showcase-upload.has-preview span,
+.top-showcase-upload.has-preview strong,
+.top-showcase-upload.has-preview small,
+.sub-upload.has-preview span,
+.sub-upload.has-preview small,
+.variant-upload.has-preview span,
+.variant-upload.has-preview small {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.upload-preview-actions {
+  position: absolute;
+  inset: 7px 7px auto 7px;
+  z-index: 5;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.upload-preview-actions button {
+  pointer-events: auto;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.upload-color-pick-btn {
+  min-height: 26px;
+  max-width: 92px;
+  padding: 4px 7px;
+  border-radius: 999px;
+  color: #7b1430;
+  background: rgba(255, 255, 255, 0.96);
+  font-size: 9.5px;
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  box-shadow: 0 5px 12px rgba(20, 10, 14, 0.16);
+}
+
+.upload-color-pick-btn:hover {
+  background: #ffeaf1;
+}
+
+.upload-remove-btn {
+  width: 28px;
+  height: 28px;
+  min-width: 28px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(20, 10, 14, 0.78);
+  font-size: 20px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 5px 12px rgba(20, 10, 14, 0.18);
+}
+
+.upload-remove-btn:hover {
+  background: rgba(20, 10, 14, 0.92);
+}
+
+.has-preview .upload-preview-img {
+  cursor: zoom-in;
+}
+
+.is-color-pick-mode {
+  border-color: rgba(143, 23, 49, 0.78) !important;
+  outline: 3px solid rgba(143, 23, 49, 0.20);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 6px rgba(143, 23, 49, 0.09);
+}
+
+.is-color-pick-mode .upload-preview-img {
+  cursor: crosshair;
+}
+
+.is-color-pick-mode::after {
+  content: "Tap saree color";
+  position: absolute;
+  left: 10px;
+  bottom: 52px;
+  z-index: 6;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(63, 29, 37, 0.82);
+  backdrop-filter: blur(8px);
+  font-size: 10.5px;
+  font-weight: 800;
+}
+
+/* Zoom modal */
+.owner-image-zoom {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(0, 0, 0, 0.86);
+}
+
+.owner-image-zoom.is-visible {
+  display: flex;
+}
+
+.owner-image-zoom__frame {
+  width: min(96vw, 760px);
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.owner-image-zoom__img {
+  width: auto;
+  max-width: 100%;
+  max-height: 90vh;
+  border-radius: 16px;
+  object-fit: contain;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+}
+
+.owner-image-zoom__close {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: #111;
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 100000;
+}
+
+.owner-image-zoom-open {
+  overflow: hidden;
+}
+
+/* Main product color tool */
+.image-color-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.image-color-pick-btn {
+  min-height: 31px;
+  border: 1px solid rgba(143, 23, 49, 0.24);
+  background: #fff7fa;
+  color: var(--primary, #8f1731);
+  border-radius: 999px;
+  padding: 0 11px;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(143, 23, 49, 0.08);
+}
+
+.image-color-pick-btn:hover {
+  background: #ffeaf1;
+  transform: translateY(-1px);
+}
+
+.image-color-status {
+  flex: 1 1 180px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 31px;
+  padding: 6px 10px;
+  border-radius: 12px;
+  color: #6f1428;
+  background: rgba(255, 236, 179, 0.75);
+  border: 1px solid rgba(143, 23, 49, 0.16);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* Variant permanent color button */
+.variant-image-color-pick-btn {
+  width: 100%;
+  min-height: 38px;
+  margin-top: 10px;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary, #8f1731), var(--primary-dark, #681021));
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(143, 23, 49, 0.16);
+}
+
+.variant-image-color-pick-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(143, 23, 49, 0.22);
+}
+
+@media (max-width: 420px) {
+  .image-color-tools {
+    align-items: stretch;
+  }
+
+  .image-color-pick-btn {
+    width: 100%;
+  }
+
+  .image-color-status {
+    flex-basis: 100%;
+  }
+}
+
+/* Hide optional color note in owner product forms */
+.color-code-field > small {
+  display: none !important;
+}

@@ -1,4 +1,4 @@
-{% load static %}
+﻿{% load static %}
 <!-- E:\pallavi_papa_sarees\store\templates\store\owner\partials\owner_add_product_form.html -->
 <!doctype html>
 <html lang="en">
@@ -6,8 +6,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Add Products</title>
-  <link rel="stylesheet" href="{% static 'store/owner/css/owner_add_product_form.css' %}?v=20260609-image-color-picker">
-  <script src="{% static 'store/owner/js/owner_add_product_form.js' %}?v=20260609-image-color-picker" defer></script>
+
+  <link rel="stylesheet" href="{% static 'store/owner/css/owner_add_product_form.css' %}?v=20260611-forcefix13">
+  <link rel="stylesheet" href="{% static 'store/owner/css/owner_product_image_tools.css' %}?v=20260611-tools2">
+
+  <script src="{% static 'store/owner/js/product_draft_autosave.js' %}?v=20260611-draft" defer></script>
+  <script src="{% static 'store/owner/js/owner_product_image_tools.js' %}?v=20260611-tools2" defer></script>
+  <script src="{% static 'store/owner/js/owner_add_product_form.js' %}?v=20260611-forcefix17" defer></script>
 </head>
 
 <body>
@@ -28,15 +33,22 @@
   <main class="wrap">
     <section class="form-card">
       <h1>Add Products</h1>
-      <p>Select category first. Then upload product images, color, price, size, stock, highlights, and optional variants.</p>
+      <p>
+        Select category first. Then upload product images, color, price, size, stock, highlights, and optional variants.
+        If upload is interrupted after product creation, you can continue from the edit product page.
+      </p>
 
       <form
         class="product-form"
         method="post"
         enctype="multipart/form-data"
         action="{% url 'store_owner:owner_product_add' %}"
+        data-draft-enabled="true"
+        data-draft-mode="add"
+        data-draft-key="pp_owner_product_add_draft"
         data-upload-url-template="{% url 'store_owner:owner_product_upload_image' 0 %}"
         data-variant-upload-url-template="{% url 'store_owner:owner_product_upload_variant' 0 %}"
+        data-edit-url-template="{% url 'store_owner:owner_product_edit' 0 %}"
         data-success-url="{% url 'store_owner:owner_dashboard' %}"
         data-max-image-mb="5"
         data-max-total-mb="12"
@@ -48,6 +60,7 @@
         {% csrf_token %}
 
         <div class="client-error-box" id="clientErrorBox"></div>
+        <div class="client-resume-box" id="clientResumeBox" hidden></div>
 
 {% if form.errors %}
   <div class="error-box">
@@ -112,7 +125,7 @@
                 <input type="file" id="mainImage" name="main_image" accept="image/*" required>
                 <span class="upload-plus">+</span>
                 <strong>Upload catalog image</strong>
-                <small>Best upload: 1600 × 2000 WebP/JPG/PNG</small>
+                <small>Best upload: 1600 &times; 2000 WebP/JPG/PNG</small>
               </label>
 
               <div class="upload-limit-note">
@@ -133,7 +146,7 @@
                   <small>Only for products marked as New Arrival.</small>
                 </label>
 
-                <div class="upload-limit-note">Max 5MB. Final output: 900 × 1125 WebP.</div>
+                <div class="upload-limit-note">Max 5MB. Final output: 900 &times; 1125 WebP.</div>
 
                 {{ form.arrival_card_image.errors }}
               </div>
@@ -148,7 +161,7 @@
                   <small>Optional. Used only for Top Selling / Most Liked / Most Carted carousel.</small>
                 </label>
 
-                <div class="upload-limit-note">Max 5MB. Final output: 900 × 1000 WebP.</div>
+                <div class="upload-limit-note">Max 5MB. Final output: 900 &times; 1000 WebP.</div>
 
                 {{ form.top_showcase_image.errors }}
               </div>
@@ -157,7 +170,7 @@
                 <label>Sub Images</label>
 
                 <div class="upload-limit-note">
-                  Each sub image max 5MB. Final output: 900 × 1125 WebP.
+                  Each sub image max 5MB. Final output: 900 &times; 1125 WebP.
                 </div>
 
                 <div class="sub-upload-grid">
@@ -205,7 +218,7 @@
                 required
               >
               <small id="productNameHelp">
-                Use 3–80 characters. Add spaces properly; don’t enter one long word.
+                Use 3â€“80 characters. Add spaces properly; donâ€™t enter one long word.
               </small>
               {{ form.name.errors }}
             </div>
@@ -540,3 +553,20 @@
   </div>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
