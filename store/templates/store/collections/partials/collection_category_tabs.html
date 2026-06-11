@@ -4,7 +4,8 @@
   <div class="collection-tabs">
 
     <a href="{% url 'store:collections' %}?category=all"
-       class="collection-tab {% if active_category == 'all' %}is-active{% endif %}">
+      class="collection-tab {% if active_category == 'all' %}is-active{% endif %}"
+      data-no-loader="true">
       <span class="collection-tab__media">
         <img src="{% static 'store/collections/tabs/all.webp' %}" alt="All products">
       </span>
@@ -12,8 +13,9 @@
     </a>
 
     {% for category in categories %}
-      <a href="{% url 'store:collections' %}?category={{ category.slug }}"
-         class="collection-tab {% if active_category == category.slug %}is-active{% endif %}">
+  <a href="{% url 'store:collections' %}?category={{ category.slug }}"
+    class="collection-tab {% if active_category == category.slug %}is-active{% endif %}"
+    data-no-loader="true">
 <span class="collection-tab__media">
   {% if category.image %}
     <img src="{{ category.image.url }}" alt="{{ category.name }}">
@@ -305,8 +307,9 @@
 <script>
   (() => {
     const wrap = document.querySelector(".collection-tabs-wrap");
-
     if (!wrap) return;
+
+    let activeRequestId = 0;
 
     function getAjaxContent() {
       return document.getElementById("collectionsAjaxContent");
@@ -314,6 +317,28 @@
 
     function getActiveTab() {
       return wrap.querySelector(".collection-tab.is-active");
+    }
+
+    function cleanPageUrl(url) {
+      const pageUrl = new URL(url, window.location.origin);
+      pageUrl.searchParams.delete("partial");
+      return pageUrl;
+    }
+
+    function ajaxUrlFromPageUrl(url) {
+      const ajaxUrl = cleanPageUrl(url);
+      ajaxUrl.searchParams.set("partial", "products");
+      return ajaxUrl;
+    }
+
+    function sameVisibleUrl(a, b) {
+      const urlA = cleanPageUrl(a);
+      const urlB = cleanPageUrl(b);
+
+      return (
+        urlA.pathname === urlB.pathname &&
+        urlA.search === urlB.search
+      );
     }
 
     function centerActiveTab(behavior = "auto") {
@@ -333,16 +358,16 @@
 
       wrap.scrollTo({
         left: Math.max(0, targetScroll),
-        behavior,
+        behavior: behavior,
       });
     }
 
     function setActiveTabByUrl(url) {
-      const targetUrl = new URL(url, window.location.origin);
+      const targetUrl = cleanPageUrl(url);
       const targetCategory = targetUrl.searchParams.get("category") || "all";
 
       wrap.querySelectorAll(".collection-tab").forEach((tab) => {
-        const tabUrl = new URL(tab.href, window.location.origin);
+        const tabUrl = cleanPageUrl(tab.href);
         const tabCategory = tabUrl.searchParams.get("category") || "all";
 
         tab.classList.toggle("is-active", tabCategory === targetCategory);
@@ -363,83 +388,95 @@
       ajaxContent.style.transition = "opacity 160ms ease";
     }
 
-    async function loadCategory(url, pushState = true) {
+    async function loadCategory(url, options = {}) {
       const ajaxContent = getAjaxContent();
+      const shouldPushState = options.pushState !== false;
+
+      const pageUrl = cleanPageUrl(url);
+      const ajaxUrl = ajaxUrlFromPageUrl(pageUrl);
 
       if (!ajaxContent) {
-        console.warn("collectionsAjaxContent wrapper missing.");
-        window.location.href = url;
+        window.location.href = pageUrl.toString();
         return;
       }
 
+      const requestId = ++activeRequestId;
       setLoading(true);
 
       try {
-        const response = await fetch(url, {
+        const response = await fetch(ajaxUrl.toString(), {
           method: "GET",
           credentials: "same-origin",
+          cache: "no-store",
           headers: {
             "X-Requested-With": "XMLHttpRequest",
             "Accept": "application/json",
           },
         });
 
+        if (requestId !== activeRequestId) return;
+
         const contentType = response.headers.get("content-type") || "";
 
         if (!response.ok || !contentType.includes("application/json")) {
-          console.error("AJAX failed. Falling back to normal navigation.");
-          window.location.href = url;
+          window.location.href = pageUrl.toString();
           return;
         }
 
         const data = await response.json();
 
         if (!data.ok || !data.html) {
-          console.error("Invalid AJAX response:", data);
-          window.location.href = url;
+          window.location.href = pageUrl.toString();
           return;
         }
 
         ajaxContent.innerHTML = data.html;
 
-        if (pushState) {
+        if (shouldPushState && !sameVisibleUrl(window.location.href, pageUrl)) {
           window.history.pushState(
             { collectionsAjax: true },
             "",
-            url
+            pageUrl.toString()
           );
         }
 
-        setActiveTabByUrl(url);
+        setActiveTabByUrl(pageUrl);
 
       } catch (error) {
         console.error("AJAX category error:", error);
-        window.location.href = url;
+        window.location.href = pageUrl.toString();
       } finally {
-        setLoading(false);
+        if (requestId === activeRequestId) {
+          setLoading(false);
+        }
       }
     }
 
     document.addEventListener("click", function (event) {
       const tab = event.target.closest(".collection-tab");
-
       if (!tab || !wrap.contains(tab)) return;
 
       event.preventDefault();
 
-      const url = tab.href;
-      if (!url) return;
+      const pageUrl = cleanPageUrl(tab.href);
 
-      if (tab.classList.contains("is-active")) {
+      if (sameVisibleUrl(window.location.href, pageUrl)) {
+        setActiveTabByUrl(pageUrl);
         centerActiveTab("smooth");
         return;
       }
 
-      loadCategory(url, true);
+      loadCategory(pageUrl.toString(), { pushState: true });
     });
 
-    window.addEventListener("popstate", () => {
-      loadCategory(window.location.href, false);
+    window.history.replaceState(
+      { collectionsAjax: true },
+      "",
+      cleanPageUrl(window.location.href).toString()
+    );
+
+    window.addEventListener("popstate", function () {
+      loadCategory(window.location.href, { pushState: false });
     });
 
     requestAnimationFrame(() => {

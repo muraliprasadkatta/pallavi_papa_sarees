@@ -1017,4 +1017,100 @@
   75% {
     transform: translateX(4px);
   }
+  
 }
+
+/* Image tap color picker */
+.image-color-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.image-color-pick-btn {
+  min-height: 36px;
+  border: 1px solid rgba(143, 23, 49, 0.24);
+  background: #fff7fa;
+  color: var(--primary);
+  border-radius: 999px;
+  padding: 0 13px;
+  font-size: 12.5px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(143, 23, 49, 0.08);
+}
+
+.image-color-pick-btn:hover {
+  background: #ffeaf1;
+  transform: translateY(-1px);
+}
+
+/* Better highlight for picked color status */
+.image-color-status {
+  flex: 1 1 180px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 8px 11px;
+  border-radius: 12px;
+  color: #6f1428;
+  background: rgba(255, 236, 179, 0.75);
+  border: 1px solid rgba(143, 23, 49, 0.16);
+  font-size: 12.5px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+/* Make the optional color note more readable */
+.color-code-field > small {
+  padding: 9px 11px;
+  border-radius: 12px;
+  color: #6f4f2a;
+  background: rgba(244, 199, 107, 0.16);
+  border: 1px solid rgba(244, 199, 107, 0.26);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.catalog-upload.is-color-pick-mode {
+  border-color: rgba(143, 23, 49, 0.70);
+  outline: 3px solid rgba(143, 23, 49, 0.18);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 6px rgba(143, 23, 49, 0.08);
+}
+
+.catalog-upload.is-color-pick-mode .upload-preview-img {
+  cursor: crosshair;
+}
+
+.catalog-upload.is-color-pick-mode::after {
+  content: "Tap saree color";
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 3;
+  padding: 7px 10px;
+  border-radius: 999px;
+  color: #fff;
+  background: rgba(63, 29, 37, 0.78);
+  backdrop-filter: blur(8px);
+  font-size: 11.5px;
+  font-weight: 900;
+}
+
+@media (max-width: 420px) {
+  .image-color-tools {
+    align-items: stretch;
+  }
+
+  .image-color-pick-btn {
+    width: 100%;
+  }
+
+  .image-color-status {
+    flex-basis: 100%;
+  }
+}
+

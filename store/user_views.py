@@ -5,7 +5,7 @@ from django.db.models.functions import Coalesce
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
-
+from django.utils.cache import patch_vary_headers
 from .models import Category, Product
 
 
@@ -343,20 +343,30 @@ def collections_page(request):
         "new_arrivals": new_arrivals,
     }
 
-    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+    is_products_partial = (
+        request.GET.get("partial") == "products"
+        and request.headers.get("x-requested-with") == "XMLHttpRequest"
+    )
+
+    if is_products_partial:
         html = render_to_string(
             "store/collections/partials/product_grid.html",
             context,
             request=request,
         )
 
-        return JsonResponse({
+        response = JsonResponse({
             "ok": True,
             "html": html,
             "active_category": active_category,
             "page_title": page_title,
             "page_description": page_description,
         })
+
+        response["Cache-Control"] = "no-store, max-age=0"
+        patch_vary_headers(response, ["X-Requested-With"])
+
+        return response
 
     return render(request, "store/collections/collections.html", context)
 

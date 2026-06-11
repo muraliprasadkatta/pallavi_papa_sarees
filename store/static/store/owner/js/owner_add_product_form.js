@@ -433,6 +433,176 @@ document.addEventListener("DOMContentLoaded", function () {
 
   syncColorInputs(colorText, colorPicker);
 
+
+    const pickMainImageColorBtn = document.getElementById("pickMainImageColorBtn");
+    const imageColorPickStatus = document.getElementById("imageColorPickStatus");
+    let isMainImageColorPickMode = false;
+
+    function rgbToHex(r, g, b) {
+      return `#${[r, g, b]
+        .map((value) => value.toString(16).padStart(2, "0"))
+        .join("")}`;
+    }
+
+    function setPickedColor(hexValue, textInput, pickerInput) {
+      if (!hexValue || !textInput || !pickerInput) return;
+
+      textInput.value = hexValue;
+      pickerInput.value = hexValue;
+      clearFieldError(textInput);
+      clearClientError();
+    }
+
+    function setImageColorPickStatus(message) {
+      if (imageColorPickStatus) {
+        imageColorPickStatus.textContent = message;
+      }
+    }
+
+    function stopMainImageColorPickMode(uploadBox) {
+      isMainImageColorPickMode = false;
+
+      if (uploadBox) {
+        uploadBox.classList.remove("is-color-pick-mode");
+      }
+    }
+
+    function getImagePixelPosition(event, image) {
+      const rect = image.getBoundingClientRect();
+
+      const clientX = event.clientX;
+      const clientY = event.clientY;
+
+      const style = window.getComputedStyle(image);
+      const objectFit = style.objectFit || "fill";
+
+      let drawnWidth = rect.width;
+      let drawnHeight = rect.height;
+      let offsetX = 0;
+      let offsetY = 0;
+
+      const naturalRatio = image.naturalWidth / image.naturalHeight;
+      const boxRatio = rect.width / rect.height;
+
+      if (objectFit === "cover") {
+        if (naturalRatio > boxRatio) {
+          drawnHeight = rect.height;
+          drawnWidth = rect.height * naturalRatio;
+          offsetX = (rect.width - drawnWidth) / 2;
+        } else {
+          drawnWidth = rect.width;
+          drawnHeight = rect.width / naturalRatio;
+          offsetY = (rect.height - drawnHeight) / 2;
+        }
+      }
+
+      if (objectFit === "contain") {
+        if (naturalRatio > boxRatio) {
+          drawnWidth = rect.width;
+          drawnHeight = rect.width / naturalRatio;
+          offsetY = (rect.height - drawnHeight) / 2;
+        } else {
+          drawnHeight = rect.height;
+          drawnWidth = rect.height * naturalRatio;
+          offsetX = (rect.width - drawnWidth) / 2;
+        }
+      }
+
+      const displayX = clientX - rect.left - offsetX;
+      const displayY = clientY - rect.top - offsetY;
+
+      const x = Math.max(
+        0,
+        Math.min(image.naturalWidth - 1, Math.round((displayX / drawnWidth) * image.naturalWidth))
+      );
+
+      const y = Math.max(
+        0,
+        Math.min(image.naturalHeight - 1, Math.round((displayY / drawnHeight) * image.naturalHeight))
+      );
+
+      return { x, y };
+    }
+
+    function pickColorFromPreviewImage(event, image, textInput, pickerInput) {
+      if (!image || !image.complete || !image.naturalWidth || !image.naturalHeight) {
+        throw new Error("Image preview is not ready yet. Please try again.");
+      }
+
+      const { x, y } = getImagePixelPosition(event, image);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = image.naturalWidth;
+      canvas.height = image.naturalHeight;
+
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      const pixel = context.getImageData(x, y, 1, 1).data;
+      const hexValue = rgbToHex(pixel[0], pixel[1], pixel[2]);
+
+      setPickedColor(hexValue, textInput, pickerInput);
+
+      return hexValue;
+    }
+
+    function setupMainImageTapColorPicker() {
+      const mainImageInput = document.getElementById("mainImage");
+      const mainUploadBox = getUploadBox(mainImageInput);
+
+      if (!mainImageInput || !mainUploadBox || !pickMainImageColorBtn) return;
+
+      pickMainImageColorBtn.addEventListener("click", function () {
+        const previewImage = mainUploadBox.querySelector(".upload-preview-img");
+
+        if (!mainImageInput.files || !mainImageInput.files[0] || !previewImage) {
+          showClientError("Please upload the main catalog image first.");
+          scrollToElement(mainImageInput);
+          return;
+        }
+
+        isMainImageColorPickMode = true;
+        mainUploadBox.classList.add("is-color-pick-mode");
+        setImageColorPickStatus("Now tap on the saree main color area. Avoid shadow/highlight.");
+      });
+
+      mainUploadBox.addEventListener(
+        "click",
+        function (event) {
+          if (!isMainImageColorPickMode) return;
+
+          const previewImage = event.target.closest(".upload-preview-img");
+          if (!previewImage) return;
+
+          event.preventDefault();
+          event.stopPropagation();
+
+          try {
+            const pickedColor = pickColorFromPreviewImage(event, previewImage, colorText, colorPicker);
+            stopMainImageColorPickMode(mainUploadBox);
+            setImageColorPickStatus(`Selected ${pickedColor}. You can adjust manually if needed.`);
+          } catch (error) {
+            stopMainImageColorPickMode(mainUploadBox);
+            showClientError(error.message || "Could not pick color from image.");
+          }
+        },
+        true
+      );
+
+      mainImageInput.addEventListener("change", function () {
+        stopMainImageColorPickMode(mainUploadBox);
+        setImageColorPickStatus("After preview loads, tap button and then tap saree color area.");
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          stopMainImageColorPickMode(mainUploadBox);
+        }
+      });
+    }
+
+    setupMainImageTapColorPicker();
+
   const addVariantBtn = document.getElementById("addVariantBtn");
   const variantsList = document.getElementById("variantsList");
   let variantCount = 0;

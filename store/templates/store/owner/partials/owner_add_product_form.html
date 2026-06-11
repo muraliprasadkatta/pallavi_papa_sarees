@@ -6,8 +6,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Add Products</title>
-  <link rel="stylesheet" href="{% static 'store/owner/css/owner_add_product_form.css' %}?v=20260604-variant-validation">
-  <script src="{% static 'store/owner/js/owner_add_product_form.js' %}?v=20260608-name-validation" defer></script>
+  <link rel="stylesheet" href="{% static 'store/owner/css/owner_add_product_form.css' %}?v=20260609-image-color-picker">
+  <script src="{% static 'store/owner/js/owner_add_product_form.js' %}?v=20260609-image-color-picker" defer></script>
 </head>
 
 <body>
@@ -114,7 +114,11 @@
                 <strong>Upload catalog image</strong>
                 <small>Best upload: 1600 × 2000 WebP/JPG/PNG</small>
               </label>
-              <div class="upload-limit-note">Max upload size: 5MB. Large phone photos will be compressed automatically.</div>
+
+              <div class="upload-limit-note">
+                Max upload size: 5MB. Large phone photos will be compressed automatically.
+              </div>
+
               {{ form.main_image.errors }}
             </div>
 
@@ -128,6 +132,7 @@
                   <strong>Upload card image</strong>
                   <small>Only for products marked as New Arrival.</small>
                 </label>
+
                 <div class="upload-limit-note">Max 5MB. Final output: 900 × 1125 WebP.</div>
 
                 {{ form.arrival_card_image.errors }}
@@ -142,6 +147,7 @@
                   <strong>Upload carousel image</strong>
                   <small>Optional. Used only for Top Selling / Most Liked / Most Carted carousel.</small>
                 </label>
+
                 <div class="upload-limit-note">Max 5MB. Final output: 900 × 1000 WebP.</div>
 
                 {{ form.top_showcase_image.errors }}
@@ -150,7 +156,9 @@
               <div class="field">
                 <label>Sub Images</label>
 
-                <div class="upload-limit-note">Each sub image max 5MB. Final output: 900 × 1125 WebP.</div>
+                <div class="upload-limit-note">
+                  Each sub image max 5MB. Final output: 900 × 1125 WebP.
+                </div>
 
                 <div class="sub-upload-grid">
                   <label class="sub-upload" for="subImage1">
@@ -227,8 +235,9 @@
               {{ form.color_name.errors }}
             </div>
 
-            <div class="field">
-              <label for="colorCode">Color Code</label>
+            <div class="field color-code-field">
+              <label for="colorCodeText">Color Code</label>
+
               <div class="color-row">
                 <input
                   type="text"
@@ -236,7 +245,10 @@
                   name="color_code"
                   value="{{ request.POST.color_code|default:'#8f1731' }}"
                   placeholder="Example: #2f6b45"
+                  autocomplete="off"
+                  spellcheck="false"
                 >
+
                 <input
                   type="color"
                   id="colorCode"
@@ -244,7 +256,21 @@
                   aria-label="Pick product color"
                 >
               </div>
-              <small>Optional. Helps later for color dots/swatches.</small>
+
+              <div class="image-color-tools">
+                <button type="button" class="image-color-pick-btn" id="pickMainImageColorBtn">
+                  Pick color from main image
+                </button>
+
+                <span class="image-color-status" id="imageColorPickStatus">
+                  Mobile lo main image upload chesi, saree main color area tap cheyyi.
+                </span>
+              </div>
+
+              <small>
+                Optional. Helps later for color dots/swatches. Photo lighting valla shade slightly change avvachu.
+              </small>
+
               {{ form.color_code.errors }}
             </div>
 
