@@ -7,12 +7,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Add Products</title>
 
-  <link rel="stylesheet" href="{% static 'store/owner/css/owner_add_product_form.css' %}?v=20260611-forcefix13">
+  <link rel="stylesheet" href="{% static 'store/owner/css/owner_add_product_form.css' %}?v=20260611-forcefix20">
   <link rel="stylesheet" href="{% static 'store/owner/css/owner_product_image_tools.css' %}?v=20260611-tools2">
 
   <script src="{% static 'store/owner/js/product_draft_autosave.js' %}?v=20260611-draft" defer></script>
   <script src="{% static 'store/owner/js/owner_product_image_tools.js' %}?v=20260611-tools3" defer></script>
-  <script src="{% static 'store/owner/js/owner_add_product_form.js' %}?v=20260611-forcefix17" defer></script>
+  <script src="{% static 'store/owner/js/owner_add_product_form.js' %}?v=20260611-forcefix18" defer></script>
 </head>
 
 <body>
@@ -269,18 +269,7 @@
                   aria-label="Pick product color"
                 >
               </div>
-
-              <div class="image-color-tools">
-                <button type="button" class="image-color-pick-btn" id="pickMainImageColorBtn">
-                  Pick color from main image
-                </button>
-
-                <span class="image-color-status" id="imageColorPickStatus">
-                  Mobile lo main image upload chesi, saree main color area tap cheyyi.
-                </span>
-              </div>
-
-              <small>
+<small>
                 Optional. Helps later for color dots/swatches. Photo lighting valla shade slightly change avvachu.
               </small>
 
@@ -525,16 +514,16 @@
                   Variant image is required whenever you add a variant.
                 </p>
               </div>
-
-              <button type="button" class="add-variant-btn" id="addVariantBtn">
-                + Add more variant
-              </button>
             </div>
 
             <div class="variants-list" id="variantsList"></div>
           </div>
 
-          <div class="form-actions">
+          <div class="form-actions form-actions--product-submit">
+            <button type="button" class="add-variant-btn add-variant-btn--bottom" id="addVariantBtn">
+              + Add another colour
+            </button>
+
             <button type="submit" class="save-btn">
               Save Product
             </button>
@@ -553,6 +542,11 @@
   </div>
 </body>
 </html>
+
+
+
+
+
 
 
 

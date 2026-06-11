@@ -849,24 +849,7 @@ try {
     const variantColorPicker = document.getElementById(variantColorPickerId);
     const variantColorText = document.getElementById(variantColorTextId);
     syncColorInputs(variantColorText, variantColorPicker);
-
-    const variantColorCodeField = variantColorText?.closest(".field");
-    if (variantColorCodeField && !variantColorCodeField.querySelector("[data-variant-color-pick='true']")) {
-      const variantColorPickBtn = document.createElement("button");
-      variantColorPickBtn.type = "button";
-      variantColorPickBtn.className = "variant-image-color-pick-btn";
-      variantColorPickBtn.dataset.variantColorPick = "true";
-      variantColorPickBtn.textContent = "Pick color from variant image";
-
-      variantColorPickBtn.addEventListener("click", function () {
-        const imageInput = document.getElementById(variantImageId);
-        startImageColorPickFromInput(imageInput);
-      });
-
-      variantColorCodeField.appendChild(variantColorPickBtn);
-    }
-
-    const removeBtn = card.querySelector(".remove-variant-btn");
+const removeBtn = card.querySelector(".remove-variant-btn");
     if (removeBtn) {
       removeBtn.addEventListener("click", function () {
         card.remove();
@@ -1446,6 +1429,7 @@ try {
     });
   }
 });
+
 
 
 

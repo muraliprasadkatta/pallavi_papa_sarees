@@ -1136,3 +1136,31 @@ body {
 }
 
 
+
+/* Bottom product actions */
+.form-actions--product-submit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.add-variant-btn--bottom {
+  min-width: 210px;
+}
+
+.form-actions--product-submit .save-btn {
+  margin-left: auto;
+}
+
+@media (max-width: 767px) {
+  .form-actions--product-submit {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .add-variant-btn--bottom,
+  .form-actions--product-submit .save-btn {
+    width: 100%;
+  }
+}
