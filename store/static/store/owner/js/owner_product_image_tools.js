@@ -115,7 +115,7 @@
 
     if (!modalImg) return;
 
-    modalImg.src = image.src;
+    modalImg.src = image.currentSrc || image.src;
     modalImg.alt = image.alt || "Image preview";
 
     modal.hidden = false;
@@ -243,11 +243,17 @@
       box.appendChild(fileName);
     }
 
-    if (options.revokeUrlOnLoad) {
-      previewImg.onload = function () {
-        URL.revokeObjectURL(imageUrl);
-      };
+    const oldObjectUrl = previewImg.dataset.objectUrl || "";
+
+    if (oldObjectUrl && oldObjectUrl !== imageUrl && oldObjectUrl.startsWith("blob:")) {
+      URL.revokeObjectURL(oldObjectUrl);
+    }
+
+    if (options.revokeUrlOnLoad && imageUrl.startsWith("blob:")) {
+      previewImg.dataset.objectUrl = imageUrl;
+      previewImg.onload = null;
     } else {
+      delete previewImg.dataset.objectUrl;
       previewImg.onload = null;
     }
 
@@ -274,7 +280,15 @@
     const fileName = box.querySelector(".upload-preview-layer");
     const controls = box.querySelector(".upload-preview-actions");
 
-    if (previewImg) previewImg.remove();
+    if (previewImg) {
+      const objectUrl = previewImg.dataset.objectUrl || "";
+
+      if (objectUrl && objectUrl.startsWith("blob:")) {
+        URL.revokeObjectURL(objectUrl);
+      }
+
+      previewImg.remove();
+    }
     if (fileName) fileName.remove();
     if (controls) controls.remove();
 
@@ -635,3 +649,4 @@
     closeImageZoom
   };
 })();
+
