@@ -1432,13 +1432,3 @@ const removeBtn = card.querySelector(".remove-variant-btn");
 
 
 
-
-
-
-
-
-
-
-
-
-

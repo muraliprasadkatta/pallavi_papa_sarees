@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Category, Product, ProductVariant
+from .models import Category, Product, ProductHighlight, ProductVariant
 
 
 @admin.register(Category)
@@ -70,6 +70,17 @@ class CategoryAdmin(admin.ModelAdmin):
     image_preview.short_description = "Category Image"
 
 
+class ProductHighlightInline(admin.TabularInline):
+    model = ProductHighlight
+    extra = 1
+
+    fields = (
+        "label",
+        "value",
+        "sort_order",
+    )
+
+
 class ProductVariantInline(admin.StackedInline):
     model = ProductVariant
     extra = 0
@@ -109,7 +120,10 @@ class ProductVariantInline(admin.StackedInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    inlines = [ProductVariantInline]
+    inlines = [
+        ProductHighlightInline,
+        ProductVariantInline,
+    ]
 
     list_display = (
         "id",
