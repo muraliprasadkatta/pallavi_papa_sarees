@@ -20,8 +20,17 @@
       <p>Create rows like Popular Picks, Budget Friendly, Premium Pattu Picks, Wedding Specials etc.</p>
     </div>
 
-    <form method="post" class="owner-row-card" novalidate>
+    <form
+      method="post"
+      class="owner-row-card product-form"
+      data-draft-enabled="true"
+      data-draft-mode="add"
+      data-draft-key="pp_owner_home_row_add_draft"
+      novalidate
+    >
       {% csrf_token %}
+
+      <div class="client-resume-box owner-draft-resume" id="clientResumeBox" hidden></div>
 
       {% if form.non_field_errors %}
         <div class="owner-form-error">
@@ -162,6 +171,34 @@
   background: rgba(255, 255, 255, .92);
   border: 1px solid rgba(35, 35, 35, .08);
   box-shadow: 0 16px 38px rgba(46, 30, 26, .08);
+}
+
+.owner-draft-resume {
+  margin-bottom: 16px;
+  padding: 13px 14px;
+  border: 1px solid rgba(23, 107, 77, .22);
+  border-radius: 14px;
+  background: rgba(23, 107, 77, .07);
+  color: #17372c;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.owner-draft-resume[hidden] {
+  display: none;
+}
+
+.owner-draft-resume button {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: #176b4d;
+  color: #fff;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
 }
 
 .owner-field {
@@ -315,5 +352,7 @@
   }
 }
 </style>
+
+<script src="{% static 'store/owner/js/product_draft_autosave.js' %}?v=20260615-home-row-draft1" defer></script>
 
 {% endblock %}
