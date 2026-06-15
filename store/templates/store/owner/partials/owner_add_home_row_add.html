@@ -64,6 +64,15 @@
         {% endif %}
       </div>
 
+      <div class="owner-field">
+        <label for="{{ form.display_after.id_for_label }}">Display After</label>
+        {{ form.display_after }}
+        <small class="field-help" id="display-after-help">Choose the homepage section after which this custom row should appear.</small>
+        {% if form.display_after.errors %}
+          <small class="field-error">{{ form.display_after.errors|striptags }}</small>
+        {% endif %}
+      </div>
+
       <div class="owner-row-grid">
         <div class="owner-field">
           <label for="{{ form.sort_order.id_for_label }}">Sort Order</label>
