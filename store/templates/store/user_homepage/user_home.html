@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static home_rows %}
 
 {% block title %}Pallavi Papa Sarees Collections | Pattu, Silk & Designer Sarees{% endblock %}
 
@@ -21,24 +21,22 @@
 
 {% block content %}
 
-  {# Collection page URL once define chesi partials ki pass chestunnam #}
   {% url 'store:collections' as collection_page_url %}
 
   {% include "store/user_homepage/partials/top_slider.html" %}
 
-  {# Shop by Collection section #}
   {% include "store/user_homepage/partials/collection_discovery.html" with collection_page_url=collection_page_url collection_focus="shop" %}
   {% include "store/user_homepage/partials/popular_items.html" %}
 
   {% include "store/user_homepage/partials/shop_by_price.html" %}
-  {# New Arrivals section #}
   {% include "store/user_homepage/partials/new_arrivals_preview.html" with collection_page_url=collection_page_url collection_focus="new" %}
+
+  {% render_owner_home_rows %}
 
 {% comment %}
   Trending Collection section removed for now
   {% include "store/user_homepage/partials/trending_collections.html" with collection_page_url=collection_page_url collection_focus="trending" %}
 {% endcomment %}
-
 
   {% include "store/user_homepage/partials/top_sale_products.html" %}
   {% include "store/user_homepage/partials/homepage_promo_banner.html" %}
