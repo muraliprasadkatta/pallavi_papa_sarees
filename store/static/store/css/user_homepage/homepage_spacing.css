@@ -1,0 +1,32 @@
+body.user-home-template {
+  --home-section-edge-space: 10px;
+}
+
+body.user-home-template .main > section:not(.top-slider):not(.collection-discovery),
+body.user-home-template .main > .site-footer {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  padding-top: var(--home-section-edge-space) !important;
+  padding-bottom: var(--home-section-edge-space) !important;
+}
+
+body.user-home-template .special-offers-section {
+  overflow-x: clip !important;
+  padding-bottom: calc(var(--home-section-edge-space) + 22px) !important;
+}
+
+body.user-home-template .special-offers-card {
+  max-width: calc(100% - 6px);
+}
+
+@media (max-width: 767px) {
+  body.user-home-template {
+    --home-section-edge-space: 6px;
+  }
+}
+
+@media (max-width: 360px) {
+  body.user-home-template {
+    --home-section-edge-space: 5px;
+  }
+}

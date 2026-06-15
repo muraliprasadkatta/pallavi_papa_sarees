@@ -696,10 +696,15 @@
     display: block;
   }
 
-  .pd-related-swipe {
+  .pd-related-subrow {
+    min-width: 0;
+  }
+
+  .pd-related--slider .pd-related-head .pd-related-swipe {
     flex: 0 0 auto;
     display: inline-flex;
     align-items: center;
+    margin: 0;
     min-height: 25px;
     padding: 6px 9px;
     border-radius: 999px;
@@ -712,6 +717,10 @@
     letter-spacing: 0.04em;
     text-transform: uppercase;
     white-space: nowrap;
+  }
+
+  .pd-related--slider .pd-related-head .pd-related-swipe--mobile {
+    display: none;
   }
 
   .pd-related-rail-wrap {
@@ -773,20 +782,27 @@
   }
 
   .pd-related-slide .product-info h3 {
-    font-size: 12.5px;
-    line-height: 1.15;
-    letter-spacing: -0.01em;
+    margin: 0 0 4px;
+    min-height: 0;
+    max-height: 2.36em;
+    font-size: 14px;
+    line-height: 1.18;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: #20242c;
   }
 
   .pd-related-slide .product-category {
-    margin-top: 6px;
-    font-size: 9px;
-    line-height: 1.1;
-    letter-spacing: 0.08em;
+    margin: 0 0 6px;
+    font-size: 9.5px;
+    line-height: 1.15;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    color: #747b86;
   }
 
   .pd-related-slide .product-price {
-    margin-top: 6px;
+    margin-top: auto;
     gap: 4px;
   }
 
@@ -897,7 +913,7 @@
       gap: 14px;
     }
 
-    .pd-related-swipe {
+    .pd-related--slider .pd-related-head .pd-related-swipe {
       display: none;
     }
   }
@@ -1063,12 +1079,42 @@
       padding-top: 13px;
     }
 
-    .pd-related--slider .pd-related-head h2 {
-      font-size: 20px;
+    .pd-related--slider .pd-related-head {
+      align-items: flex-start;
     }
 
-    .pd-related--slider .pd-related-head p {
-      font-size: 10.5px;
+    .pd-related--slider .pd-related-head > div {
+      width: 100%;
+      min-width: 0;
+    }
+
+    .pd-related--slider .pd-related-head h2 {
+      font-size: 16.5px;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .pd-related-subrow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 5px;
+    }
+
+    .pd-related--slider .pd-related-head .pd-related-subrow p {
+      min-width: 0;
+      margin: 0;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    .pd-related--slider .pd-related-head .pd-related-swipe--desktop {
+      display: none;
+    }
+
+    .pd-related--slider .pd-related-head .pd-related-swipe--mobile {
+      display: inline-flex;
     }
 
     .pd-related-slide {
@@ -1159,10 +1205,11 @@
     }
 
     .pd-related--slider .pd-related-head h2 {
-      font-size: 18.5px;
+      font-size: 15.5px;
+      line-height: 1.1;
     }
 
-    .pd-related-swipe {
+    .pd-related--slider .pd-related-head .pd-related-swipe {
       min-height: 23px;
       padding: 5px 7px;
       font-size: 8.5px;

@@ -276,7 +276,7 @@
 
     .arrival-product {
       border-radius: 16px;
-      aspect-ratio: 4 / 4.85;
+      aspect-ratio: 0.72 / 1;
     }
 
     .arrival-image-box {
@@ -310,8 +310,18 @@
       gap: 8px;
     }
 
+    .arrival-product {
+      aspect-ratio: 0.68 / 1;
+    }
+
     .arrival-head h2 {
       font-size: 21px;
+    }
+  }
+
+  @media (min-width: 361px) and (max-width: 480px) {
+    .arrival-product {
+      aspect-ratio: 0.70 / 1;
     }
   }
 </style>

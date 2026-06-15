@@ -2,6 +2,7 @@
 {% load static home_rows %}
 
 {% block title %}Pallavi Papa Sarees Collections | Pattu, Silk & Designer Sarees{% endblock %}
+{% block body_class %}user-home-template{% endblock %}
 
 {% block meta %}
   <meta name="description" content="Shop elegant pattu sarees, silk sarees, cotton sarees and designer saree collections from Pallavi Papa Sarees Collections. Browse new arrivals and contact us on WhatsApp for orders.">
@@ -16,7 +17,58 @@
 {% endblock %}
 
 {% block extra_css %}
-  <link rel="stylesheet" href="{% static 'store/css/collections/product_card.css' %}">
+  <link rel="stylesheet" href="{% static 'store/css/collections/product_card.css' %}?v=20260615-card-typography1">
+  <link rel="stylesheet" href="{% static 'store/css/user_homepage/homepage_spacing.css' %}?v=20260615-home-spacing2">
+
+  <style>
+    body.user-home-template .collection-head h2,
+    body.user-home-template .popular-items-head h2,
+    body.user-home-template .shop-price__head h2,
+    body.user-home-template .arrival-head h2,
+    body.user-home-template .trend-head h2,
+    body.user-home-template .order-head__center h2,
+    body.user-home-template .why-choose-head h2,
+    body.user-home-template .customer-testimonials-head h2,
+    body.user-home-template .trending-collections-head h2 {
+      color: #176b4d !important;
+    }
+
+    @media (max-width: 767px) {
+      body.user-home-template .collection-head h2,
+      body.user-home-template .popular-items-head h2,
+      body.user-home-template .arrival-head h2 {
+        font-size: 18px !important;
+        line-height: 1.1 !important;
+      }
+
+      body.user-home-template .shop-price__head h2,
+      body.user-home-template .trend-head h2 {
+        font-size: 19px !important;
+        line-height: 1.1 !important;
+      }
+
+      body.user-home-template .order-head__center h2,
+      body.user-home-template .why-choose-head h2,
+      body.user-home-template .customer-testimonials-head h2,
+      body.user-home-template .trending-collections-head h2 {
+        font-size: 14px !important;
+        line-height: 1.12 !important;
+      }
+    }
+
+    @media (max-width: 360px) {
+      body.user-home-template .collection-head h2,
+      body.user-home-template .popular-items-head h2,
+      body.user-home-template .arrival-head h2 {
+        font-size: 17px !important;
+      }
+
+      body.user-home-template .shop-price__head h2,
+      body.user-home-template .trend-head h2 {
+        font-size: 18px !important;
+      }
+    }
+  </style>
 {% endblock %}
 
 {% block content %}
@@ -26,12 +78,16 @@
   {% include "store/user_homepage/partials/top_slider.html" %}
 
   {% include "store/user_homepage/partials/collection_discovery.html" with collection_page_url=collection_page_url collection_focus="shop" %}
+  {% render_owner_home_rows "shop_by_collection" %}
+
   {% include "store/user_homepage/partials/popular_items.html" %}
+  {% render_owner_home_rows "popular_items" %}
 
   {% include "store/user_homepage/partials/shop_by_price.html" %}
-  {% include "store/user_homepage/partials/new_arrivals_preview.html" with collection_page_url=collection_page_url collection_focus="new" %}
+  {% render_owner_home_rows "shop_by_price" %}
 
-  {% render_owner_home_rows %}
+  {% include "store/user_homepage/partials/new_arrivals_preview.html" with collection_page_url=collection_page_url collection_focus="new" %}
+  {% render_owner_home_rows "new_arrivals" %}
 
 {% comment %}
   Trending Collection section removed for now
@@ -39,8 +95,12 @@
 {% endcomment %}
 
   {% include "store/user_homepage/partials/top_sale_products.html" %}
+  {% render_owner_home_rows "top_sale_products" %}
+
   {% include "store/user_homepage/partials/homepage_promo_banner.html" %}
   {% include "store/user_homepage/partials/special_offers.html" %}
+  {% render_owner_home_rows "special_offers" %}
+
   {% include "store/user_homepage/partials/how_to_order.html" %}
   {% include "store/user_homepage/partials/why_choose_pallavi.html" %}
   {% include "store/user_homepage/partials/featured_collection_slider.html" %}

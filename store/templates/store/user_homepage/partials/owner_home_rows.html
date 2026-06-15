@@ -15,40 +15,7 @@
 
       <div class="popular-items-grid">
         {% for p in row.homepage_products|slice:":8" %}
-          {% url 'store:product_detail' p.id as product_detail_url %}
-          <article class="popular-items-card">
-            <a href="{{ product_detail_url }}" class="popular-items-card-link">
-              <div class="popular-items-art">
-                {% if p.arrival_card_image %}
-                  <img src="{{ p.arrival_card_image.url }}" alt="{{ p.name }}" loading="lazy" decoding="async">
-                {% else %}
-                  <img src="{{ p.main_image.url }}" alt="{{ p.name }}" loading="lazy" decoding="async">
-                {% endif %}
-              </div>
-
-              <strong class="popular-items-tag">
-                {% if p.offer_price %}
-                  ₹{{ p.offer_price|floatformat:0 }}
-                {% else %}
-                  ₹{{ p.actual_price|floatformat:0 }}
-                {% endif %}
-              </strong>
-            </a>
-
-            <button
-              class="product-heart popular-items-heart"
-              type="button"
-              aria-label="Add {{ p.name }} to favorites"
-              aria-pressed="false"
-              data-favorite-toggle
-              data-product-id="{{ p.id }}"
-              data-product-name="{{ p.name }}"
-              data-product-category="{% if p.category %}{{ p.category.name }}{% endif %}"
-              data-product-price="{% if p.offer_price %}{{ p.offer_price|floatformat:0 }}{% else %}{{ p.actual_price|floatformat:0 }}{% endif %}"
-              data-product-image="{% if p.arrival_card_image %}{{ p.arrival_card_image.url }}{% else %}{{ p.main_image.url }}{% endif %}"
-              data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
-            >♥</button>
-          </article>
+          {% include "store/collections/partials/product_card.html" with p=p hide_product_overlays=True %}
         {% endfor %}
       </div>
     </div>

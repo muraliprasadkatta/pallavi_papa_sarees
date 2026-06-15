@@ -351,11 +351,17 @@
 
   .popular-items-card {
     border-radius: 16px;
+    aspect-ratio: 0.72 / 1;
+  }
+
+  .popular-items-card-link {
+    height: 100%;
   }
 
   .popular-items-art {
+    height: 100%;
     border-radius: 16px;
-    aspect-ratio: 4 / 4.85;
+    aspect-ratio: auto;
   }
 
   .popular-items-tag {
@@ -376,6 +382,10 @@
     gap: 8px;
   }
 
+  .popular-items-card {
+    aspect-ratio: 0.68 / 1;
+  }
+
   .popular-items-head h2 {
     font-size: 21px;
   }
@@ -388,6 +398,12 @@
     min-width: 58px;
     min-height: 26px;
     font-size: 13px;
+  }
+}
+
+@media (min-width: 361px) and (max-width: 480px) {
+  .popular-items-card {
+    aspect-ratio: 0.70 / 1;
   }
 }
 </style>

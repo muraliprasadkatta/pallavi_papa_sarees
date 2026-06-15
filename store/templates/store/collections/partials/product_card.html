@@ -16,32 +16,34 @@
           loading="lazy"
         >
 
-        {% if p.has_offer %}
-          <span class="product-offer">
-            {% if p.discount_percentage %}
-              {{ p.discount_percentage }}% Off
-            {% else %}
-              Offer
-            {% endif %}
-          </span>
-        {% elif p.is_new_arrival %}
-          <span class="product-offer">New</span>
-        {% endif %}
+        {% if not hide_product_overlays %}
+          {% if p.has_offer %}
+            <span class="product-offer">
+              {% if p.discount_percentage %}
+                {{ p.discount_percentage }}% Off
+              {% else %}
+                Offer
+              {% endif %}
+            </span>
+          {% elif p.is_new_arrival %}
+            <span class="product-offer">New</span>
+          {% endif %}
 
-        <button
-          class="product-heart"
-          type="button"
-          aria-label="Add to wishlist"
-          data-favorite-toggle
-          data-product-id="{{ p.id }}"
-          data-product-name="{{ p.name }}"
-          data-product-category="{% if p.category %}{{ p.category.name }}{% endif %}"
-          data-product-price="{% if p.offer_price %}{{ p.offer_price|floatformat:0 }}{% else %}{{ p.actual_price|floatformat:0 }}{% endif %}"
-          data-product-image="{{ card_image.url }}"
-          data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
-        >
-          ♥
-        </button>
+          <button
+            class="product-heart"
+            type="button"
+            aria-label="Add to wishlist"
+            data-favorite-toggle
+            data-product-id="{{ p.id }}"
+            data-product-name="{{ p.name }}"
+            data-product-category="{% if p.category %}{{ p.category.name }}{% endif %}"
+            data-product-price="{% if p.offer_price %}{{ p.offer_price|floatformat:0 }}{% else %}{{ p.actual_price|floatformat:0 }}{% endif %}"
+            data-product-image="{{ card_image.url }}"
+            data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
+          >
+            ♥
+          </button>
+        {% endif %}
       </div>
 
       <div class="product-info">
@@ -86,32 +88,34 @@
           >
         {% endif %}
 
-        {% if p.has_offer %}
-          <span class="product-offer">
-            {% if p.discount_percentage %}
-              {{ p.discount_percentage }}% Off
-            {% else %}
-              Offer
-            {% endif %}
-          </span>
-        {% elif p.is_new_arrival %}
-          <span class="product-offer">New</span>
-        {% endif %}
+        {% if not hide_product_overlays %}
+          {% if p.has_offer %}
+            <span class="product-offer">
+              {% if p.discount_percentage %}
+                {{ p.discount_percentage }}% Off
+              {% else %}
+                Offer
+              {% endif %}
+            </span>
+          {% elif p.is_new_arrival %}
+            <span class="product-offer">New</span>
+          {% endif %}
 
-        <button
-          class="product-heart"
-          type="button"
-          aria-label="Add to wishlist"
-          data-favorite-toggle
-          data-product-id="{{ p.id }}"
-          data-product-name="{{ p.name }}"
-          data-product-category="{% if p.category %}{{ p.category.name }}{% endif %}"
-          data-product-price="{% if p.offer_price %}{{ p.offer_price|floatformat:0 }}{% else %}{{ p.actual_price|floatformat:0 }}{% endif %}"
-          data-product-image="{% if card_image %}{{ card_image.url }}{% endif %}"
-          data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
-        >
-          ♥
-        </button>
+          <button
+            class="product-heart"
+            type="button"
+            aria-label="Add to wishlist"
+            data-favorite-toggle
+            data-product-id="{{ p.id }}"
+            data-product-name="{{ p.name }}"
+            data-product-category="{% if p.category %}{{ p.category.name }}{% endif %}"
+            data-product-price="{% if p.offer_price %}{{ p.offer_price|floatformat:0 }}{% else %}{{ p.actual_price|floatformat:0 }}{% endif %}"
+            data-product-image="{% if card_image %}{{ card_image.url }}{% endif %}"
+            data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
+          >
+            ♥
+          </button>
+        {% endif %}
       </div>
 
       <div class="product-info">
