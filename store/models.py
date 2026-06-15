@@ -128,12 +128,24 @@ class Category(models.Model):
         return self.name
 
 
-
-
 class OwnerHomePageRow(models.Model):
+    class DisplayAfter(models.TextChoices):
+        SHOP_BY_COLLECTION = "shop_by_collection", "After Shop by Collection"
+        POPULAR_ITEMS = "popular_items", "After Popular Items"
+        SHOP_BY_PRICE = "shop_by_price", "After Shop by Price"
+        NEW_ARRIVALS = "new_arrivals", "After New Arrivals"
+        TOP_SALE_PRODUCTS = "top_sale_products", "After Top Sale Products"
+        SPECIAL_OFFERS = "special_offers", "After Special Offers"
+
     name = models.CharField(max_length=80)
     slug = models.SlugField(max_length=100, unique=True)
     subtitle = models.CharField(max_length=160, blank=True)
+    display_after = models.CharField(
+        max_length=40,
+        choices=DisplayAfter.choices,
+        default=DisplayAfter.NEW_ARRIVALS,
+        db_index=True,
+    )
     is_active = models.BooleanField(default=True)
     sort_order = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -145,7 +157,6 @@ class OwnerHomePageRow(models.Model):
 
     def __str__(self):
         return self.name
-
 
 
 class Product(models.Model):
@@ -285,7 +296,6 @@ class Product(models.Model):
         discount = ((actual_price - offer_price) * Decimal("100")) / actual_price
 
         return int(discount.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
-
 
     def clean(self):
         super().clean()
@@ -452,8 +462,7 @@ class ProductVariant(models.Model):
         discount = ((actual_price - offer_price) * Decimal("100")) / actual_price
 
         return int(discount.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
-    
-    
+
     def clean(self):
         super().clean()
 
