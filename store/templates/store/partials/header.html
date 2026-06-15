@@ -1,17 +1,27 @@
+{% url 'store:user_home' as home_url %}
 {% url 'store:cart' as cart_url %}
 
 <header class="site-header">
   <div class="header-inner">
 
-    <!-- Left menu -->
-    <button class="header-icon header-menu" type="button" aria-label="Open menu">
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 7h16M4 12h16M4 17h16"/>
-      </svg>
-    </button>
+    {% if request.resolver_match.url_name == "user_home" %}
+      <!-- Left menu -->
+      <button class="header-icon header-menu" type="button" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16"/>
+        </svg>
+      </button>
+    {% else %}
+      <!-- Back navigation -->
+      <button class="header-icon header-back" type="button" aria-label="Back">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 5L8 12l7 7"/>
+        </svg>
+      </button>
+    {% endif %}
 
     <!-- Center brand -->
-    <a href="{% url 'store:user_home' %}" class="brand-center" aria-label="Pallavi Papa Sarees home">
+    <a href="{{ home_url }}" class="brand-center" aria-label="Pallavi Papa Sarees home">
       <strong>Pallavi Papa</strong>
       <small>Collections</small>
     </a>
@@ -153,6 +163,19 @@
   fill: none !important;
   stroke: currentColor !important;
   stroke-width: 1.9 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+.site-header .header-back svg {
+  width: clamp(25px, 4.4vw, 32px) !important;
+  height: clamp(25px, 4.4vw, 32px) !important;
+}
+
+.site-header .header-back svg path {
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 2.1 !important;
   stroke-linecap: round !important;
   stroke-linejoin: round !important;
 }
@@ -300,6 +323,40 @@
   }
 }
 </style>
+
+<script>
+  (function () {
+    const backButton = document.querySelector(".site-header .header-back");
+    if (!backButton) return;
+
+    backButton.addEventListener("click", function (event) {
+      event.preventDefault();
+
+      const loader = document.getElementById("ppPageLoader");
+      if (loader) {
+        loader.classList.remove("is-hidden");
+        document.body.classList.add("pp-page-busy");
+      }
+
+      window.setTimeout(function () {
+        let hasSameOriginReferrer = false;
+
+        try {
+          hasSameOriginReferrer = Boolean(document.referrer)
+            && new URL(document.referrer).origin === window.location.origin;
+        } catch (error) {
+          hasSameOriginReferrer = false;
+        }
+
+        if (hasSameOriginReferrer && window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = "{{ home_url }}";
+        }
+      }, 90);
+    });
+  })();
+</script>
 
 <script>
   (function () {

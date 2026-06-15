@@ -16,32 +16,50 @@
       <div class="arrival-grid">
 
         {% for p in new_arrivals %}
-          <a
-            class="arrival-product"
-            href="{% url 'store:product_detail' p.id %}"
-            aria-label="{{ p.name }}"
-          >
-            <div class="arrival-image-box">
-              {% if p.arrival_card_image %}
-                <img
-                  src="{{ p.arrival_card_image.url }}"
-                  alt="{{ p.name }}"
-                  loading="lazy"
-                  decoding="async"
-                >
-              {% elif p.main_image %}
-                <img
-                  src="{{ p.main_image.url }}"
-                  alt="{{ p.name }}"
-                  loading="lazy"
-                  decoding="async"
-                >
-              {% endif %}
-            </div>
+          {% url 'store:product_detail' p.id as product_detail_url %}
+          <article class="arrival-product">
+            <a
+              class="arrival-product-link"
+              href="{{ product_detail_url }}"
+              aria-label="{{ p.name }}"
+            >
+              <div class="arrival-image-box">
+                {% if p.arrival_card_image %}
+                  <img
+                    src="{{ p.arrival_card_image.url }}"
+                    alt="{{ p.name }}"
+                    loading="lazy"
+                    decoding="async"
+                  >
+                {% elif p.main_image %}
+                  <img
+                    src="{{ p.main_image.url }}"
+                    alt="{{ p.name }}"
+                    loading="lazy"
+                    decoding="async"
+                  >
+                {% endif %}
+              </div>
 
-            <span class="arrival-pill">New ✨</span>
-            <span class="arrival-heart" aria-hidden="true">♥</span>
-          </a>
+              <span class="arrival-pill">New ✨</span>
+            </a>
+
+            <button
+              class="product-heart arrival-heart"
+              type="button"
+              aria-label="Add to favorites"
+              aria-pressed="false"
+              data-favorite-toggle
+              data-product-id="{{ p.id }}"
+              data-product-name="{{ p.name }}"
+              data-product-category="{% if p.category %}{{ p.category.name }}{% endif %}"
+              data-product-price="{% if p.offer_price %}{{ p.offer_price|floatformat:0 }}{% else %}{{ p.actual_price|floatformat:0 }}{% endif %}"
+              data-product-image="{% if p.arrival_card_image %}{{ p.arrival_card_image.url }}{% elif p.main_image %}{{ p.main_image.url }}{% endif %}"
+              data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
+            >
+              ♥
+            </button>
+          </article>
         {% endfor %}
 
       </div>
@@ -131,6 +149,14 @@
     border: 1px solid rgba(91, 7, 16, .09);
     box-shadow: 0 10px 24px rgba(82, 20, 30, .10);
     transform: translateZ(0);
+  }
+
+  .arrival-product-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    color: inherit;
+    text-decoration: none;
   }
 
   .arrival-product::after {

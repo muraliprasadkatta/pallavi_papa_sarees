@@ -19,33 +19,52 @@
     <div class="popular-items-grid">
 
       {% for p in popular_items %}
-        <a href="{% url 'store:product_detail' p.id %}" class="popular-items-card">
-          <div class="popular-items-art">
-            {% if p.arrival_card_image %}
-              <img
-                src="{{ p.arrival_card_image.url }}"
-                alt="{{ p.name }}"
-                loading="lazy"
-              >
-            {% elif p.main_image %}
-              <img
-                src="{{ p.main_image.url }}"
-                alt="{{ p.name }}"
-                loading="lazy"
-              >
-            {% else %}
-              <span class="popular-items-shine"></span>
-            {% endif %}
-          </div>
+        {% url 'store:product_detail' p.id as product_detail_url %}
+        <article class="popular-items-card">
+          <a href="{{ product_detail_url }}" class="popular-items-card-link">
+            <div class="popular-items-art">
+              {% if p.arrival_card_image %}
+                <img
+                  src="{{ p.arrival_card_image.url }}"
+                  alt="{{ p.name }}"
+                  loading="lazy"
+                >
+              {% elif p.main_image %}
+                <img
+                  src="{{ p.main_image.url }}"
+                  alt="{{ p.name }}"
+                  loading="lazy"
+                >
+              {% else %}
+                <span class="popular-items-shine"></span>
+              {% endif %}
+            </div>
 
-          <strong class="popular-items-tag">
-            {% if p.offer_price %}
-              ₹{{ p.offer_price|floatformat:0 }}
-            {% else %}
-              ₹{{ p.actual_price|floatformat:0 }}
-            {% endif %}
-          </strong>
-        </a>
+            <strong class="popular-items-tag">
+              {% if p.offer_price %}
+                ₹{{ p.offer_price|floatformat:0 }}
+              {% else %}
+                ₹{{ p.actual_price|floatformat:0 }}
+              {% endif %}
+            </strong>
+          </a>
+
+          <button
+            class="product-heart popular-items-heart"
+            type="button"
+            aria-label="Add to favorites"
+            aria-pressed="false"
+            data-favorite-toggle
+            data-product-id="{{ p.id }}"
+            data-product-name="{{ p.name }}"
+            data-product-category="{% if p.category %}{{ p.category.name }}{% endif %}"
+            data-product-price="{% if p.offer_price %}{{ p.offer_price|floatformat:0 }}{% else %}{{ p.actual_price|floatformat:0 }}{% endif %}"
+            data-product-image="{% if p.arrival_card_image %}{{ p.arrival_card_image.url }}{% elif p.main_image %}{{ p.main_image.url }}{% endif %}"
+            data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
+          >
+            ♥
+          </button>
+        </article>
       {% empty %}
         <a href="{{ collections_url }}" class="popular-items-card">
           <div class="popular-items-art popular-items-art--one">
@@ -186,6 +205,12 @@
   box-shadow: 0 10px 24px rgba(82, 20, 30, .10);
   border: 1px solid rgba(91, 7, 16, .09);
   transform: translateZ(0);
+}
+
+.popular-items-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
 }
 
 .popular-items-card::after {

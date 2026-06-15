@@ -43,12 +43,10 @@
       width: 100%;
       min-height: 72px;
       padding: 12px clamp(14px, 3vw, 34px);
-
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 14px;
-
       background: rgba(255, 250, 246, 0.94);
       border-bottom: 1px solid var(--border);
       backdrop-filter: blur(14px);
@@ -68,15 +66,12 @@
       width: 40px;
       height: 40px;
       border-radius: 14px;
-
       display: grid;
       place-items: center;
-
       color: #fff;
       font-size: 14px;
       font-weight: 900;
       letter-spacing: 0.03em;
-
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       box-shadow: 0 10px 24px rgba(143, 23, 49, 0.22);
       flex: 0 0 auto;
@@ -105,15 +100,12 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-
       min-height: 38px;
       padding: 9px 16px;
       border-radius: 999px;
-
       text-decoration: none;
       color: #fff;
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-
       font-size: 13px;
       font-weight: 800;
       white-space: nowrap;
@@ -155,7 +147,7 @@
     .actions {
       margin-top: 18px;
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 12px;
     }
 
@@ -163,16 +155,13 @@
       min-height: 112px;
       padding: 16px;
       border-radius: 18px;
-
       display: flex;
       flex-direction: column;
       justify-content: center;
-
       border: 1px solid var(--border);
       background: var(--soft);
       text-decoration: none;
       color: var(--text);
-
       box-shadow: 0 8px 22px rgba(70, 28, 35, 0.055);
       transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
     }
@@ -198,26 +187,117 @@
       line-height: 1.45;
     }
 
-    @media (max-width: 900px) {
+    .owner-message-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .owner-message-modal.is-visible {
+      display: flex;
+    }
+
+    .owner-message-backdrop {
+      position: absolute;
+      inset: 0;
+      background: rgba(63, 29, 37, 0.42);
+      backdrop-filter: blur(10px);
+    }
+
+    .owner-message-box {
+      position: relative;
+      width: min(420px, 100%);
+      padding: 22px;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at top right, rgba(244, 199, 107, 0.18), transparent 34%),
+        #ffffff;
+      border: 1px solid rgba(143, 23, 49, 0.14);
+      box-shadow: 0 24px 80px rgba(63, 29, 37, 0.28);
+      text-align: center;
+      animation: ownerMessagePop 0.18s ease-out;
+    }
+
+    .owner-message-icon {
+      width: 46px;
+      height: 46px;
+      margin: 0 auto 12px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      color: #ffffff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      font-size: 22px;
+      font-weight: 900;
+      box-shadow: 0 12px 24px rgba(143, 23, 49, 0.18);
+    }
+
+    .owner-message-box h2 {
+      margin: 0;
+      color: var(--text);
+      font-size: 20px;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .owner-message-box p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    @keyframes ownerMessagePop {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @media (max-width: 1000px) {
       .actions {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
 
     @media (max-width: 767px) {
+      body {
+        font-size: 13px;
+      }
+
       .owner-header {
-        min-height: 66px;
-        padding: 11px 14px;
+        min-height: 62px;
+        padding: 10px 12px;
       }
 
       .brand-logo {
-        width: 38px;
-        height: 38px;
-        border-radius: 13px;
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        font-size: 12px;
+      }
+
+      .brand-text strong {
+        font-size: 16px;
       }
 
       .brand-text span {
         display: none;
+      }
+
+      .logout-btn {
+        min-height: 36px;
+        padding: 8px 12px;
+        font-size: 12px;
       }
 
       .wrap {
@@ -226,7 +306,16 @@
 
       .welcome-card {
         border-radius: 20px;
-        padding: 16px;
+        padding: 16px 14px;
+      }
+
+      .welcome-card h1 {
+        font-size: 22px;
+      }
+
+      .welcome-card p {
+        font-size: 12.5px;
+        line-height: 1.45;
       }
 
       .actions {
@@ -235,31 +324,75 @@
       }
 
       .action-card {
-        min-height: 94px;
+        min-height: 90px;
         padding: 14px;
         border-radius: 16px;
       }
+
+      .action-card strong {
+        font-size: 15px;
+      }
+
+      .action-card span {
+        font-size: 12px;
+      }
+
+      .owner-message-box {
+        padding: 18px;
+        border-radius: 20px;
+      }
+
+      .owner-message-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        font-size: 20px;
+      }
+
+      .owner-message-box h2 {
+        font-size: 18px;
+      }
+
+      .owner-message-box p {
+        font-size: 12px;
+      }
+    }
+    .actions {
+      margin-top: 18px;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
     }
 
     @media (max-width: 420px) {
-      .logout-btn {
-        min-height: 36px;
-        padding: 8px 13px;
-        font-size: 12.5px;
-      }
-
       .welcome-card h1 {
-        font-size: 24px;
+        font-size: 21px;
       }
 
-      .welcome-card p {
-        font-size: 13px;
+      .owner-message-modal {
+        padding: 12px;
       }
     }
   </style>
 </head>
 
 <body>
+  {% if messages %}
+    <div class="owner-message-modal is-visible" id="ownerMessageModal" aria-hidden="false">
+      <div class="owner-message-backdrop"></div>
+
+      <div class="owner-message-box" role="dialog" aria-modal="true" aria-labelledby="ownerMessageTitle">
+        <div class="owner-message-icon">✓</div>
+
+        {% for message in messages %}
+          <h2 id="ownerMessageTitle">{{ message }}</h2>
+        {% endfor %}
+
+        <p>Saved successfully. You can continue managing your store.</p>
+      </div>
+    </div>
+  {% endif %}
+
   <header class="owner-header">
     <div class="brand">
       <div class="brand-logo">PP</div>
@@ -281,23 +414,47 @@
         Manage products, upload saree images, update prices, and organize collections from here.
       </p>
 
-      <div class="actions">
-        <a class="action-card" href="{% url 'store_owner:owner_product_add' %}">
-          <strong>Add Products</strong>
-          <span>Upload new product image, price, category, and details.</span>
-        </a>
+    <div class="actions">
+      <a class="action-card" href="{% url 'store_owner:owner_product_add' %}">
+        <strong>Add Products</strong>
+        <span>Upload new product image, price, category, and details.</span>
+      </a>
 
-        <a class="action-card" href="#">
-          <strong>Manage Products</strong>
-          <span>Edit existing products, update stock, and mark sold out.</span>
-        </a>
+      <a class="action-card" href="{% url 'store_owner:owner_category_add' %}">
+        <strong>Add Category</strong>
+        <span>Create new collection category for products and tabs.</span>
+      </a>
 
-        <a class="action-card" href="{% url 'store:user_home' %}">
-          <strong>View Website</strong>
-          <span>Open customer-facing saree collection page.</span>
-        </a>
-      </div>
+      <a class="action-card" href="{% url 'store_owner:owner_home_row_add' %}">
+        <strong>Add Home Row</strong>
+        <span>Create homepage rows like Popular Picks, Budget Friendly, Premium Pattu, and Festival Specials.</span>
+      </a>
+
+      <a class="action-card" href="#">
+        <strong>Manage Products</strong>
+        <span>Edit existing products, update stock, and mark sold out.</span>
+      </a>
+
+      <a class="action-card" href="{% url 'store:user_home' %}">
+        <strong>View Website</strong>
+        <span>Open customer-facing saree collection page.</span>
+      </a>
+    </div>
+
     </section>
   </main>
+
+  {% if messages %}
+    <script>
+      window.setTimeout(function () {
+        const modal = document.getElementById("ownerMessageModal");
+
+        if (!modal) return;
+
+        modal.classList.remove("is-visible");
+        modal.setAttribute("aria-hidden", "true");
+      }, 3500);
+    </script>
+  {% endif %}
 </body>
 </html>

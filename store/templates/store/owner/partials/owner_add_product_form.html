@@ -7,16 +7,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Add Products</title>
 
-  <link rel="stylesheet" href="{% static 'store/owner/css/owner_add_product_form.css' %}?v=20260611-forcefix22">
-  <link rel="stylesheet" href="{% static 'store/owner/css/owner_product_image_tools.css' %}?v=20260611-tools3">
+<link rel="stylesheet" href="{% static 'store/owner/css/owner_add_product_form.css' %}?v=20260614-custom-category-dropdown1">
+<link rel="stylesheet" href="{% static 'store/owner/css/owner_product_image_tools.css' %}?v=20260611-tools3">
 
-  <script src="{% static 'store/owner/js/product_draft_autosave.js' %}?v=20260611-draft" defer></script>
-  <script src="{% static 'store/owner/js/owner_product_image_tools.js' %}?v=20260611-tools3" defer></script>
-  <script src="{% static 'store/owner/js/owner_add_product_form.js' %}?v=20260611-forcefix18" defer></script>
+<script src="{% static 'store/owner/js/product_draft_autosave.js' %}?v=20260611-draft" defer></script>
+<script src="{% static 'store/owner/js/owner_product_image_tools.js' %}?v=20260611-tools3" defer></script>
+<script src="{% static 'store/owner/js/owner_add_product_form.js' %}?v=20260614-custom-category-dropdown1" defer></script>
 </head>
 
 <body>
-  <header class="owner-header">
+    <header class="owner-header">
     <div class="brand">
       <div class="brand-logo">PP</div>
       <div>
@@ -86,14 +86,21 @@
 
         <div class="field category-field">
           <div class="category-title-row">
-            <label for="category">Product Category *</label>
+            <label for="ownerCategoryButton">Product Category *</label>
 
             <a class="add-category-link" href="{% url 'store_owner:owner_category_add' %}">
               + Add new category
             </a>
           </div>
 
-          <select id="category" name="category" required>
+          <select
+            id="category"
+            class="category-native-select"
+            name="category"
+            required
+            tabindex="-1"
+            aria-hidden="true"
+          >
             <option value="">Select category</option>
 
             {% for category in form.fields.category.queryset %}
@@ -114,8 +121,32 @@
           </small>
 
           {{ form.category.errors }}
-        </div>
+          </div>
 
+          <div class="field home-row-field">
+            <div class="category-title-row">
+              <label for="{{ form.home_rows.id_for_label }}">
+                Homepage Rows
+              </label>
+
+              <a
+                class="add-category-link"
+                href="{% url 'store_owner:owner_home_row_add' %}"
+              >
+                + Add new row
+              </a>
+            </div>
+
+            {{ form.home_rows }}
+
+            <small>
+              Ee product kanipinchalsina homepage rows select cheyyi.
+              Multiple rows select cheyyavachu.
+            </small>
+
+            {{ form.home_rows.errors }}
+          </div>
+          
         <div class="product-details" id="productDetails">
           <div class="upload-section">
             <div class="field">
@@ -218,7 +249,7 @@
                 required
               >
               <small id="productNameHelp">
-                Use 3â€“80 characters. Add spaces properly; donâ€™t enter one long word.
+                  Use 3–80 characters. Add spaces properly; don’t enter one long word.
               </small>
               {{ form.name.errors }}
             </div>
@@ -533,6 +564,48 @@
     </section>
   </main>
 
+    <div class="save-confirm-modal" id="saveConfirmModal" aria-hidden="true" hidden>
+    <div class="save-confirm-backdrop" data-save-confirm-cancel></div>
+
+    <div class="save-confirm-box" role="dialog" aria-modal="true" aria-labelledby="saveConfirmTitle">
+      <div class="save-confirm-icon">✓</div>
+
+      <h2 id="saveConfirmTitle">Save this product?</h2>
+
+      <p>
+        Please check product name, price, stock, images, highlights, and variants before saving.
+        After this, product details will be created first and extra images will upload one by one.
+      </p>
+
+      <div class="save-confirm-summary">
+        <div>
+          <span>Product</span>
+          <strong id="saveConfirmProductName">-</strong>
+        </div>
+
+        <div>
+          <span>Actual Price</span>
+          <strong id="saveConfirmActualPrice">-</strong>
+        </div>
+
+        <div>
+          <span>Offer Price</span>
+          <strong id="saveConfirmOfferPrice">-</strong>
+        </div>
+      </div>
+
+      <div class="save-confirm-actions">
+        <button type="button" class="save-confirm-cancel" data-save-confirm-cancel>
+          Cancel
+        </button>
+
+        <button type="button" class="save-confirm-submit" id="saveConfirmSubmit">
+          Yes, Save Product
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="saving-overlay" id="savingOverlay" aria-live="polite" aria-hidden="true">
     <div class="saving-box">
       <div class="saving-spinner"></div>
@@ -542,26 +615,6 @@
   </div>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

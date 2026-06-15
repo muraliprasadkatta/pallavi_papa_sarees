@@ -1,7 +1,8 @@
 from django import forms
 from django.db.models import Max
+from django.utils.text import slugify
 
-from .models import Category, Product
+from .models import Category, OwnerHomePageRow, Product
 
 
 PRODUCT_MAIN_MAX_MB = 5
@@ -108,6 +109,88 @@ class CategoryForm(forms.ModelForm):
         return category
 
 
+class OwnerHomePageRowForm(forms.ModelForm):
+    slug = forms.SlugField(
+        required=False,
+        max_length=100,
+        help_text="Leave empty to auto-create from row name.",
+        widget=forms.TextInput(attrs={
+            "placeholder": "Example: popular-picks",
+            "maxlength": "100",
+            "autocomplete": "off",
+        }),
+    )
+
+    class Meta:
+        model = OwnerHomePageRow
+        fields = [
+            "name",
+            "slug",
+            "subtitle",
+            "is_active",
+            "sort_order",
+        ]
+
+        widgets = {
+            "name": forms.TextInput(attrs={
+                "placeholder": "Example: Popular Picks",
+                "maxlength": "80",
+                "autocomplete": "off",
+                "spellcheck": "true",
+            }),
+            "subtitle": forms.TextInput(attrs={
+                "placeholder": "Example: Customer favorite sarees from our collection",
+                "maxlength": "160",
+                "autocomplete": "off",
+                "spellcheck": "true",
+            }),
+            "sort_order": forms.NumberInput(attrs={
+                "min": "0",
+                "placeholder": "0",
+            }),
+        }
+
+    def clean_name(self):
+        return _clean_name_value(
+            value=self.cleaned_data.get("name"),
+            label="Home row name",
+            min_chars=2,
+            max_chars=80,
+            max_single_word_chars=32,
+        )
+
+    def clean_slug(self):
+        name = self.cleaned_data.get("name") or ""
+        slug = (self.cleaned_data.get("slug") or "").strip()
+
+        if not slug:
+            slug = slugify(name)
+
+        if not slug:
+            raise forms.ValidationError("Slug is required.")
+
+        queryset = OwnerHomePageRow.objects.filter(slug__iexact=slug)
+
+        if self.instance and self.instance.pk:
+            queryset = queryset.exclude(pk=self.instance.pk)
+
+        if queryset.exists():
+            raise forms.ValidationError("A home row with this slug already exists.")
+
+        return slug
+
+    def clean_sort_order(self):
+        sort_order = self.cleaned_data.get("sort_order")
+
+        if sort_order is None:
+            return 0
+
+        if sort_order < 0:
+            raise forms.ValidationError("Sort order cannot be negative.")
+
+        return sort_order
+
+
 class ProductForm(forms.ModelForm):
     category = forms.ModelChoiceField(
         queryset=Category.objects.none(),
@@ -115,10 +198,20 @@ class ProductForm(forms.ModelForm):
         empty_label="Select Category",
     )
 
+    home_rows = forms.ModelMultipleChoiceField(
+        queryset=OwnerHomePageRow.objects.none(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple(attrs={
+            "class": "home-row-checkboxes",
+        }),
+        help_text="Select one or more homepage rows.",
+    )
+
     class Meta:
         model = Product
         fields = [
             "category",
+            "home_rows",
 
             "main_image",
             "arrival_card_image",
@@ -152,18 +245,34 @@ class ProductForm(forms.ModelForm):
                 "autocomplete": "off",
                 "spellcheck": "true",
             }),
-            "main_image": forms.ClearableFileInput(attrs={"accept": "image/*"}),
-            "arrival_card_image": forms.ClearableFileInput(attrs={"accept": "image/*"}),
-            "top_showcase_image": forms.ClearableFileInput(attrs={"accept": "image/*"}),
-            "sub_image_1": forms.ClearableFileInput(attrs={"accept": "image/*"}),
-            "sub_image_2": forms.ClearableFileInput(attrs={"accept": "image/*"}),
-            "sub_image_3": forms.ClearableFileInput(attrs={"accept": "image/*"}),
+            "main_image": forms.ClearableFileInput(
+                attrs={"accept": "image/*"}
+            ),
+            "arrival_card_image": forms.ClearableFileInput(
+                attrs={"accept": "image/*"}
+            ),
+            "top_showcase_image": forms.ClearableFileInput(
+                attrs={"accept": "image/*"}
+            ),
+            "sub_image_1": forms.ClearableFileInput(
+                attrs={"accept": "image/*"}
+            ),
+            "sub_image_2": forms.ClearableFileInput(
+                attrs={"accept": "image/*"}
+            ),
+            "sub_image_3": forms.ClearableFileInput(
+                attrs={"accept": "image/*"}
+            ),
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.fields["category"].queryset = Category.objects.filter(
+            is_active=True
+        ).order_by("sort_order", "name")
+
+        self.fields["home_rows"].queryset = OwnerHomePageRow.objects.filter(
             is_active=True
         ).order_by("sort_order", "name")
 
@@ -178,10 +287,16 @@ class ProductForm(forms.ModelForm):
 
     def clean_main_image(self):
         image = self.cleaned_data.get("main_image")
-        return _validate_image_size(image, PRODUCT_MAIN_MAX_MB, "Main image")
+
+        return _validate_image_size(
+            image,
+            PRODUCT_MAIN_MAX_MB,
+            "Main image",
+        )
 
     def clean_arrival_card_image(self):
         image = self.cleaned_data.get("arrival_card_image")
+
         return _validate_image_size(
             image,
             PRODUCT_EXTRA_IMAGE_MAX_MB,
@@ -190,6 +305,7 @@ class ProductForm(forms.ModelForm):
 
     def clean_top_showcase_image(self):
         image = self.cleaned_data.get("top_showcase_image")
+
         return _validate_image_size(
             image,
             PRODUCT_EXTRA_IMAGE_MAX_MB,
@@ -198,18 +314,35 @@ class ProductForm(forms.ModelForm):
 
     def clean_sub_image_1(self):
         image = self.cleaned_data.get("sub_image_1")
-        return _validate_image_size(image, PRODUCT_SUB_IMAGE_MAX_MB, "Sub image 1")
+
+        return _validate_image_size(
+            image,
+            PRODUCT_SUB_IMAGE_MAX_MB,
+            "Sub image 1",
+        )
 
     def clean_sub_image_2(self):
         image = self.cleaned_data.get("sub_image_2")
-        return _validate_image_size(image, PRODUCT_SUB_IMAGE_MAX_MB, "Sub image 2")
+
+        return _validate_image_size(
+            image,
+            PRODUCT_SUB_IMAGE_MAX_MB,
+            "Sub image 2",
+        )
 
     def clean_sub_image_3(self):
         image = self.cleaned_data.get("sub_image_3")
-        return _validate_image_size(image, PRODUCT_SUB_IMAGE_MAX_MB, "Sub image 3")
+
+        return _validate_image_size(
+            image,
+            PRODUCT_SUB_IMAGE_MAX_MB,
+            "Sub image 3",
+        )
 
     def clean_color_code(self):
-        color_code = (self.cleaned_data.get("color_code") or "").strip()
+        color_code = (
+            self.cleaned_data.get("color_code") or ""
+        ).strip()
 
         if not color_code:
             return ""
@@ -218,25 +351,39 @@ class ProductForm(forms.ModelForm):
             color_code = f"#{color_code}"
 
         if len(color_code) not in [4, 7]:
-            raise forms.ValidationError("Enter a valid color code like #2f6b45.")
+            raise forms.ValidationError(
+                "Enter a valid color code like #2f6b45."
+            )
 
         valid_chars = color_code[1:]
-        if not all(char in "0123456789abcdefABCDEF" for char in valid_chars):
-            raise forms.ValidationError("Color code should contain only hex characters.")
+
+        if not all(
+            char in "0123456789abcdefABCDEF"
+            for char in valid_chars
+        ):
+            raise forms.ValidationError(
+                "Color code should contain only hex characters."
+            )
 
         return color_code.lower()
 
     def clean_product_size(self):
-        return (self.cleaned_data.get("product_size") or "").strip()
+        return (
+            self.cleaned_data.get("product_size") or ""
+        ).strip()
 
     def clean_stock_quantity(self):
-        stock_quantity = self.cleaned_data.get("stock_quantity")
+        stock_quantity = self.cleaned_data.get(
+            "stock_quantity"
+        )
 
         if stock_quantity is None:
             return 0
 
         if stock_quantity < 0:
-            raise forms.ValidationError("Available pieces cannot be negative.")
+            raise forms.ValidationError(
+                "Available pieces cannot be negative."
+            )
 
         return stock_quantity
 
@@ -246,7 +393,11 @@ class ProductForm(forms.ModelForm):
         actual_price = cleaned_data.get("actual_price")
         offer_price = cleaned_data.get("offer_price")
 
-        if actual_price and offer_price and offer_price > actual_price:
+        if (
+            actual_price is not None
+            and offer_price is not None
+            and offer_price > actual_price
+        ):
             self.add_error(
                 "offer_price",
                 "Offer price cannot be greater than actual price.",
@@ -262,15 +413,25 @@ class ProductForm(forms.ModelForm):
         ]
 
         total_size = 0
+
         for field_name in image_fields:
             image = cleaned_data.get(field_name)
-            if image:
-                total_size += getattr(image, "size", 0) or 0
 
-        max_total_bytes = PRODUCT_TOTAL_UPLOAD_MAX_MB * 1024 * 1024
+            if image:
+                total_size += (
+                    getattr(image, "size", 0) or 0
+                )
+
+        max_total_bytes = (
+            PRODUCT_TOTAL_UPLOAD_MAX_MB
+            * 1024
+            * 1024
+        )
+
         if total_size > max_total_bytes:
             raise forms.ValidationError(
-                f"Total image upload size should be under {PRODUCT_TOTAL_UPLOAD_MAX_MB}MB. "
+                "Total image upload size should be under "
+                f"{PRODUCT_TOTAL_UPLOAD_MAX_MB}MB. "
                 "Please upload fewer or smaller images."
             )
 

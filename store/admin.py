@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Category, Product, ProductHighlight, ProductVariant
+from .models import Category, Product, ProductHighlight, ProductVariant, OwnerHomePageRow
 
 
 @admin.register(Category)
@@ -69,6 +69,64 @@ class CategoryAdmin(admin.ModelAdmin):
 
     image_preview.short_description = "Category Image"
 
+
+@admin.register(OwnerHomePageRow)
+class OwnerHomePageRowAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "name",
+        "slug",
+        "subtitle",
+        "is_active",
+        "sort_order",
+        "created_at",
+    )
+
+    list_filter = (
+        "is_active",
+        "created_at",
+    )
+
+    search_fields = (
+        "name",
+        "slug",
+        "subtitle",
+    )
+
+    readonly_fields = (
+        "created_at",
+    )
+
+    prepopulated_fields = {
+        "slug": ("name",),
+    }
+
+    ordering = (
+        "sort_order",
+        "name",
+    )
+
+    fieldsets = (
+        ("Home Row Details", {
+            "fields": (
+                "name",
+                "slug",
+                "subtitle",
+            )
+        }),
+        ("Status & Order", {
+            "fields": (
+                "is_active",
+                "sort_order",
+            )
+        }),
+        ("Timestamp", {
+            "fields": (
+                "created_at",
+            )
+        }),
+    )
+    
 
 class ProductHighlightInline(admin.TabularInline):
     model = ProductHighlight

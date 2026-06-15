@@ -130,18 +130,6 @@
       border-color: #fffaf7 !important;
     }
 
-    body.collections-template .header-back svg {
-      width: clamp(25px, 4.4vw, 32px);
-      height: clamp(25px, 4.4vw, 32px);
-    }
-
-    body.collections-template .header-back svg path {
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2.1;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
   </style>
 {% endblock %}
 
@@ -268,37 +256,6 @@
           subtree: true
         });
       }
-    })();
-  </script>
-
-  <!-- menu icon to back icon converter -->
-  <script>
-    (function () {
-      const menuBtn = document.querySelector("body.collections-template .header-menu");
-      if (!menuBtn) return;
-
-      menuBtn.setAttribute("aria-label", "Back to home");
-      menuBtn.classList.add("header-back");
-
-      menuBtn.innerHTML = `
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M15 5L8 12l7 7"></path>
-        </svg>
-      `;
-
-      menuBtn.addEventListener("click", function (event) {
-        event.preventDefault();
-
-        const loader = document.getElementById("ppPageLoader");
-        if (loader) {
-          loader.classList.remove("is-hidden");
-          document.body.classList.add("pp-page-busy");
-        }
-
-        window.setTimeout(function () {
-          window.location.href = "{% url 'store:user_home' %}";
-        }, 90);
-      });
     })();
   </script>
 

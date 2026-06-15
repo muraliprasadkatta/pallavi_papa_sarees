@@ -42,7 +42,19 @@
             </div>
 
             {% if product %}
-              <button class="trend-heart" type="button" aria-label="Add to wishlist">♥</button>
+              <button
+                class="product-heart trend-heart"
+                type="button"
+                aria-label="Add to favorites"
+                aria-pressed="false"
+                data-favorite-toggle
+                data-product-id="{{ product.id }}"
+                data-product-name="{{ product.name }}"
+                data-product-category="{% if product.category %}{{ product.category.name }}{% endif %}"
+                data-product-price="{% if product.offer_price %}{{ product.offer_price|floatformat:0 }}{% else %}{{ product.actual_price|floatformat:0 }}{% endif %}"
+                data-product-image="{% if product.top_showcase_image %}{{ product.top_showcase_image.url }}{% elif product.main_image %}{{ product.main_image.url }}{% endif %}"
+                data-product-url="{{ request.scheme }}://{{ request.get_host }}{% url 'store:product_detail' product.id %}"
+              >♥</button>
             {% endif %}
 
             {% if product %}
@@ -113,7 +125,19 @@
             </div>
 
             {% if product %}
-              <button class="trend-heart" type="button" aria-label="Add to wishlist">♥</button>
+              <button
+                class="product-heart trend-heart"
+                type="button"
+                aria-label="Add to favorites"
+                aria-pressed="false"
+                data-favorite-toggle
+                data-product-id="{{ product.id }}"
+                data-product-name="{{ product.name }}"
+                data-product-category="{% if product.category %}{{ product.category.name }}{% endif %}"
+                data-product-price="{% if product.offer_price %}{{ product.offer_price|floatformat:0 }}{% else %}{{ product.actual_price|floatformat:0 }}{% endif %}"
+                data-product-image="{% if product.top_showcase_image %}{{ product.top_showcase_image.url }}{% elif product.main_image %}{{ product.main_image.url }}{% endif %}"
+                data-product-url="{{ request.scheme }}://{{ request.get_host }}{% url 'store:product_detail' product.id %}"
+              >♥</button>
             {% endif %}
 
             {% if product %}
@@ -184,7 +208,19 @@
             </div>
 
             {% if product %}
-              <button class="trend-heart" type="button" aria-label="Add to wishlist">♥</button>
+              <button
+                class="product-heart trend-heart"
+                type="button"
+                aria-label="Add to favorites"
+                aria-pressed="false"
+                data-favorite-toggle
+                data-product-id="{{ product.id }}"
+                data-product-name="{{ product.name }}"
+                data-product-category="{% if product.category %}{{ product.category.name }}{% endif %}"
+                data-product-price="{% if product.offer_price %}{{ product.offer_price|floatformat:0 }}{% else %}{{ product.actual_price|floatformat:0 }}{% endif %}"
+                data-product-image="{% if product.top_showcase_image %}{{ product.top_showcase_image.url }}{% elif product.main_image %}{{ product.main_image.url }}{% endif %}"
+                data-product-url="{{ request.scheme }}://{{ request.get_host }}{% url 'store:product_detail' product.id %}"
+              >♥</button>
             {% endif %}
 
             {% if product %}

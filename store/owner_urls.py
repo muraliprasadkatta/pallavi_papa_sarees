@@ -11,6 +11,7 @@ urlpatterns = [
     path("categories/add/", owner_views.owner_category_add_view, name="owner_category_add"),
 
     path("products/add/", owner_views.owner_product_add_view, name="owner_product_add"),
+    path("home-rows/add/", owner_views.owner_home_row_add_view, name="owner_home_row_add"),
 
     path(
         "products/<int:product_id>/edit/",

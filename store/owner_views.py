@@ -10,7 +10,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from .forms import CategoryForm, ProductForm
+from .forms import CategoryForm, OwnerHomePageRowForm, ProductForm
 from .models import Product, ProductHighlight, ProductVariant
 from .services.product_image_service import (
     ARRIVAL_CARD_MAX_SIZE_KB,
@@ -32,6 +32,7 @@ OWNER_LOGIN_TEMPLATE = "store/owner/owner_login_form.html"
 OWNER_DASHBOARD_TEMPLATE = "store/owner/owner_dashboard.html"
 OWNER_PRODUCT_FORM_TEMPLATE = "store/owner/partials/owner_add_product_form.html"
 OWNER_CATEGORY_FORM_TEMPLATE = "store/owner/partials/owner_add_category_form.html"
+OWNER_HOME_ROW_FORM_TEMPLATE = "store/owner/partials/owner_add_home_row_add.html"
 OWNER_PRODUCT_EDIT_TEMPLATE = "store/owner/owner_product_edit.html"
 
 
@@ -411,7 +412,7 @@ def owner_category_add_view(request):
 
         if form.is_valid():
             form.save()
-            messages.success(request, "Category added successfully.")
+            messages.success(request, "Category saved successfully.")
             return redirect("store_owner:owner_dashboard")
     else:
         form = CategoryForm()
@@ -419,6 +420,31 @@ def owner_category_add_view(request):
     return render(
         request,
         OWNER_CATEGORY_FORM_TEMPLATE,
+        {
+            "form": form,
+        },
+    )
+
+
+@login_required(login_url="store_owner:owner_login")
+def owner_home_row_add_view(request):
+    if not request.user.is_staff:
+        logout(request)
+        return redirect("store_owner:owner_login")
+
+    if request.method == "POST":
+        form = OwnerHomePageRowForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Home row saved successfully.")
+            return redirect("store_owner:owner_dashboard")
+    else:
+        form = OwnerHomePageRowForm()
+
+    return render(
+        request,
+        OWNER_HOME_ROW_FORM_TEMPLATE,
         {
             "form": form,
         },
@@ -451,15 +477,16 @@ def owner_product_add_view(request):
                     if not _is_ajax_request(request):
                         _save_product_variants(product, request)
 
-                if _is_ajax_request(request):
-                    return JsonResponse(
-                        {
-                            "ok": True,
-                            "product_id": product.id,
-                            "edit_url": _product_edit_url(product),
-                            "message": "Product details saved.",
-                        }
-                    )
+                    if _is_ajax_request(request):
+                        messages.success(request, "Product saved successfully.")
+                        return JsonResponse(
+                            {
+                                "ok": True,
+                                "product_id": product.id,
+                                "edit_url": _product_edit_url(product),
+                                "message": "Product saved successfully.",
+                            }
+                        )
 
                 messages.success(request, "Product added successfully.")
                 return redirect("store_owner:owner_dashboard")
@@ -522,6 +549,7 @@ def owner_product_edit_view(request, product_id):
                         _save_product_variants(product, request)
 
                 if _is_ajax_request(request):
+                    messages.success(request, "Product updated successfully.")
                     return JsonResponse(
                         {
                             "ok": True,
@@ -530,7 +558,6 @@ def owner_product_edit_view(request, product_id):
                             "message": "Product updated successfully.",
                         }
                     )
-
                 messages.success(request, "Product updated successfully.")
                 return redirect("store_owner:owner_dashboard")
 

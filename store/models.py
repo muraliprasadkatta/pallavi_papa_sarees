@@ -128,6 +128,26 @@ class Category(models.Model):
         return self.name
 
 
+
+
+class OwnerHomePageRow(models.Model):
+    name = models.CharField(max_length=80)
+    slug = models.SlugField(max_length=100, unique=True)
+    subtitle = models.CharField(max_length=160, blank=True)
+    is_active = models.BooleanField(default=True)
+    sort_order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["sort_order", "name"]
+        verbose_name = "Owner Home Page Row"
+        verbose_name_plural = "Owner Home Page Rows"
+
+    def __str__(self):
+        return self.name
+
+
+
 class Product(models.Model):
     name = models.CharField(max_length=140)
 
@@ -137,6 +157,12 @@ class Product(models.Model):
         related_name="products",
         null=True,
         blank=True,
+    )
+
+    home_rows = models.ManyToManyField(
+        OwnerHomePageRow,
+        blank=True,
+        related_name="products",
     )
 
     material = models.CharField(max_length=120, blank=True)
