@@ -127,6 +127,7 @@ class OwnerHomePageRowForm(forms.ModelForm):
             "name",
             "slug",
             "subtitle",
+            "display_after",
             "is_active",
             "sort_order",
         ]
@@ -143,6 +144,9 @@ class OwnerHomePageRowForm(forms.ModelForm):
                 "maxlength": "160",
                 "autocomplete": "off",
                 "spellcheck": "true",
+            }),
+            "display_after": forms.Select(attrs={
+                "aria-describedby": "display-after-help",
             }),
             "sort_order": forms.NumberInput(attrs={
                 "min": "0",
