@@ -8,11 +8,11 @@
     <div class="collections-hero-card__content">
       <span class="collections-eyebrow">Premium Collections</span>
 
-      <h1>
+      <h1 id="collectionsHeroTitle" data-collections-hero-title>
         {{ page_title|default:"All Saree Collections" }}
       </h1>
 
-      <p>
+      <p id="collectionsHeroDescription" data-collections-hero-description>
         {{ page_description|default:"Handpicked sarees for every occasion and every you." }}
       </p>
 
@@ -22,11 +22,11 @@
       </a>
     </div>
 
-    <div class="collections-hero-card__visual" aria-hidden="true">
+    <div class="collections-hero-card__visual" data-collections-hero-visual aria-hidden="true">
       {% if hero_image_url %}
-        <img src="{{ hero_image_url }}" alt="">
+        <img src="{{ hero_image_url }}" alt="" data-collections-hero-image>
       {% else %}
-        <div class="collections-fallback-art">
+        <div class="collections-fallback-art" data-collections-hero-fallback>
           <div class="collections-fallback-art__head"></div>
           <div class="collections-fallback-art__body"></div>
           <div class="collections-fallback-art__saree"></div>
