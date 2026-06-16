@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -407,6 +408,41 @@
       line-height: 1.5;
     }
 
+    .category-draft-resume {
+      margin-bottom: 16px;
+      padding: 13px 14px;
+      border: 1px solid rgba(23, 107, 77, 0.24);
+      border-radius: 14px;
+      color: #17372c;
+      background: rgba(23, 107, 77, 0.07);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .category-draft-resume[hidden] {
+      display: none;
+    }
+
+    .owner-common-draft-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .category-draft-resume button {
+      min-height: 34px;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 999px;
+      color: #fff;
+      background: #176b4d;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
     .category-loading-box p {
       margin-bottom: 0;
     }
@@ -694,8 +730,13 @@
         action="{% url 'store_owner:owner_category_add' %}"
         novalidate
         id="categoryAddForm"
+        data-owner-draft-form
+        data-draft-key="pp_owner_category_add_draft"
+        data-draft-label="category"
       >
         {% csrf_token %}
+
+        <div class="category-draft-resume" data-owner-draft-banner hidden></div>
 
         {% if form.errors %}
           <div class="error-box">
@@ -799,6 +840,8 @@
       </p>
     </div>
   </div>
+
+  <script src="{% static 'store/owner/js/owner_form_draft_restore.js' %}?v=20260615-common-draft1" defer></script>
 
   <script>
     (() => {
@@ -1143,6 +1186,7 @@
           showCategoryLoadingModal();
 
           window.setTimeout(() => {
+            form.dispatchEvent(new CustomEvent("owner:draft-clear"));
             form.submit();
           }, 120);
         });

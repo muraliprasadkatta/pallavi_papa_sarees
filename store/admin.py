@@ -77,12 +77,14 @@ class OwnerHomePageRowAdmin(admin.ModelAdmin):
         "name",
         "slug",
         "subtitle",
+        "display_after",
         "is_active",
         "sort_order",
         "created_at",
     )
 
     list_filter = (
+        "display_after",
         "is_active",
         "created_at",
     )
@@ -116,6 +118,7 @@ class OwnerHomePageRowAdmin(admin.ModelAdmin):
         }),
         ("Status & Order", {
             "fields": (
+                "display_after",
                 "is_active",
                 "sort_order",
             )
@@ -189,18 +192,27 @@ class ProductAdmin(admin.ModelAdmin):
         "category",
         "color_name",
         "color_swatch",
+        "product_size",
+        "stock_quantity",
         "actual_price",
         "offer_price",
         "is_available",
         "is_new_arrival",
+        "is_top_selling",
+        "is_most_liked",
+        "is_most_carted",
         "main_image_preview",
         "created_at",
     )
 
     list_filter = (
         "category",
+        "home_rows",
         "is_available",
         "is_new_arrival",
+        "is_top_selling",
+        "is_most_liked",
+        "is_most_carted",
         "created_at",
     )
 
@@ -211,11 +223,14 @@ class ProductAdmin(admin.ModelAdmin):
         "material",
         "color_name",
         "color_code",
+        "product_size",
+        "home_rows__name",
     )
 
     readonly_fields = (
         "main_image_preview",
         "arrival_card_image_preview",
+        "top_showcase_image_preview",
         "sub_image_1_preview",
         "sub_image_2_preview",
         "sub_image_3_preview",
@@ -224,14 +239,23 @@ class ProductAdmin(admin.ModelAdmin):
     )
 
     ordering = ("-created_at",)
+    filter_horizontal = ("home_rows",)
+    list_select_related = ("category",)
 
     fieldsets = (
         ("Basic Details", {
             "fields": (
                 "name",
                 "category",
+                "home_rows",
                 "material",
                 "description",
+            )
+        }),
+        ("Size & Stock", {
+            "fields": (
+                "product_size",
+                "stock_quantity",
             )
         }),
         ("Color", {
@@ -252,6 +276,8 @@ class ProductAdmin(admin.ModelAdmin):
                 "main_image_preview",
                 "arrival_card_image",
                 "arrival_card_image_preview",
+                "top_showcase_image",
+                "top_showcase_image_preview",
                 "sub_image_1",
                 "sub_image_1_preview",
                 "sub_image_2",
@@ -264,6 +290,9 @@ class ProductAdmin(admin.ModelAdmin):
             "fields": (
                 "is_available",
                 "is_new_arrival",
+                "is_top_selling",
+                "is_most_liked",
+                "is_most_carted",
             )
         }),
         ("Timestamps", {
@@ -304,6 +333,16 @@ class ProductAdmin(admin.ModelAdmin):
         return "-"
 
     arrival_card_image_preview.short_description = "Arrival Card Image"
+
+    def top_showcase_image_preview(self, obj):
+        if obj.top_showcase_image:
+            return format_html(
+                '<img src="{}" style="width:120px;height:80px;object-fit:cover;border-radius:8px;" />',
+                obj.top_showcase_image.url,
+            )
+        return "-"
+
+    top_showcase_image_preview.short_description = "Top Carousel Image"
 
     def sub_image_1_preview(self, obj):
         if obj.sub_image_1:

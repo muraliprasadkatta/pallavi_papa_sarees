@@ -19,6 +19,7 @@ from store.services.product_image_service import (
     TOP_SHOWCASE_TARGET_HEIGHT,
     TOP_SHOWCASE_TARGET_WIDTH,
     convert_product_image_to_webp,
+    convert_sub_product_image_to_webp,
 )
 
 
@@ -348,6 +349,12 @@ class Product(models.Model):
                             target_height=TOP_SHOWCASE_TARGET_HEIGHT,
                             max_size_kb=TOP_SHOWCASE_MAX_SIZE_KB,
                             keep_alpha=False,
+                        )
+
+                    elif field_name in {"sub_image_1", "sub_image_2", "sub_image_3"}:
+                        converted_image = convert_sub_product_image_to_webp(
+                            uploaded_file=image,
+                            base_name=f"{self.name}-{field_name}",
                         )
 
                     else:

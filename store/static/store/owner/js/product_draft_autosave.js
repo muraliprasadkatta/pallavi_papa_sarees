@@ -10,6 +10,7 @@
   let activeDraftKey = "";
   let activeDraft = null;
   let restoreApplied = false;
+  let initialFormState = null;
 
   function now() {
     return Date.now();
@@ -352,12 +353,49 @@
     });
   }
 
+  function hasMeaningfulDraft(draft) {
+    if (!draft) return false;
+
+    if (draft.status === "server_product_created" && draft.productId) {
+      return true;
+    }
+
+    if (Object.keys(draft.files || {}).length > 0) {
+      return true;
+    }
+
+    const hasHighlightValues = (draft.highlights || []).some((item) => {
+      return Boolean((item.label || "").trim() || (item.value || "").trim());
+    });
+
+    if (hasHighlightValues || (draft.variants || []).length > 0) {
+      return true;
+    }
+
+    const initialFields = initialFormState?.fields || {};
+    const initialCheckboxes = initialFormState?.checkboxes || {};
+
+    const fieldChanged = Object.entries(draft.fields || {}).some(([key, item]) => {
+      const initialValue = initialFields[key]?.value || "";
+      return String(item?.value || "") !== String(initialValue);
+    });
+
+    if (fieldChanged) {
+      return true;
+    }
+
+    return Object.entries(draft.checkboxes || {}).some(([key, item]) => {
+      const initialChecked = Boolean(initialCheckboxes[key]?.checked);
+      return Boolean(item?.checked) !== initialChecked;
+    });
+  }
+
   function saveFormState() {
     if (!activeForm || !activeDraftKey) return;
 
     const draft = activeDraft || loadDraft(activeForm) || createEmptyDraft(activeForm);
 
-    saveDraft({
+    const nextDraft = {
       ...draft,
       fields: collectNormalFields(),
       checkboxes: collectCheckboxes(),
@@ -365,7 +403,15 @@
       variants: collectVariants(),
       mode: getDraftMode(activeForm),
       productId: draft.productId || getProductId(activeForm) || null
-    });
+    };
+
+    if (!hasMeaningfulDraft(nextDraft)) {
+      localStorage.removeItem(getDraftStorageKey(activeDraftKey));
+      activeDraft = null;
+      return;
+    }
+
+    saveDraft(nextDraft);
   }
 
   async function saveFileInput(input) {
@@ -839,14 +885,19 @@
     if (!isDraftEnabled(activeForm)) return;
 
     activeDraftKey = getDraftKey(activeForm);
+    initialFormState = {
+      fields: collectNormalFields(),
+      checkboxes: collectCheckboxes()
+    };
     activeDraft = loadDraft(activeForm);
+
+    if (activeDraft && !hasMeaningfulDraft(activeDraft)) {
+      localStorage.removeItem(getDraftStorageKey(activeDraftKey));
+      activeDraft = null;
+    }
 
     setupFormListeners();
     renderDraftBanner();
-
-    if (!activeDraft) {
-        saveFormState();
-    }
     }
 
     window.ProductDraftAutosave = {

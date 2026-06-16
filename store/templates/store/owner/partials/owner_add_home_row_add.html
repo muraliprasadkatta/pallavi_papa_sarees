@@ -11,26 +11,22 @@
   <div class="owner-row-wrap">
 
     <div class="owner-row-head">
-      <a href="{% url 'store_owner:owner_dashboard' %}" class="owner-back-link">
-        ← Back to Dashboard
-      </a>
-
       <span>Homepage Setup</span>
       <h1>Add Home Row</h1>
-      <p>Create rows like Popular Picks, Budget Friendly, Premium Pattu Picks, Wedding Specials etc.</p>
+      <p>Create and place a custom product row on the customer homepage.</p>
     </div>
 
     <form
       method="post"
-      class="owner-row-card product-form"
-      data-draft-enabled="true"
-      data-draft-mode="add"
+      class="owner-row-card"
+      data-owner-draft-form
       data-draft-key="pp_owner_home_row_add_draft"
+      data-draft-label="home row"
       novalidate
     >
       {% csrf_token %}
 
-      <div class="client-resume-box owner-draft-resume" id="clientResumeBox" hidden></div>
+      <div class="owner-draft-resume" data-owner-draft-banner hidden></div>
 
       {% if form.non_field_errors %}
         <div class="owner-form-error">
@@ -38,39 +34,42 @@
         </div>
       {% endif %}
 
-      <div class="owner-field">
-        <label for="{{ form.name.id_for_label }}">Row Name</label>
-        {{ form.name }}
-        {% if form.name.errors %}
-          <small class="field-error">{{ form.name.errors|striptags }}</small>
-        {% endif %}
-      </div>
+      <div class="owner-fields-grid">
+        <div class="owner-field">
+          <label for="{{ form.name.id_for_label }}">Row Name</label>
+          {{ form.name }}
+          <small class="field-help">Example: Popular Picks or Budget Friendly.</small>
+          {% if form.name.errors %}
+            <small class="field-error">{{ form.name.errors|striptags }}</small>
+          {% endif %}
+        </div>
 
-      <div class="owner-field">
-        <label for="{{ form.slug.id_for_label }}">Slug</label>
-        {{ form.slug }}
-        <small class="field-help">Example: popular-picks, budget-friendly, premium-pattu</small>
-        {% if form.slug.errors %}
-          <small class="field-error">{{ form.slug.errors|striptags }}</small>
-        {% endif %}
-      </div>
+        <div class="owner-field">
+          <label for="{{ form.slug.id_for_label }}">Slug</label>
+          {{ form.slug }}
+          <small class="field-help">Leave empty to create it automatically.</small>
+          {% if form.slug.errors %}
+            <small class="field-error">{{ form.slug.errors|striptags }}</small>
+          {% endif %}
+        </div>
 
-      <div class="owner-field">
-        <label for="{{ form.subtitle.id_for_label }}">Subtitle</label>
-        {{ form.subtitle }}
-        <small class="field-help">Small line shown below the row title on homepage.</small>
-        {% if form.subtitle.errors %}
-          <small class="field-error">{{ form.subtitle.errors|striptags }}</small>
-        {% endif %}
-      </div>
+        <div class="owner-field">
+          <label for="{{ form.subtitle.id_for_label }}">Subtitle</label>
+          {{ form.subtitle }}
+          <small class="field-help">Small line shown below the row title.</small>
+          {% if form.subtitle.errors %}
+            <small class="field-error">{{ form.subtitle.errors|striptags }}</small>
+          {% endif %}
+        </div>
 
-      <div class="owner-field">
-        <label for="{{ form.display_after.id_for_label }}">Display After</label>
-        {{ form.display_after }}
-        <small class="field-help" id="display-after-help">Choose the homepage section after which this custom row should appear.</small>
-        {% if form.display_after.errors %}
-          <small class="field-error">{{ form.display_after.errors|striptags }}</small>
-        {% endif %}
+        <div class="owner-field">
+          <label for="{{ form.display_after.id_for_label }}">Display After</label>
+          {{ form.display_after }}
+          <small class="field-help" id="display-after-help">Choose where this row should appear.</small>
+          {% if form.display_after.errors %}
+            <small class="field-error">{{ form.display_after.errors|striptags }}</small>
+          {% endif %}
+        </div>
       </div>
 
       <div class="owner-row-grid">
@@ -133,15 +132,6 @@
 
 .owner-row-head {
   margin-bottom: 18px;
-}
-
-.owner-back-link {
-  display: inline-flex;
-  margin-bottom: 16px;
-  color: #176b4d;
-  font-size: 13px;
-  font-weight: 800;
-  text-decoration: none;
 }
 
 .owner-row-head span {
@@ -208,6 +198,13 @@
   font-size: 12px;
   font-weight: 800;
   cursor: pointer;
+}
+
+.owner-common-draft-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .owner-field {
@@ -360,8 +357,223 @@
     width: 100%;
   }
 }
+
+/* Add Home Row responsive layout */
+.owner-home-row-template .site-header {
+  min-height: 62px !important;
+}
+
+.owner-home-row-template .site-header .header-inner {
+  min-height: 62px !important;
+  justify-content: center !important;
+}
+
+.owner-home-row-template .site-header .header-back,
+.owner-home-row-template .site-header .header-actions {
+  display: none !important;
+}
+
+.owner-home-row-template .site-header .brand-center {
+  position: static !important;
+  transform: none !important;
+}
+
+.owner-home-row-template .site-header .brand-center strong {
+  font-size: clamp(22px, 2.6vw, 30px) !important;
+}
+
+.owner-row-page {
+  min-height: calc(100vh - 62px);
+  padding: clamp(18px, 3vw, 36px) 0 clamp(24px, 4vw, 48px);
+}
+
+.owner-row-wrap {
+  width: min(calc(100% - clamp(24px, 5vw, 72px)), 1180px);
+}
+
+.owner-row-head {
+  margin-bottom: clamp(14px, 2vw, 22px);
+  text-align: center;
+}
+
+.owner-row-head h1 {
+  margin: 9px 0 5px;
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1;
+  letter-spacing: -.035em;
+}
+
+.owner-row-head p {
+  max-width: 580px;
+  margin: 0 auto;
+  font-size: clamp(12.5px, 1.2vw, 14px);
+  line-height: 1.45;
+}
+
+.owner-row-card {
+  padding: clamp(16px, 2.5vw, 30px);
+  border-radius: clamp(20px, 2.5vw, 30px);
+  background: rgba(255, 255, 255, .95);
+  border-color: rgba(35, 35, 35, .09);
+  box-shadow: 0 18px 48px rgba(46, 30, 26, .10);
+}
+
+.owner-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(14px, 2vw, 22px);
+  margin-bottom: clamp(14px, 2vw, 20px);
+}
+
+.owner-field {
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.owner-field label {
+  margin-bottom: 6px;
+  font-size: clamp(12px, 1vw, 13px);
+}
+
+.owner-field input,
+.owner-field textarea,
+.owner-field select {
+  min-height: clamp(44px, 4vw, 52px);
+  padding: 10px clamp(12px, 1.3vw, 16px);
+  border-radius: clamp(12px, 1.4vw, 16px);
+  font-size: clamp(13px, 1.15vw, 15px);
+}
+
+.field-help {
+  margin-top: 5px;
+  font-size: clamp(10.5px, .95vw, 12px);
+}
+
+.owner-row-grid {
+  gap: clamp(14px, 2vw, 22px);
+  align-items: stretch;
+}
+
+.owner-row-grid .owner-field {
+  margin: 0;
+}
+
+.owner-check {
+  min-height: 72px;
+  padding: clamp(12px, 1.5vw, 16px);
+  border-radius: 16px;
+}
+
+.owner-actions {
+  margin-top: clamp(18px, 2.4vw, 26px);
+  padding-top: clamp(14px, 2vw, 20px);
+  border-top: 1px solid rgba(43, 23, 24, .10);
+}
+
+.owner-btn {
+  min-height: 44px;
+  padding: 0 clamp(18px, 2vw, 26px);
+}
+
+@media (max-width: 640px) {
+  .owner-home-row-template .site-header,
+  .owner-home-row-template .site-header .header-inner {
+    min-height: 54px !important;
+  }
+
+  .owner-home-row-template .site-header .brand-center strong {
+    font-size: 21px !important;
+  }
+
+  .owner-home-row-template .site-header .brand-center small {
+    margin-top: 3px !important;
+    font-size: 7px !important;
+  }
+
+  .owner-row-page {
+    min-height: calc(100vh - 54px);
+    padding: 12px 0 24px;
+  }
+
+  .owner-row-wrap {
+    width: calc(100% - 12px);
+  }
+
+  .owner-row-head {
+    margin-bottom: 11px;
+  }
+
+  .owner-row-head span {
+    padding: 5px 9px;
+    font-size: 9.5px;
+  }
+
+  .owner-row-head h1 {
+    margin-top: 7px;
+    font-size: clamp(27px, 9vw, 34px);
+  }
+
+  .owner-row-head p {
+    width: min(94%, 420px);
+    font-size: 11.5px;
+  }
+
+  .owner-row-card {
+    padding: 14px 12px;
+    border-radius: 18px;
+  }
+
+  .owner-fields-grid,
+  .owner-row-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .owner-fields-grid {
+    margin-bottom: 12px;
+  }
+
+  .owner-field input,
+  .owner-field textarea,
+  .owner-field select {
+    min-height: 43px;
+    padding: 9px 11px;
+    border-radius: 12px;
+    font-size: 13px;
+  }
+
+  .owner-field label {
+    margin-bottom: 5px;
+  }
+
+  .owner-check {
+    min-height: 66px;
+    padding: 11px;
+    border-radius: 14px;
+  }
+
+  .owner-actions {
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 14px;
+  }
+
+  .owner-btn {
+    min-height: 43px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .owner-row-wrap {
+    width: min(calc(100% - 96px), 1320px);
+  }
+
+  .owner-row-card {
+    padding: 34px 38px;
+  }
+}
 </style>
 
-<script src="{% static 'store/owner/js/product_draft_autosave.js' %}?v=20260615-home-row-draft1" defer></script>
+<script src="{% static 'store/owner/js/owner_form_draft_restore.js' %}?v=20260615-common-draft1" defer></script>
 
 {% endblock %}

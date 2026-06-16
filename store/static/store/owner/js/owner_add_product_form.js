@@ -21,6 +21,7 @@
 
     const uploadSelector = ".catalog-upload, .arrival-upload, .top-showcase-upload, .sub-upload, .variant-upload";
     const imageTools = window.OwnerProductImageTools || null;
+    const imagePreprocessor = window.OwnerProductImageCropCompress || null;
 
     const OLD_UPLOAD_RESUME_KEY = "pp_owner_product_upload_resume";
     let isUploadingProduct = false;
@@ -1661,6 +1662,7 @@
         let editUrl = "";
 
         try {
+          await imagePreprocessor?.whenIdle?.();
           cleanAllPriceInputs();
           await validateFormOrThrow();
 

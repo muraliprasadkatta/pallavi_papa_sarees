@@ -195,6 +195,11 @@ class OwnerHomePageRowForm(forms.ModelForm):
         return sort_order
 
 
+class HomeRowMultipleChoiceField(forms.ModelMultipleChoiceField):
+    def label_from_instance(self, obj):
+        return f"{obj.name} - {obj.get_display_after_display()}"
+
+
 class ProductForm(forms.ModelForm):
     category = forms.ModelChoiceField(
         queryset=Category.objects.none(),
@@ -202,13 +207,14 @@ class ProductForm(forms.ModelForm):
         empty_label="Select Category",
     )
 
-    home_rows = forms.ModelMultipleChoiceField(
+    home_rows = HomeRowMultipleChoiceField(
         queryset=OwnerHomePageRow.objects.none(),
         required=False,
         widget=forms.CheckboxSelectMultiple(attrs={
             "class": "home-row-checkboxes",
+            "aria-describedby": "home-rows-help",
         }),
-        help_text="Select one or more homepage rows.",
+        help_text="Select one or more homepage rows and review where each row appears.",
     )
 
     class Meta:

@@ -7,11 +7,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Add Products</title>
 
-<link rel="stylesheet" href="{% static 'store/owner/css/owner_add_product_form.css' %}?v=20260614-custom-category-dropdown1">
+<link rel="stylesheet" href="{% static 'store/owner/css/owner_add_product_form.css' %}?v=20260615-image-fit1">
 <link rel="stylesheet" href="{% static 'store/owner/css/owner_product_image_tools.css' %}?v=20260611-tools3">
 
-<script src="{% static 'store/owner/js/product_draft_autosave.js' %}?v=20260611-draft" defer></script>
+<script src="{% static 'store/owner/js/product_draft_autosave.js' %}?v=20260615-meaningful-draft1" defer></script>
 <script src="{% static 'store/owner/js/owner_product_image_tools.js' %}?v=20260611-tools3" defer></script>
+<script src="{% static 'store/owner/js/owner_product_image_crop_compress.js' %}?v=20260615-image-fit1" defer></script>
 <script src="{% static 'store/owner/js/owner_add_product_form.js' %}?v=20260614-custom-category-dropdown1" defer></script>
 </head>
 
@@ -126,7 +127,7 @@
           <div class="field home-row-field">
             <div class="category-title-row">
               <label for="{{ form.home_rows.id_for_label }}">
-                Homepage Rows
+                Show Product in Homepage Rows
               </label>
 
               <a
@@ -139,9 +140,9 @@
 
             {{ form.home_rows }}
 
-            <small>
-              Ee product kanipinchalsina homepage rows select cheyyi.
-              Multiple rows select cheyyavachu.
+            <small id="home-rows-help">
+              Select the homepage sections where this product should appear.
+              You can select more than one row.
             </small>
 
             {{ form.home_rows.errors }}
@@ -153,7 +154,15 @@
               <label>Main Catalog Image *</label>
 
               <label class="catalog-upload" for="mainImage">
-                <input type="file" id="mainImage" name="main_image" accept="image/*" required>
+                <input
+                  type="file"
+                  id="mainImage"
+                  name="main_image"
+                  accept="image/*"
+                  required
+                  data-owner-image-process="main"
+                  data-image-fit-mode-input="mainImageFitMode"
+                >
                 <span class="upload-plus">+</span>
                 <strong>Upload catalog image</strong>
                 <small>Best upload: 1600 &times; 2000 WebP/JPG/PNG</small>
@@ -161,6 +170,48 @@
 
               <div class="upload-limit-note">
                 Max upload size: 5MB. Large phone photos will be compressed automatically.
+              </div>
+
+              <div
+                class="owner-image-fit-control"
+                data-owner-image-fit-control
+                data-mode-input-id="mainImageFitMode"
+                data-input-ids="mainImage"
+              >
+                <input
+                  type="hidden"
+                  id="mainImageFitMode"
+                  name="main_image_fit_mode"
+                  value="contain"
+                >
+
+                <div class="owner-image-fit-heading">
+                  <strong>Image fit</strong>
+                  <span>Choose before saving</span>
+                </div>
+
+                <div class="owner-image-fit-options" role="group" aria-label="Main image fit">
+                  <button
+                    type="button"
+                    class="owner-image-fit-option is-active"
+                    data-image-fit-mode="contain"
+                    aria-pressed="true"
+                  >
+                    Full image
+                  </button>
+                  <button
+                    type="button"
+                    class="owner-image-fit-option"
+                    data-image-fit-mode="crop"
+                    aria-pressed="false"
+                  >
+                    Fill frame
+                  </button>
+                </div>
+
+                <small data-image-process-status aria-live="polite">
+                  Full image keeps the complete saree visible with a soft background.
+                </small>
               </div>
 
               {{ form.main_image.errors }}
@@ -204,21 +255,84 @@
                   Each sub image max 5MB. Final output: 900 &times; 1125 WebP.
                 </div>
 
+                <div
+                  class="owner-image-fit-control owner-image-fit-control--compact"
+                  data-owner-image-fit-control
+                  data-mode-input-id="subImagesFitMode"
+                  data-input-ids="subImage1,subImage2,subImage3"
+                >
+                  <input
+                    type="hidden"
+                    id="subImagesFitMode"
+                    name="sub_images_fit_mode"
+                    value="contain"
+                  >
+
+                  <div class="owner-image-fit-heading">
+                    <strong>Sub image fit</strong>
+                    <span>Applies to all three</span>
+                  </div>
+
+                  <div class="owner-image-fit-options" role="group" aria-label="Sub image fit">
+                    <button
+                      type="button"
+                      class="owner-image-fit-option is-active"
+                      data-image-fit-mode="contain"
+                      aria-pressed="true"
+                    >
+                      Full image
+                    </button>
+                    <button
+                      type="button"
+                      class="owner-image-fit-option"
+                      data-image-fit-mode="crop"
+                      aria-pressed="false"
+                    >
+                      Fill frame
+                    </button>
+                  </div>
+
+                  <small data-image-process-status aria-live="polite">
+                    Full image keeps the complete saree visible with a soft background.
+                  </small>
+                </div>
+
                 <div class="sub-upload-grid">
                   <label class="sub-upload" for="subImage1">
-                    <input type="file" id="subImage1" name="sub_image_1" accept="image/*">
+                    <input
+                      type="file"
+                      id="subImage1"
+                      name="sub_image_1"
+                      accept="image/*"
+                      data-owner-image-process="sub"
+                      data-image-fit-mode-input="subImagesFitMode"
+                    >
                     <span>+</span>
                     <small>Sub image 1</small>
                   </label>
 
                   <label class="sub-upload" for="subImage2">
-                    <input type="file" id="subImage2" name="sub_image_2" accept="image/*">
+                    <input
+                      type="file"
+                      id="subImage2"
+                      name="sub_image_2"
+                      accept="image/*"
+                      data-owner-image-process="sub"
+                      data-image-fit-mode-input="subImagesFitMode"
+                    >
                     <span>+</span>
                     <small>Sub image 2</small>
                   </label>
 
                   <label class="sub-upload" for="subImage3">
-                    <input type="file" id="subImage3" name="sub_image_3" accept="image/*">
+                    <input
+                      type="file"
+                      id="subImage3"
+                      name="sub_image_3"
+                      accept="image/*"
+                      data-owner-image-process="sub"
+                      data-image-fit-mode-input="subImagesFitMode"
+                    >
                     <span>+</span>
                     <small>Sub image 3</small>
                   </label>
