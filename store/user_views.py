@@ -5,6 +5,7 @@ from django.db.models.functions import Coalesce
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
+from django.templatetags.static import static
 from django.utils.cache import patch_vary_headers
 from .models import Category, Product
 
@@ -178,6 +179,16 @@ def collections_page(request):
         "under-1500": "Browse premium sarees, dresses and dress materials under ₹1500.",
     }
 
+    fallback_hero_images = {
+        "all": static("store/collections/tabs/all.webp"),
+        "pattu": static("store/collections/tabs/pattu.webp"),
+        "cotton": static("store/collections/tabs/cotton.webp"),
+        "silk": static("store/collections/tabs/silk.webp"),
+        "designer": static("store/collections/tabs/designer.webp"),
+        "wedding": static("store/collections/tabs/wedding.webp"),
+        "daily": static("store/collections/tabs/daily.webp"),
+    }
+
     all_products = (
         Product.objects
         .select_related("category")
@@ -305,6 +316,7 @@ def collections_page(request):
             active_price,
             "Browse budget-friendly products."
         )
+        hero_image_url = fallback_hero_images.get("all", "")
     elif selected_category:
         page_title = category_titles.get(
             active_category,
@@ -314,12 +326,18 @@ def collections_page(request):
             active_category,
             f"Browse our latest {selected_category.name.lower()} products."
         )
+        hero_image_url = (
+            selected_category.image.url
+            if selected_category.image
+            else fallback_hero_images.get(active_category, fallback_hero_images["all"])
+        )
     else:
         page_title = category_titles.get(active_category, "All Products")
         page_description = category_descriptions.get(
             active_category,
             "Browse premium products."
         )
+        hero_image_url = fallback_hero_images.get(active_category, fallback_hero_images["all"])
 
     context = {
         "categories": categories,
@@ -338,6 +356,7 @@ def collections_page(request):
 
         "page_title": page_title,
         "page_description": page_description,
+        "hero_image_url": hero_image_url,
 
         "products": products,
         "new_arrivals": new_arrivals,
@@ -361,6 +380,7 @@ def collections_page(request):
             "active_category": active_category,
             "page_title": page_title,
             "page_description": page_description,
+            "hero_image_url": hero_image_url,
         })
 
         response["Cache-Control"] = "no-store, max-age=0"

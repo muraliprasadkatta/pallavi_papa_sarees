@@ -5,8 +5,8 @@
   <div class="collection-card">
     <div class="collection-head">
       <div>
-        <h2>Explore Saree Catalogue</h2>
-        <p>6 popular collections. More styles inside.</p>
+        <h2>Shop by Category</h2>
+        <p>Pick a saree type to explore matching collections.</p>
       </div>
     </div>
 
@@ -91,14 +91,14 @@
 
 <style>
   :root {
-    --pp-bg: #fff7f1;
-    --pp-card: #fffdfa;
+    --pp-bg: #ffe8dc;
+    --pp-card: #fffaf6;
     --pp-maroon: #8f1731;
     --pp-maroon-dark: #5f1020;
     --pp-text: #3d2430;
     --pp-muted: #82757b;
     --pp-gold: #c79243;
-    --pp-line: rgba(143, 23, 49, 0.14);
+    --pp-line: rgba(143, 23, 49, 0.24);
     --pp-shadow: 0 18px 42px rgba(70, 28, 35, 0.13);
   }
 
@@ -131,8 +131,9 @@
     top: var(--collection-overlap);
     bottom: 0;
     background:
-      radial-gradient(circle at 10% 0%, rgba(199, 146, 67, 0.09), transparent 26%),
-      linear-gradient(180deg, #fff6ef 0%, #fffaf6 52%, #fff7f1 100%);
+      radial-gradient(circle at 12% 4%, rgba(199, 146, 67, 0.18), transparent 30%),
+      radial-gradient(circle at 86% 18%, rgba(143, 23, 49, 0.09), transparent 28%),
+      linear-gradient(180deg, #ffe4d7 0%, #fff0e8 48%, #ffe8dc 100%);
   }
 
   .collection-card {
@@ -142,10 +143,10 @@
     position: relative;
     z-index: 25;
     background:
-      linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(255, 250, 245, 0.95));
-    border: 1px solid rgba(143, 23, 49, 0.10);
+      linear-gradient(145deg, rgba(255, 253, 249, 0.98), rgba(255, 242, 232, 0.96));
+    border: 1px solid rgba(143, 23, 49, 0.18);
     border-radius: clamp(18px, 5vw, 28px);
-    box-shadow: 0 18px 42px rgba(70, 28, 35, 0.15);
+    box-shadow: 0 18px 46px rgba(70, 28, 35, 0.18);
     padding: 0;
     overflow: hidden;
   }
@@ -198,10 +199,10 @@
     text-decoration: none;
     color: var(--pp-maroon-dark);
     background:
-      linear-gradient(135deg, rgba(255, 255, 255, 0.97), rgba(255, 247, 241, 0.94));
+      linear-gradient(135deg, #fffdf9 0%, #fff4eb 100%);
     border: 1px solid var(--pp-line);
     border-radius: 14px;
-    box-shadow: 0 7px 18px rgba(80, 36, 40, 0.07);
+    box-shadow: 0 9px 22px rgba(80, 36, 40, 0.11);
     overflow: hidden;
     -webkit-tap-highlight-color: transparent;
     transition:
@@ -223,7 +224,9 @@
     position: relative;
     overflow: hidden;
     flex: 0 0 auto;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+    box-shadow:
+      inset 0 0 0 1px rgba(255, 255, 255, 0.45),
+      0 0 0 1px rgba(143, 23, 49, 0.16);
   }
 
   .saree-thumb::before,
@@ -777,6 +780,82 @@
     }
   }
 
+
+  /* Mobile category-card polish: image uses the full card width; no inner image box/padding. */
+  @media (max-width: 767px) {
+    .collection-head {
+      padding: 11px 10px 0;
+      margin-bottom: 10px;
+    }
+
+    .collection-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(7px, 2vw, 9px);
+      padding: 0 7px 10px;
+    }
+
+    .collection-tile {
+      padding: 0;
+      gap: 0;
+      border-radius: 14px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #fffdf9 0%, #fff1e8 100%);
+      border: 1px solid rgba(143, 23, 49, 0.26);
+      box-shadow:
+        0 8px 20px rgba(80, 36, 40, 0.13),
+        0 0 0 1px rgba(255, 255, 255, 0.72);
+    }
+
+    .saree-thumb {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1 / 1;
+      border-radius: 14px 14px 0 0;
+      box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, 0.82),
+        0 1px 0 rgba(143, 23, 49, 0.16);
+    }
+
+    .collection-copy {
+      min-height: 34px;
+      padding: 7px 18px 7px 8px;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #fffaf5 0%, #ffece1 100%);
+      border-top: 1px solid rgba(143, 23, 49, 0.16);
+    }
+
+    .collection-copy strong {
+      font-size: clamp(11.2px, 3.25vw, 13px);
+      line-height: 1.02;
+      font-weight: 720;
+    }
+
+    .tile-arrow {
+      right: 7px;
+      bottom: 11px;
+      font-size: 12px;
+    }
+  }
+
+  @media (max-width: 380px) {
+    .collection-grid {
+      gap: 6px;
+      padding-left: 6px;
+      padding-right: 6px;
+    }
+
+    .collection-copy {
+      min-height: 32px;
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
+
+    .collection-copy strong {
+      font-size: clamp(10.4px, 3.05vw, 12px);
+    }
+  }
+
   @media (min-width: 1200px) {
     .collection-card {
       width: min(100% - 56px, 1680px);
@@ -784,6 +863,130 @@
 
     .collection-grid {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+
+  /* Final mobile rich image-card version: taller image, no label background, text directly on image. */
+  @media (max-width: 767px) {
+    .collection-card {
+      width: min(100% - 4px, 980px);
+    }
+
+    .collection-head {
+      padding: 10px 8px 0;
+      margin-bottom: 8px;
+    }
+
+    .collection-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 4px;
+      padding: 0 4px 10px;
+    }
+
+    .collection-tile {
+      min-height: clamp(136px, 42vw, 166px);
+      position: relative;
+      display: block;
+      padding: 0;
+      border-radius: 13px;
+      overflow: hidden;
+      background: #111;
+      border: 1px solid rgba(255, 255, 255, 0.88);
+      box-shadow:
+        0 8px 18px rgba(80, 36, 40, 0.15),
+        0 0 0 1px rgba(143, 23, 49, 0.16);
+    }
+
+    .saree-thumb {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      aspect-ratio: auto;
+      border-radius: inherit;
+      box-shadow: none;
+    }
+
+    .saree-thumb--image {
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.03) 0%, rgba(0, 0, 0, 0.05) 48%, rgba(0, 0, 0, 0.58) 100%),
+        var(--thumb-img);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    .collection-copy {
+      position: absolute;
+      z-index: 2;
+      left: 6px;
+      right: 6px;
+      bottom: 14px;
+      width: auto;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 14px 0 0;
+      background: transparent;
+      border-top: 0;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .collection-copy strong {
+      color: #fffdf7;
+      font-size: clamp(11.5px, 3.35vw, 13.5px);
+      line-height: 1.02;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      text-shadow:
+        0 2px 6px rgba(0, 0, 0, 0.72),
+        0 0 1px rgba(0, 0, 0, 0.85);
+      white-space: normal;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    .tile-arrow {
+      z-index: 3;
+      right: 8px;
+      bottom: 13px;
+      color: #f4c56f;
+      font-size: 14px;
+      text-shadow: 0 2px 5px rgba(0, 0, 0, 0.65);
+    }
+  }
+
+  @media (max-width: 380px) {
+    .collection-grid {
+      gap: 4px;
+      padding-left: 4px;
+      padding-right: 4px;
+    }
+
+    .collection-tile {
+      min-height: clamp(128px, 41vw, 152px);
+      border-radius: 12px;
+    }
+
+    .collection-copy {
+      left: 5px;
+      right: 5px;
+      bottom: 12px;
+      padding-right: 13px;
+    }
+
+    .collection-copy strong {
+      font-size: clamp(10.5px, 3.1vw, 12.2px);
+    }
+
+    .tile-arrow {
+      right: 7px;
+      bottom: 11px;
+      font-size: 13px;
     }
   }
 </style>

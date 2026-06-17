@@ -22,17 +22,13 @@
       </a>
     </div>
 
-    <div class="collections-hero-card__visual" data-collections-hero-visual aria-hidden="true">
-      {% if hero_image_url %}
-        <img src="{{ hero_image_url }}" alt="" data-collections-hero-image>
-      {% else %}
-        <div class="collections-fallback-art" data-collections-hero-fallback>
-          <div class="collections-fallback-art__head"></div>
-          <div class="collections-fallback-art__body"></div>
-          <div class="collections-fallback-art__saree"></div>
-        </div>
-      {% endif %}
-    </div>
+<div class="collections-hero-card__visual" aria-hidden="true">
+  <div class="collections-fallback-art" data-collections-hero-fallback>
+    <div class="collections-fallback-art__head"></div>
+    <div class="collections-fallback-art__body"></div>
+    <div class="collections-fallback-art__saree"></div>
+  </div>
+</div>
 
     <div class="collections-hero-dots" aria-hidden="true">
       <span class="active"></span>

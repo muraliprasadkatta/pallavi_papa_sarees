@@ -13,28 +13,28 @@
     </a>
 
     {% for category in categories %}
-  <a href="{% url 'store:collections' %}?category={{ category.slug }}"
-    class="collection-tab {% if active_category == category.slug %}is-active{% endif %}"
-    data-no-loader="true">
-<span class="collection-tab__media">
-  {% if category.image %}
-    <img src="{{ category.image.url }}" alt="{{ category.name }}">
-  {% elif category.slug == "pattu" %}
-    <img src="{% static 'store/collections/tabs/pattu.webp' %}" alt="{{ category.name }}">
-  {% elif category.slug == "cotton" %}
-    <img src="{% static 'store/collections/tabs/cotton.webp' %}" alt="{{ category.name }}">
-  {% elif category.slug == "silk" %}
-    <img src="{% static 'store/collections/tabs/silk.webp' %}" alt="{{ category.name }}">
-  {% elif category.slug == "designer" %}
-    <img src="{% static 'store/collections/tabs/designer.webp' %}" alt="{{ category.name }}">
-  {% elif category.slug == "wedding" %}
-    <img src="{% static 'store/collections/tabs/wedding.webp' %}" alt="{{ category.name }}">
-  {% elif category.slug == "daily" %}
-    <img src="{% static 'store/collections/tabs/daily.webp' %}" alt="{{ category.name }}">
-  {% else %}
-    <img src="{% static 'store/collections/tabs/all.webp' %}" alt="{{ category.name }}">
-  {% endif %}
-</span>
+      <a href="{% url 'store:collections' %}?category={{ category.slug }}"
+        class="collection-tab {% if active_category == category.slug %}is-active{% endif %}"
+        data-no-loader="true">
+        <span class="collection-tab__media">
+          {% if category.image %}
+            <img src="{{ category.image.url }}" alt="{{ category.name }}">
+          {% elif category.slug == "pattu" %}
+            <img src="{% static 'store/collections/tabs/pattu.webp' %}" alt="{{ category.name }}">
+          {% elif category.slug == "cotton" %}
+            <img src="{% static 'store/collections/tabs/cotton.webp' %}" alt="{{ category.name }}">
+          {% elif category.slug == "silk" %}
+            <img src="{% static 'store/collections/tabs/silk.webp' %}" alt="{{ category.name }}">
+          {% elif category.slug == "designer" %}
+            <img src="{% static 'store/collections/tabs/designer.webp' %}" alt="{{ category.name }}">
+          {% elif category.slug == "wedding" %}
+            <img src="{% static 'store/collections/tabs/wedding.webp' %}" alt="{{ category.name }}">
+          {% elif category.slug == "daily" %}
+            <img src="{% static 'store/collections/tabs/daily.webp' %}" alt="{{ category.name }}">
+          {% else %}
+            <img src="{% static 'store/collections/tabs/all.webp' %}" alt="{{ category.name }}">
+          {% endif %}
+        </span>
 
         <span class="collection-tab__label">
           {{ category.name }}
@@ -52,26 +52,41 @@
   }
 
   .collection-tabs-wrap {
+    position: sticky;
+    top: 70px;
+    z-index: 900;
+
     width: 100%;
     max-width: 100%;
     margin-left: 0;
     margin-right: 0;
     margin-bottom: clamp(14px, 3vw, 24px);
 
-    background: #fffaf6;
+    background: rgba(255, 250, 246, 0.96);
     border-bottom: 1px solid rgba(143, 23, 49, 0.10);
-    box-shadow: 0 8px 22px rgba(70, 28, 35, 0.06);
+    box-shadow: 0 8px 20px rgba(70, 28, 35, 0.07);
+    backdrop-filter: blur(12px);
 
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
 
     --tab-w: clamp(118px, 10.5vw, 158px);
-    --tab-media-height: clamp(84px, 7.5vw, 128px);
+    --tab-media-height: var(--tab-w);
+    --tab-compact-media-height: clamp(14px, 1.4vw, 18px);
     --tab-radius: clamp(13px, 1.3vw, 20px);
     --tab-gap: clamp(10px, 1.2vw, 16px);
+    --tab-current-media-height: var(--tab-media-height);
+    --tab-current-radius: var(--tab-radius);
+    --tab-current-gap: var(--tab-gap);
+    --tab-current-inner-gap: clamp(6px, 0.8vw, 10px);
+    --tab-current-label-size: clamp(11px, 1.05vw, 15px);
+    --tabs-current-padding:
+      clamp(12px, 1.8vw, 22px)
+      clamp(14px, 2vw, 30px)
+      clamp(11px, 1.5vw, 18px);
   }
 
   .collection-tabs-wrap::-webkit-scrollbar {
@@ -84,14 +99,11 @@
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
-    gap: var(--tab-gap);
+    gap: var(--tab-current-gap);
 
-    padding:
-      clamp(12px, 1.8vw, 22px)
-      clamp(14px, 2vw, 30px)
-      clamp(11px, 1.5vw, 18px);
+    padding: var(--tabs-current-padding);
 
-    background: #fffaf6;
+    background: transparent;
   }
 
   .collection-tab {
@@ -105,20 +117,25 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: clamp(6px, 0.8vw, 10px);
+    gap: var(--tab-current-inner-gap);
 
     padding: 0;
     border-radius: var(--tab-radius);
     -webkit-tap-highlight-color: transparent;
+    transition:
+      color 160ms ease,
+      background-color 160ms ease,
+      border-color 160ms ease,
+      box-shadow 160ms ease;
   }
 
   .collection-tab__media {
     width: 100%;
-    height: var(--tab-media-height);
+    height: var(--tab-current-media-height);
 
     display: block;
     overflow: hidden;
-    border-radius: var(--tab-radius);
+    border-radius: var(--tab-current-radius);
 
     background: #f7ece6;
     border: 1px solid rgba(143, 23, 49, 0.08);
@@ -144,7 +161,7 @@
     text-align: center;
 
     color: #4b1e29;
-    font-size: clamp(11px, 1.05vw, 15px);
+    font-size: var(--tab-current-label-size);
     line-height: 1.05;
     font-weight: 720;
 
@@ -197,10 +214,65 @@
     pointer-events: none;
   }
 
+  .collection-tabs-wrap.is-compact .collection-tabs {
+    align-items: flex-start;
+    gap: var(--tab-current-gap);
+    padding: var(--tabs-current-padding);
+  }
+
+  .collection-tabs-wrap.is-compact .collection-tab {
+    flex: 0 0 var(--tab-w);
+    width: var(--tab-w);
+    min-width: var(--tab-w);
+    min-height: 0;
+    padding: 0;
+    gap: var(--tab-current-inner-gap);
+  }
+
+  .collection-tabs-wrap.is-compact .collection-tab__media {
+    height: var(--tab-current-media-height);
+    border-radius: var(--tab-current-radius);
+    box-shadow: 0 5px 12px rgba(70, 28, 35, 0.08);
+  }
+
+  .collection-tabs-wrap.is-compact .collection-tab__label {
+    width: 100%;
+    color: inherit;
+    font-size: var(--tab-current-label-size);
+    line-height: 1.05;
+    font-weight: 760;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .collection-tabs-wrap.is-compact .collection-tab:hover .collection-tab__media,
+  .collection-tabs-wrap.is-compact .collection-tab:focus-visible .collection-tab__media {
+    border-color: rgba(143, 23, 49, 0.26);
+    box-shadow: 0 6px 14px rgba(70, 28, 35, 0.08);
+  }
+
+  .collection-tabs-wrap.is-compact .collection-tab:focus-visible {
+    outline: none;
+  }
+
+  .collection-tabs-wrap.is-compact .collection-tab.is-active .collection-tab__media {
+    background: #8f1731;
+    border-color: #8f1731;
+    box-shadow: 0 7px 16px rgba(143, 23, 49, 0.20);
+  }
+
+  .collection-tabs-wrap.is-compact .collection-tab.is-active .collection-tab__label {
+    color: #8f1731;
+  }
+
+  .collection-tabs-wrap.is-compact .collection-tab::after {
+    bottom: -5px;
+  }
+
   @media (max-width: 1100px) {
     .collection-tabs-wrap {
       --tab-w: clamp(108px, 13vw, 138px);
-      --tab-media-height: clamp(76px, 9vw, 100px);
+      --tab-media-height: var(--tab-w);
       --tab-gap: 10px;
       --tab-radius: 14px;
     }
@@ -210,15 +282,17 @@
     }
 
     .collection-tab__label {
-      font-size: clamp(10.5px, 1.25vw, 13.5px);
+      font-size: var(--tab-current-label-size);
     }
   }
 
   @media (max-width: 767px) {
     .collection-tabs-wrap {
+      top: 58px;
       margin-bottom: 14px;
       --tab-w: clamp(84px, 24vw, 104px);
-      --tab-media-height: clamp(62px, 17vw, 78px);
+      --tab-media-height: var(--tab-w);
+      --tab-compact-media-height: 11px;
       --tab-gap: 8px;
       --tab-radius: 12px;
     }
@@ -233,15 +307,33 @@
     }
 
     .collection-tab__label {
-      font-size: 10.5px;
+      font-size: var(--tab-current-label-size);
       font-weight: 720;
+    }
+
+    .collection-tabs-wrap.is-compact .collection-tabs {
+      min-width: max-content;
+      gap: 8px;
+      padding: 7px 8px 8px;
+    }
+
+    .collection-tabs-wrap.is-compact .collection-tab {
+      flex-basis: var(--tab-w);
+      width: var(--tab-w);
+      min-width: var(--tab-w);
+      padding: 0;
+    }
+
+    .collection-tabs-wrap.is-compact .collection-tab__label {
+      font-size: var(--tab-current-label-size);
     }
   }
 
   @media (max-width: 480px) {
     .collection-tabs-wrap {
       --tab-w: clamp(82px, 25vw, 96px);
-      --tab-media-height: clamp(58px, 17vw, 72px);
+      --tab-media-height: var(--tab-w);
+      --tab-compact-media-height: 10px;
       --tab-gap: 7px;
       --tab-radius: 11px;
     }
@@ -251,15 +343,17 @@
     }
 
     .collection-tab__label {
-      font-size: 10px;
+      font-size: var(--tab-current-label-size);
       letter-spacing: -0.02em;
     }
   }
 
   @media (max-width: 380px) {
     .collection-tabs-wrap {
+      top: 56px;
       --tab-w: clamp(78px, 25.5vw, 90px);
-      --tab-media-height: clamp(54px, 16.5vw, 66px);
+      --tab-media-height: var(--tab-w);
+      --tab-compact-media-height: 9px;
       --tab-gap: 6px;
       --tab-radius: 10px;
     }
@@ -270,14 +364,18 @@
     }
 
     .collection-tab__label {
-      font-size: 9.4px;
+      font-size: var(--tab-current-label-size);
+    }
+
+    .collection-tabs-wrap.is-compact .collection-tab__label {
+      font-size: var(--tab-current-label-size);
     }
   }
 
   @media (max-width: 340px) {
     .collection-tabs-wrap {
       --tab-w: 76px;
-      --tab-media-height: 52px;
+      --tab-media-height: var(--tab-w);
       --tab-gap: 6px;
     }
 
@@ -287,7 +385,13 @@
     }
 
     .collection-tab__label {
-      font-size: 8.8px;
+      font-size: var(--tab-current-label-size);
+    }
+  }
+
+  @media (max-width: 320px) {
+    .collection-tabs-wrap {
+      top: 54px;
     }
   }
 
@@ -303,13 +407,18 @@
   }
 </style>
 
-
 <script>
   (() => {
     const wrap = document.querySelector(".collection-tabs-wrap");
     if (!wrap) return;
 
+    const stickySentinel = document.createElement("span");
+    stickySentinel.setAttribute("aria-hidden", "true");
+    stickySentinel.style.cssText = "display:block;width:1px;height:0;margin:0;padding:0;pointer-events:none;";
+    wrap.before(stickySentinel);
+
     let activeRequestId = 0;
+    let compressionMetrics = null;
 
     function getAjaxContent() {
       return document.getElementById("collectionsAjaxContent");
@@ -317,6 +426,171 @@
 
     function getActiveTab() {
       return wrap.querySelector(".collection-tab.is-active");
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(Math.max(value, min), max);
+    }
+
+    function getMaxScrollLeft() {
+      return Math.max(0, wrap.scrollWidth - wrap.clientWidth);
+    }
+
+    function setScrollLeftInstant(left) {
+      const previousScrollBehavior = wrap.style.scrollBehavior;
+      wrap.style.scrollBehavior = "auto";
+      wrap.scrollLeft = clamp(left, 0, getMaxScrollLeft());
+      wrap.style.scrollBehavior = previousScrollBehavior;
+    }
+
+    function lerp(start, end, progress) {
+      return start + (end - start) * progress;
+    }
+
+    function readPx(value, fallback = 0) {
+      const parsed = parseFloat(value);
+      return Number.isFinite(parsed) ? parsed : fallback;
+    }
+
+    function measureCssLength(cssLength, fallback = 0) {
+      const probe = document.createElement("span");
+      probe.style.cssText = [
+        "position:absolute",
+        "visibility:hidden",
+        "pointer-events:none",
+        "width:0",
+        "height:" + cssLength,
+      ].join(";");
+
+      wrap.appendChild(probe);
+      const height = probe.getBoundingClientRect().height;
+      probe.remove();
+
+      return height || fallback;
+    }
+
+    function measureCompressionMetrics() {
+      const tabs = wrap.querySelector(".collection-tabs");
+      const tab = wrap.querySelector(".collection-tab");
+      const media = wrap.querySelector(".collection-tab__media");
+      const label = wrap.querySelector(".collection-tab__label");
+
+      if (!tabs || !tab || !media || !label) return null;
+
+      const wasCompact = wrap.classList.contains("is-compact");
+      const currentValues = {
+        mediaHeight: wrap.style.getPropertyValue("--tab-current-media-height"),
+        radius: wrap.style.getPropertyValue("--tab-current-radius"),
+        gap: wrap.style.getPropertyValue("--tab-current-gap"),
+        innerGap: wrap.style.getPropertyValue("--tab-current-inner-gap"),
+        labelSize: wrap.style.getPropertyValue("--tab-current-label-size"),
+        padding: wrap.style.getPropertyValue("--tabs-current-padding"),
+      };
+
+      wrap.classList.remove("is-compact");
+      Object.keys(currentValues).forEach((key) => {
+        const cssName = {
+          mediaHeight: "--tab-current-media-height",
+          radius: "--tab-current-radius",
+          gap: "--tab-current-gap",
+          innerGap: "--tab-current-inner-gap",
+          labelSize: "--tab-current-label-size",
+          padding: "--tabs-current-padding",
+        }[key];
+        wrap.style.removeProperty(cssName);
+      });
+
+      const tabsStyle = window.getComputedStyle(tabs);
+      const tabStyle = window.getComputedStyle(tab);
+      const mediaStyle = window.getComputedStyle(media);
+      const labelStyle = window.getComputedStyle(label);
+      const compactMediaHeight = measureCssLength(
+        window.getComputedStyle(wrap).getPropertyValue("--tab-compact-media-height"),
+        10
+      );
+      const isMobile = window.matchMedia("(max-width: 767px)").matches;
+      const isSmall = window.matchMedia("(max-width: 380px)").matches;
+      const compactLabelSize = isSmall ? 9.2 : (isMobile ? 10 : clamp(window.innerWidth * 0.01, 10.5, 13));
+
+      const metrics = {
+        fullMediaHeight: media.getBoundingClientRect().height,
+        compactMediaHeight,
+        fullRadius: readPx(mediaStyle.borderTopLeftRadius, 12),
+        compactRadius: compactMediaHeight / 2,
+        fullOuterGap: readPx(tabsStyle.columnGap || tabsStyle.gap, 10),
+        compactOuterGap: isMobile ? 8 : readPx(window.getComputedStyle(wrap).getPropertyValue("--tab-gap"), 10),
+        fullInnerGap: readPx(tabStyle.rowGap || tabStyle.gap, 6),
+        compactInnerGap: 4,
+        fullLabelSize: readPx(labelStyle.fontSize, 11),
+        compactLabelSize,
+        paddingTop: readPx(tabsStyle.paddingTop, 10),
+        compactPaddingTop: isMobile ? 7 : 8,
+        paddingRight: readPx(tabsStyle.paddingRight, 14),
+        paddingBottom: readPx(tabsStyle.paddingBottom, 10),
+        compactPaddingBottom: isMobile ? 8 : 9,
+        paddingLeft: readPx(tabsStyle.paddingLeft, 14),
+      };
+
+      Object.entries(currentValues).forEach(([key, value]) => {
+        if (!value) return;
+        const cssName = {
+          mediaHeight: "--tab-current-media-height",
+          radius: "--tab-current-radius",
+          gap: "--tab-current-gap",
+          innerGap: "--tab-current-inner-gap",
+          labelSize: "--tab-current-label-size",
+          padding: "--tabs-current-padding",
+        }[key];
+        wrap.style.setProperty(cssName, value);
+      });
+
+      wrap.classList.toggle("is-compact", wasCompact);
+      return metrics;
+    }
+
+    function setCompressionProgress(progress) {
+      if (!compressionMetrics) {
+        compressionMetrics = measureCompressionMetrics();
+      }
+
+      if (!compressionMetrics) return;
+
+      const metrics = compressionMetrics;
+      const easedProgress = progress;
+      const mediaHeight = lerp(metrics.fullMediaHeight, metrics.compactMediaHeight, easedProgress);
+      const radius = lerp(metrics.fullRadius, metrics.compactRadius, easedProgress);
+      const outerGap = lerp(metrics.fullOuterGap, metrics.compactOuterGap, easedProgress);
+      const innerGap = lerp(metrics.fullInnerGap, metrics.compactInnerGap, easedProgress);
+      const labelSize = lerp(metrics.fullLabelSize, metrics.compactLabelSize, easedProgress);
+      const paddingTop = lerp(metrics.paddingTop, metrics.compactPaddingTop, easedProgress);
+      const paddingBottom = lerp(metrics.paddingBottom, metrics.compactPaddingBottom, easedProgress);
+
+      wrap.style.setProperty("--tab-current-media-height", mediaHeight.toFixed(2) + "px");
+      wrap.style.setProperty("--tab-current-radius", radius.toFixed(2) + "px");
+      wrap.style.setProperty("--tab-current-gap", outerGap.toFixed(2) + "px");
+      wrap.style.setProperty("--tab-current-inner-gap", innerGap.toFixed(2) + "px");
+      wrap.style.setProperty("--tab-current-label-size", labelSize.toFixed(2) + "px");
+      wrap.style.setProperty(
+        "--tabs-current-padding",
+        [
+          paddingTop.toFixed(2) + "px",
+          metrics.paddingRight.toFixed(2) + "px",
+          paddingBottom.toFixed(2) + "px",
+          metrics.paddingLeft.toFixed(2) + "px",
+        ].join(" ")
+      );
+
+      wrap.classList.toggle("is-compact", progress >= 0.98);
+    }
+
+    function updateCompactTabs() {
+      const stickyTop = parseFloat(window.getComputedStyle(wrap).top) || 0;
+      const sentinelTop = stickySentinel.getBoundingClientRect().top;
+      const compressionDistance = window.matchMedia("(max-width: 767px)").matches ? 56 : 72;
+      const progress = clamp((stickyTop - sentinelTop) / compressionDistance, 0, 1);
+
+      setCompressionProgress(progress);
+      return progress > 0 && progress < 1;
     }
 
     function cleanPageUrl(url) {
@@ -356,8 +630,13 @@
         (wrap.clientWidth / 2) +
         (activeTab.offsetWidth / 2);
 
+      if (behavior === "auto") {
+        setScrollLeftInstant(targetScroll);
+        return;
+      }
+
       wrap.scrollTo({
-        left: Math.max(0, targetScroll),
+        left: clamp(targetScroll, 0, getMaxScrollLeft()),
         behavior: behavior,
       });
     }
@@ -504,7 +783,6 @@
 
       if (sameVisibleUrl(window.location.href, pageUrl)) {
         setActiveTabByUrl(pageUrl);
-        centerActiveTab("smooth");
         return;
       }
 
@@ -521,16 +799,31 @@
       loadCategory(window.location.href, { pushState: false });
     });
 
-    requestAnimationFrame(() => {
-      centerActiveTab("auto");
+    window.requestAnimationFrame(() => {
+      const compactChanged = updateCompactTabs();
+
+      if (!compactChanged) {
+        centerActiveTab("auto");
+      }
     });
 
     window.addEventListener("load", () => {
-      centerActiveTab("auto");
+      const compactChanged = updateCompactTabs();
+
+      if (!compactChanged) {
+        centerActiveTab("auto");
+      }
     });
 
+    window.addEventListener("scroll", updateCompactTabs, { passive: true });
+
     window.addEventListener("resize", () => {
-      centerActiveTab("auto");
+      compressionMetrics = null;
+      const compactChanged = updateCompactTabs();
+
+      if (!compactChanged) {
+        centerActiveTab("auto");
+      }
     });
   })();
 </script>
