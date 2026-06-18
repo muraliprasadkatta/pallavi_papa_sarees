@@ -1,12 +1,18 @@
 {% url 'store:product_detail' p.id as product_detail_url %}
+{% url 'store:collections' as collections_url %}
 
 {% if p.arrival_card_image %}
   {% with card_image=p.arrival_card_image %}
     <article class="product-card">
       <a
-        href="{{ product_detail_url }}"
+        {% if link_to_category %}
+          href="{{ collections_url }}?category={% if p.category %}{{ p.category.slug|urlencode }}{% else %}all{% endif %}"
+          aria-label="View {% if p.category %}{{ p.category.name }}{% else %}all products{% endif %} collection"
+        {% else %}
+          href="{{ product_detail_url }}"
+          aria-label="View {{ p.name }}"
+        {% endif %}
         class="product-card-click"
-        aria-label="View {{ p.name }}"
       ></a>
 
       <div class="product-media">
@@ -51,7 +57,10 @@
           {{ p.name|truncatechars:28 }}
         </h3>
 
-        <p class="product-category" title="{% if p.category %}{{ p.category.name }}{% else %}Collection{% endif %}">
+        <p
+          class="product-category"
+          title="{% if p.category %}{{ p.category.name }}{% else %}Collection{% endif %}"
+        >
           {% if p.category %}
             {{ p.category.name|truncatechars:18 }}
           {% else %}
@@ -70,13 +79,19 @@
       </div>
     </article>
   {% endwith %}
+
 {% else %}
   {% with card_image=p.main_image %}
     <article class="product-card">
       <a
-        href="{{ product_detail_url }}"
+        {% if link_to_category %}
+          href="{{ collections_url }}?category={% if p.category %}{{ p.category.slug|urlencode }}{% else %}all{% endif %}"
+          aria-label="View {% if p.category %}{{ p.category.name }}{% else %}all products{% endif %} collection"
+        {% else %}
+          href="{{ product_detail_url }}"
+          aria-label="View {{ p.name }}"
+        {% endif %}
         class="product-card-click"
-        aria-label="View {{ p.name }}"
       ></a>
 
       <div class="product-media">
@@ -123,7 +138,10 @@
           {{ p.name|truncatechars:28 }}
         </h3>
 
-        <p class="product-category" title="{% if p.category %}{{ p.category.name }}{% else %}Collection{% endif %}">
+        <p
+          class="product-category"
+          title="{% if p.category %}{{ p.category.name }}{% else %}Collection{% endif %}"
+        >
           {% if p.category %}
             {{ p.category.name|truncatechars:18 }}
           {% else %}

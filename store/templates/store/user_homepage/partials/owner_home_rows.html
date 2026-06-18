@@ -13,11 +13,11 @@
         <a href="{{ collections_url }}" class="popular-items-view">View All ›</a>
       </div>
 
-      <div class="popular-items-grid">
-        {% for p in row.homepage_products|slice:":8" %}
-          {% include "store/collections/partials/product_card.html" with p=p hide_product_overlays=True %}
-        {% endfor %}
-      </div>
+    <div class="popular-items-grid">
+      {% for p in row.homepage_products|slice:":8" %}
+        {% include "store/collections/partials/product_card.html" with p=p hide_product_overlays=True link_to_category=True %}
+      {% endfor %}
+    </div>
     </div>
   </section>
 {% endfor %}

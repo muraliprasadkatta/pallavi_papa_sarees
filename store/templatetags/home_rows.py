@@ -26,6 +26,7 @@ def render_owner_home_rows(context, display_after):
                 "name",
                 "category",
                 "category__name",
+                "category__slug",
                 "actual_price",
                 "offer_price",
                 "main_image",
