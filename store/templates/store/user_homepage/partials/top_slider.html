@@ -1,5 +1,12 @@
 {% load static %}
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link
+  href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&display=swap"
+  rel="stylesheet"
+>
+
 <section class="top-slider" aria-label="Featured saree collections">
   <div class="top-slider__track">
 
@@ -52,24 +59,24 @@
 </section>
 
 <style>
-
   html,
-body {
-  margin: 0 !important;
-  padding: 0 !important;
-  width: 100% !important;
-  min-height: 100% !important;
-}
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-height: 100% !important;
+  }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
 
-body {
-  background: #fffaf7;
-}
+  body {
+    background: #fffaf7;
+  }
+
   .top-slider,
   .top-slider * {
     box-sizing: border-box;
@@ -82,15 +89,13 @@ body {
     overflow: hidden;
     background: #fff;
     box-shadow: none;
-    /* transform: translate3d(0, 0, 0);
-    will-change: transform; */
   }
 
-.top-slider__track {
-  position: relative;
-  height: clamp(430px, 42vw, 560px);
-  overflow: hidden;
-}
+  .top-slider__track {
+    position: relative;
+    height: clamp(430px, 42vw, 560px);
+    overflow: hidden;
+  }
 
   .top-slide {
     position: absolute;
@@ -111,15 +116,15 @@ body {
     animation-delay: 10s;
   }
 
-.top-slide__image {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  object-position: 62% 24%;
-  transform: scale(1.05);
-  will-change: transform;
-}
+  .top-slide__image {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: 62% 24%;
+    transform: scale(1.05);
+    will-change: transform;
+  }
 
   .top-slide::after {
     content: "";
@@ -166,12 +171,13 @@ body {
   .top-slide__content h1 {
     margin: 0;
     max-width: 560px;
-    font-family: var(--font-serif);
+    font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
     font-size: clamp(30px, 4.2vw, 56px);
-    line-height: 1.02;
-    letter-spacing: 0.01em;
-    font-weight: 600;
-    text-shadow: 0 12px 30px rgba(42, 20, 26, 0.18);
+    line-height: 0.98;
+    letter-spacing: 0.005em;
+    font-weight: 500;
+    text-wrap: balance;
+    text-shadow: 0 3px 18px rgba(35, 17, 22, 0.30);
   }
 
   .top-slide__content p {
@@ -183,20 +189,6 @@ body {
     line-height: 1.42;
     font-weight: 400;
     letter-spacing: 0.02em;
-  }
-
-  .top-slide__btn {
-    margin-top: 16px;
-    min-height: 38px;
-    padding: 9px 15px;
-    border-radius: 999px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: #ffffff;
-    color: #9b1c31;
-    font-size: clamp(12px, 2vw, 14px);
-    font-weight: 700;
   }
 
   @keyframes sliderFade {
@@ -223,7 +215,24 @@ body {
 
   @media (max-width: 767px) {
     .top-slider__track {
-      height: clamp(250px, 72vw, 330px);
+      height: clamp(315px, 86vw, 360px);
+    }
+
+    .top-slide__image {
+      transform: scale(1.02);
+    }
+
+    /* Separate focal points because each model is framed differently. */
+    .top-slide--one .top-slide__image {
+      object-position: 62% 18%;
+    }
+
+    .top-slide--two .top-slide__image {
+      object-position: 62% 18%;
+    }
+
+    .top-slide--three .top-slide__image {
+      object-position: 62% 16%;
     }
 
     .top-slide__content {
@@ -269,7 +278,7 @@ body {
 
   @media (max-width: 480px) {
     .top-slider__track {
-      height: 275px;
+      height: 330px;
     }
 
     .top-slide__content {
@@ -292,7 +301,7 @@ body {
 
   @media (max-width: 380px) {
     .top-slider__track {
-      height: 255px;
+      height: 305px;
     }
 
     .top-slide__content {
@@ -308,52 +317,17 @@ body {
     .top-slide__content p {
       font-size: 11.5px;
     }
+  }
 
-    .top-slide__btn {
-      width: 100%;
+  @media (prefers-reduced-motion: reduce) {
+    .top-slide {
+      animation: none;
+      opacity: 0;
+    }
+
+    .top-slide:first-child {
+      opacity: 1;
     }
   }
 </style>
 
-<script>
-  (function () {
-    const slider = document.querySelector(".top-slider");
-    if (!slider) return;
-
-    const images = slider.querySelectorAll(".top-slide__image");
-
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (reduceMotion.matches) return;
-
-    const speed = 0.12;
-    const maxShift = 24;
-
-    let ticking = false;
-
-    function updateParallax() {
-      const rect = slider.getBoundingClientRect();
-      const scrollY = window.scrollY || window.pageYOffset;
-
-      if (rect.bottom > 0) {
-        const shift = Math.min(scrollY * speed, maxShift);
-
-        images.forEach(function (img) {
-          img.style.transform = `translate3d(0, ${shift}px, 0) scale(1.05)`;
-        });
-      }
-
-      ticking = false;
-    }
-
-    function onScroll() {
-      if (!ticking) {
-        window.requestAnimationFrame(updateParallax);
-        ticking = true;
-      }
-    }
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", updateParallax);
-    updateParallax();
-  })();
-</script>
