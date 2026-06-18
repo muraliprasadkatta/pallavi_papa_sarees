@@ -83,34 +83,14 @@
   }
 
   .top-slider {
-    --hero-progress: 0;
-    --hero-slow-offset: 0px;
-    --hero-scale-y: 1;
-    --hero-image-scale: 1.05;
-    --hero-content-shift: 0px;
-    --hero-eyebrow-shift: 0px;
-    --hero-heading-shift: 0px;
-    --hero-description-shift: 0px;
-    --hero-text-opacity: 1;
-    --hero-heading-spacing: 0.005em;
-
     position: relative;
     z-index: 0;
     width: 100%;
     margin: 0;
     border-radius: 0;
-    overflow: visible;
-    background: #fffaf7;
+    overflow: hidden;
+    background: #2c1a1e;
     box-shadow: none;
-  }
-
-  /*
-   * The following section scrolls normally above the slow hero.
-   * This creates the layered overlap without delaying page scrolling.
-   */
-  .top-slider + * {
-    position: relative;
-    z-index: 2;
   }
 
   .top-slider__track {
@@ -118,14 +98,7 @@
     z-index: 0;
     height: clamp(430px, 42vw, 560px);
     overflow: hidden;
-    background: #fff;
-
-    transform:
-      translate3d(0, var(--hero-slow-offset), 0)
-      scaleY(var(--hero-scale-y));
-    transform-origin: center top;
-    border-radius: 0 0 calc(var(--hero-progress) * 22px) calc(var(--hero-progress) * 22px);
-    will-change: transform, border-radius;
+    background: #2c1a1e;
   }
 
   .top-slide {
@@ -153,9 +126,8 @@
     display: block;
     object-fit: cover;
     object-position: 62% 24%;
-    transform: scale(var(--hero-image-scale));
+    transform: scale(1.02);
     transform-origin: center center;
-    will-change: transform;
   }
 
   .top-slide::after {
@@ -185,8 +157,6 @@
     max-width: min(560px, 88%);
     color: #fff;
 
-    transform: translate3d(0, var(--hero-content-shift), 0);
-    will-change: transform;
   }
 
   .top-slide__content span {
@@ -201,9 +171,6 @@
     line-height: 1.2;
     font-weight: 500;
     letter-spacing: 0.045em;
-    opacity: var(--hero-text-opacity);
-    transform: translate3d(0, var(--hero-eyebrow-shift), 0);
-    will-change: transform, opacity;
   }
 
   .top-slide__content h1 {
@@ -212,13 +179,10 @@
     font-family: "Cormorant Garamond", Georgia, "Times New Roman", serif;
     font-size: clamp(30px, 4.2vw, 56px);
     line-height: 0.98;
-    letter-spacing: var(--hero-heading-spacing);
+    letter-spacing: 0.005em;
     font-weight: 500;
     text-wrap: balance;
     text-shadow: 0 3px 18px rgba(35, 17, 22, 0.30);
-    opacity: var(--hero-text-opacity);
-    transform: translate3d(0, var(--hero-heading-shift), 0);
-    will-change: transform, opacity, letter-spacing;
   }
 
   .top-slide__content p {
@@ -230,9 +194,6 @@
     line-height: 1.42;
     font-weight: 400;
     letter-spacing: 0.02em;
-    opacity: var(--hero-text-opacity);
-    transform: translate3d(0, var(--hero-description-shift), 0);
-    will-change: transform, opacity;
   }
 
   @keyframes sliderFade {
@@ -258,12 +219,12 @@
   }
 
   @media (max-width: 767px) {
-    .top-slider {
-      --hero-image-scale: 1.02;
-    }
-
     .top-slider__track {
       height: clamp(315px, 86vw, 360px);
+    }
+
+    .top-slide__image {
+      transform: scale(1.01);
     }
 
     .top-slide--one .top-slide__image {
@@ -293,7 +254,7 @@
       max-width: 330px;
       font-size: clamp(31px, 9.4vw, 45px);
       line-height: 0.98;
-      letter-spacing: var(--hero-heading-spacing);
+      letter-spacing: 0.005em;
     }
 
     .top-slide__content p {
@@ -333,7 +294,7 @@
       max-width: 300px;
       font-size: clamp(25px, 7.4vw, 34px);
       line-height: 1.03;
-      letter-spacing: var(--hero-heading-spacing);
+      letter-spacing: 0.005em;
     }
 
     .top-slide__content p {
@@ -371,135 +332,5 @@
     .top-slide:first-child {
       opacity: 1;
     }
-
-    .top-slider {
-      --hero-slow-offset: 0px !important;
-      --hero-scale-y: 1 !important;
-      --hero-content-shift: 0px !important;
-      --hero-eyebrow-shift: 0px !important;
-      --hero-heading-shift: 0px !important;
-      --hero-description-shift: 0px !important;
-      --hero-text-opacity: 1 !important;
-      --hero-heading-spacing: 0.005em !important;
-    }
   }
 </style>
-
-<script>
-  (function () {
-    const slider = document.querySelector(".top-slider");
-    if (!slider) return;
-
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-    if (reduceMotion.matches) return;
-
-    let ticking = false;
-
-    function clamp(value, min, max) {
-      return Math.min(Math.max(value, min), max);
-    }
-
-    function updateHeroCompression() {
-      const sliderTop =
-        slider.getBoundingClientRect().top + window.scrollY;
-      const sliderHeight = slider.offsetHeight || 1;
-      const localScroll = Math.max(0, window.scrollY - sliderTop);
-      const visibleRange = Math.max(1, sliderHeight);
-
-      /*
-       * Counter 75% of normal document movement.
-       * The hero therefore appears to move upward at 25% speed,
-       * while the following section continues at normal scroll speed.
-       */
-      const slowOffset = Math.min(
-        localScroll * 0.75,
-        visibleRange * 0.75
-      );
-
-      /*
-       * Compression starts after the first 8% of hero scrolling.
-       * It completes gradually before the next section covers the hero.
-       */
-      const compressionStart = sliderHeight * 0.08;
-      const compressionDistance = sliderHeight * 0.58;
-      const compressionProgress = clamp(
-        (localScroll - compressionStart) / compressionDistance,
-        0,
-        1
-      );
-
-      const isMobile = window.matchMedia("(max-width: 767px)").matches;
-      const maxCompression = isMobile ? 0.10 : 0.12;
-      const maxContentShift = isMobile ? 7 : 10;
-      const maxEyebrowShift = isMobile ? 4 : 6;
-      const maxHeadingShift = isMobile ? 7 : 10;
-      const maxDescriptionShift = isMobile ? 11 : 15;
-      const baseImageScale = isMobile ? 1.02 : 1.05;
-      const imageZoom = isMobile ? 0.025 : 0.035;
-      const textOpacity = 1 - (compressionProgress * 0.18);
-      const headingSpacing =
-        0.005 + (compressionProgress * (isMobile ? 0.004 : 0.006));
-
-      slider.style.setProperty(
-        "--hero-progress",
-        compressionProgress.toFixed(4)
-      );
-      slider.style.setProperty(
-        "--hero-slow-offset",
-        slowOffset.toFixed(2) + "px"
-      );
-      slider.style.setProperty(
-        "--hero-scale-y",
-        (1 - (maxCompression * compressionProgress)).toFixed(4)
-      );
-      slider.style.setProperty(
-        "--hero-content-shift",
-        (-maxContentShift * compressionProgress).toFixed(2) + "px"
-      );
-      slider.style.setProperty(
-        "--hero-eyebrow-shift",
-        (-maxEyebrowShift * compressionProgress).toFixed(2) + "px"
-      );
-      slider.style.setProperty(
-        "--hero-heading-shift",
-        (-maxHeadingShift * compressionProgress).toFixed(2) + "px"
-      );
-      slider.style.setProperty(
-        "--hero-description-shift",
-        (-maxDescriptionShift * compressionProgress).toFixed(2) + "px"
-      );
-      slider.style.setProperty(
-        "--hero-text-opacity",
-        textOpacity.toFixed(4)
-      );
-      slider.style.setProperty(
-        "--hero-heading-spacing",
-        headingSpacing.toFixed(4) + "em"
-      );
-      slider.style.setProperty(
-        "--hero-image-scale",
-        (
-          baseImageScale +
-          (imageZoom * compressionProgress)
-        ).toFixed(4)
-      );
-
-      ticking = false;
-    }
-
-    function requestHeroCompression() {
-      if (ticking) return;
-
-      ticking = true;
-      window.requestAnimationFrame(updateHeroCompression);
-    }
-
-    window.addEventListener("scroll", requestHeroCompression, {
-      passive: true
-    });
-    window.addEventListener("resize", requestHeroCompression);
-    window.addEventListener("load", updateHeroCompression);
-
-    updateHeroCompression();
-  })();
-</script>
