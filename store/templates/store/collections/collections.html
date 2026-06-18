@@ -31,133 +31,82 @@
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'store/css/collections/product_card.css' %}?v=20260615-card-typography1">
 
-  <style>
-    html,
-    body {
-      margin: 0 !important;
-      padding: 0 !important;
-      width: 100% !important;
-      min-height: 100% !important;
-    }
+<style>
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    min-height: 100% !important;
+  }
 
-    body.collections-template {
-      margin: 0 !important;
-      padding: 0 !important;
-      background: #fffaf7;
-      --collectionHeaderFade: 0;
-    }
+  body.collections-template {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #fffaf7;
+  }
 
-    body.collections-template .site-header {
-      margin: 0 !important;
-      width: 100% !important;
-      max-width: none !important;
-      left: 0 !important;
-      right: 0 !important;
+  body.collections-template .site-header {
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    left: 0 !important;
+    right: 0 !important;
 
-      background:
-        radial-gradient(circle at 78% 22%, rgba(230, 157, 57, 0.18), transparent 25%),
-        radial-gradient(circle at 18% 16%, rgba(165, 33, 46, 0.26), transparent 24%),
-        linear-gradient(115deg, #37070a 0%, #5b0d12 42%, #260506 100%) !important;
+    background:
+      radial-gradient(
+        circle at 78% 22%,
+        rgba(230, 157, 57, 0.18),
+        transparent 25%
+      ),
+      radial-gradient(
+        circle at 18% 16%,
+        rgba(165, 33, 46, 0.26),
+        transparent 24%
+      ),
+      linear-gradient(
+        115deg,
+        #37070a 0%,
+        #5b0d12 42%,
+        #260506 100%
+      ) !important;
 
-      border-bottom: none !important;
-      box-shadow:
-        0 8px 24px rgba(86, 8, 22, calc(var(--collectionHeaderFade) * 0.08)) !important;
+    border-bottom: none !important;
+    box-shadow: 0 8px 24px rgba(86, 8, 22, 0.12) !important;
+  }
 
-      overflow: hidden;
-      isolation: isolate;
-    }
+  body.collections-template .brand-center strong {
+    color: #fff8ef !important;
+  }
 
-    body.collections-template .site-header::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 0;
-      opacity: var(--collectionHeaderFade);
-      background: rgba(255, 250, 247, 0.96);
-      backdrop-filter: blur(14px);
-      pointer-events: none;
-      transition: opacity 0.12s linear;
-    }
+  body.collections-template .brand-center small {
+    color: rgba(255, 248, 239, 0.78) !important;
+  }
 
-    body.collections-template .header-inner {
-      position: relative;
-      z-index: 1;
-    }
+  body.collections-template .header-icon {
+    color: #fff8ef !important;
+  }
 
-    body.collections-template .brand-center strong,
-    body.collections-template .brand-center small,
-    body.collections-template .header-icon,
-    body.collections-template .bag-count {
-      transition:
-        color 0.18s ease,
-        background 0.18s ease,
-        border-color 0.18s ease;
-    }
+  body.collections-template .bag-count {
+    color: #6d1518 !important;
+    background: #fff0bd !important;
+    border-color: rgba(255, 248, 239, 0.92) !important;
+  }
+</style>
 
-    body.collections-template .brand-center strong {
-      color: #fff8ef !important;
-    }
 
-    body.collections-template .brand-center small {
-      color: rgba(255, 248, 239, 0.78) !important;
-    }
-
-    body.collections-template .header-icon {
-      color: #fff8ef !important;
-    }
-
-    body.collections-template .bag-count {
-      color: #6d1518 !important;
-      background: #fff0bd !important;
-      border-color: rgba(255, 248, 239, 0.92) !important;
-    }
-
-    body.collections-template .site-header.is-original-tone .brand-center strong {
-      color: #32191b !important;
-    }
-
-    body.collections-template .site-header.is-original-tone .brand-center small {
-      color: rgba(50, 25, 27, 0.70) !important;
-    }
-
-    body.collections-template .site-header.is-original-tone .header-icon {
-      color: #32191b !important;
-    }
-
-    body.collections-template .site-header.is-original-tone .bag-count {
-      color: #fff8ef !important;
-      background: #8f182d !important;
-      border-color: #fffaf7 !important;
-    }
-
-  </style>
 {% endblock %}
 
 {% block content %}
-  {% include "store/collections/partials/collections_hero.html" %}
+  {% include "store/collections/partials/collection_category_tabs.html" %}
+  {% include "store/collections/partials/collection_toolbar.html" %}
 
-  {% if focus == "new" %}
+  <div id="collectionsAjaxContent">
+    {% include "store/collections/partials/product_grid.html" %}
+  </div>
 
-    {% include "store/collections/partials/collection_category_tabs.html" %}
-    {% include "store/collections/partials/collection_toolbar.html" %}
-
-    <div id="collectionsAjaxContent">
-      {% include "store/collections/partials/product_grid.html" %}
-    </div>
-
-  {% else %}
-
-    {% include "store/collections/partials/collection_category_tabs.html" %}
-    {% include "store/collections/partials/collection_toolbar.html" %}
-
-    <div id="collectionsAjaxContent">
-      {% include "store/collections/partials/product_grid.html" %}
-    </div>
-
-    {% if products and new_arrivals %}
-      {% include "store/collections/partials/new_arrivals.html" with new_arrivals=new_arrivals %}
-    {% endif %}
-
+  {% if focus != "new" and products and new_arrivals %}
+    {% include "store/collections/partials/new_arrivals.html" with new_arrivals=new_arrivals %}
   {% endif %}
 {% endblock %}
 
@@ -259,46 +208,5 @@
     })();
   </script>
 
-  <!-- collections header fade script -->
-  <script>
-    (function () {
-      const header = document.querySelector(".site-header");
-      const heroCard = document.querySelector(".collections-hero-card");
 
-      if (!header || !heroCard) return;
-
-      function clamp(value, min, max) {
-        return Math.min(Math.max(value, min), max);
-      }
-
-      function updateCollectionsHeader() {
-        const heroRect = heroCard.getBoundingClientRect();
-        const headerHeight = header.offsetHeight || 64;
-        const heroHeight = heroCard.offsetHeight || 260;
-
-        const fadeZone = Math.max(45, heroHeight * 0.15);
-        const finishEarlyPx = 12;
-
-        const remainingUnderHeader = heroRect.bottom - headerHeight;
-        const fade = clamp(
-          (fadeZone - (remainingUnderHeader - finishEarlyPx)) / fadeZone,
-          0,
-          1
-        );
-
-        document.body.style.setProperty("--collectionHeaderFade", fade.toFixed(3));
-
-        if (fade > 0.55) {
-          header.classList.add("is-original-tone");
-        } else {
-          header.classList.remove("is-original-tone");
-        }
-      }
-
-      updateCollectionsHeader();
-
-      window.addEventListener("scroll", updateCollectionsHeader, { passive: true });
-      window.addEventListener("resize", updateCollectionsHeader);
-    })();
-  </script>
 {% endblock %}

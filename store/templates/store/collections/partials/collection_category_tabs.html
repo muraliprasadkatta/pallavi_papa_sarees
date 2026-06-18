@@ -679,34 +679,6 @@
       document.body.classList.remove("pp-form-submitting");
     }
 
-    function updateHeroFromResponse(data) {
-      const heroTitle = document.querySelector("[data-collections-hero-title]");
-      const heroDescription = document.querySelector("[data-collections-hero-description]");
-      const heroVisual = document.querySelector("[data-collections-hero-visual]");
-
-      if (heroTitle && data.page_title) {
-        heroTitle.textContent = data.page_title;
-      }
-
-      if (heroDescription && data.page_description) {
-        heroDescription.textContent = data.page_description;
-      }
-
-      if (!heroVisual || !data.hero_image_url) return;
-
-      let image = heroVisual.querySelector("[data-collections-hero-image]");
-
-      if (!image) {
-        heroVisual.textContent = "";
-        image = document.createElement("img");
-        image.setAttribute("alt", "");
-        image.dataset.collectionsHeroImage = "true";
-        heroVisual.appendChild(image);
-      }
-
-      image.src = data.hero_image_url;
-    }
-
     async function loadCategory(url, options = {}) {
       const ajaxContent = getAjaxContent();
       const shouldPushState = options.pushState !== false;
@@ -750,7 +722,6 @@
         }
 
         ajaxContent.innerHTML = data.html;
-        updateHeroFromResponse(data);
 
         if (shouldPushState && !sameVisibleUrl(window.location.href, pageUrl)) {
           window.history.pushState(
