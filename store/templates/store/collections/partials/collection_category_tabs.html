@@ -55,6 +55,7 @@
     position: sticky;
     top: 70px;
     z-index: 900;
+    overflow-anchor: none;
 
     width: 100%;
     max-width: 100%;
@@ -87,6 +88,7 @@
       clamp(12px, 1.8vw, 22px)
       clamp(14px, 2vw, 30px)
       clamp(11px, 1.5vw, 18px);
+
   }
 
   .collection-tabs-wrap::-webkit-scrollbar {
@@ -419,6 +421,10 @@
 
     let activeRequestId = 0;
     let compressionMetrics = null;
+    let compressionStart = 0;
+    let fullWrapHeight = 0;
+    let baseMarginBottom = 0;
+    let scrollFramePending = false;
 
     function getAjaxContent() {
       return document.getElementById("collectionsAjaxContent");
@@ -556,6 +562,13 @@
       if (!compressionMetrics) return;
 
       const metrics = compressionMetrics;
+      const activeTab = getActiveTab();
+      const activeRectBefore = activeTab
+        ? activeTab.getBoundingClientRect()
+        : null;
+      const activeCenterBefore = activeRectBefore
+        ? activeRectBefore.left + (activeRectBefore.width / 2)
+        : null;
       const easedProgress = progress;
       const mediaHeight = lerp(metrics.fullMediaHeight, metrics.compactMediaHeight, easedProgress);
       const radius = lerp(metrics.fullRadius, metrics.compactRadius, easedProgress);
@@ -581,16 +594,71 @@
       );
 
       wrap.classList.toggle("is-compact", progress >= 0.98);
+
+      /*
+       * Keep the element's total space in the document constant while
+       * its visible content shrinks. This prevents scroll anchoring from
+       * moving the trigger point and causing a compression/expansion loop.
+       */
+      const currentHeight = wrap.getBoundingClientRect().height;
+      const heightDifference = Math.max(0, fullWrapHeight - currentHeight);
+      wrap.style.marginBottom = (baseMarginBottom + heightDifference).toFixed(2) + "px";
+
+      /*
+       * Compression changes the gaps and horizontal padding. Preserve the
+       * active tab's current screen position so it does not drift sideways.
+       */
+      if (activeTab && activeCenterBefore !== null) {
+        const activeRectAfter = activeTab.getBoundingClientRect();
+        const activeCenterAfter =
+          activeRectAfter.left + (activeRectAfter.width / 2);
+        const centerShift = activeCenterAfter - activeCenterBefore;
+
+        if (Math.abs(centerShift) > 0.01) {
+          setScrollLeftInstant(wrap.scrollLeft + centerShift);
+        }
+      }
+    }
+
+    function prepareSmoothCompression() {
+      wrap.style.marginBottom = "";
+      compressionMetrics = null;
+
+      const stickyTop = parseFloat(window.getComputedStyle(wrap).top) || 0;
+      const sentinelDocumentTop =
+        stickySentinel.getBoundingClientRect().top + window.scrollY;
+
+      compressionStart = Math.max(0, sentinelDocumentTop - stickyTop);
+      baseMarginBottom =
+        parseFloat(window.getComputedStyle(wrap).marginBottom) || 0;
+
+      setCompressionProgress(0);
+      fullWrapHeight = wrap.getBoundingClientRect().height;
+      setCompressionProgress(0);
     }
 
     function updateCompactTabs() {
-      const stickyTop = parseFloat(window.getComputedStyle(wrap).top) || 0;
-      const sentinelTop = stickySentinel.getBoundingClientRect().top;
-      const compressionDistance = window.matchMedia("(max-width: 767px)").matches ? 56 : 72;
-      const progress = clamp((stickyTop - sentinelTop) / compressionDistance, 0, 1);
+      const compressionDistance =
+        window.matchMedia("(max-width: 767px)").matches ? 72 : 96;
+
+      const progress = clamp(
+        (window.scrollY - compressionStart) / compressionDistance,
+        0,
+        1
+      );
 
       setCompressionProgress(progress);
       return progress > 0 && progress < 1;
+    }
+
+    function requestCompressionUpdate() {
+      if (scrollFramePending) return;
+
+      scrollFramePending = true;
+      window.requestAnimationFrame(() => {
+        scrollFramePending = false;
+        updateCompactTabs();
+      });
     }
 
     function cleanPageUrl(url) {
@@ -771,6 +839,7 @@
     });
 
     window.requestAnimationFrame(() => {
+      prepareSmoothCompression();
       const compactChanged = updateCompactTabs();
 
       if (!compactChanged) {
@@ -779,6 +848,7 @@
     });
 
     window.addEventListener("load", () => {
+      prepareSmoothCompression();
       const compactChanged = updateCompactTabs();
 
       if (!compactChanged) {
@@ -786,10 +856,10 @@
       }
     });
 
-    window.addEventListener("scroll", updateCompactTabs, { passive: true });
+    window.addEventListener("scroll", requestCompressionUpdate, { passive: true });
 
     window.addEventListener("resize", () => {
-      compressionMetrics = null;
+      prepareSmoothCompression();
       const compactChanged = updateCompactTabs();
 
       if (!compactChanged) {
