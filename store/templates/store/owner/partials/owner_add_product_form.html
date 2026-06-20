@@ -7,13 +7,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Add Products</title>
 
-<link rel="stylesheet" href="{% static 'store/owner/css/owner_add_product_form.css' %}?v=20260615-image-fit1">
+<link rel="stylesheet" href="{% static 'store/owner/css/owner_add_product_form.css' %}?v=20260619-size-cards1">
 <link rel="stylesheet" href="{% static 'store/owner/css/owner_product_image_tools.css' %}?v=20260611-tools3">
 
 <script src="{% static 'store/owner/js/product_draft_autosave.js' %}?v=20260615-meaningful-draft1" defer></script>
 <script src="{% static 'store/owner/js/owner_product_image_tools.js' %}?v=20260611-tools3" defer></script>
 <script src="{% static 'store/owner/js/owner_product_image_crop_compress.js' %}?v=20260615-image-fit1" defer></script>
-<script src="{% static 'store/owner/js/owner_add_product_form.js' %}?v=20260614-custom-category-dropdown1" defer></script>
+<script src="{% static 'store/owner/js/owner_add_product_form.js' %}?v=20260619-size-cards1" defer></script>
 </head>
 
 <body>
@@ -422,20 +422,7 @@
             </div>
 
             <div class="field">
-              <label for="productSize">Product Size</label>
-              <input
-                type="text"
-                id="productSize"
-                name="product_size"
-                value="{{ request.POST.product_size|default:'' }}"
-                placeholder="Example: Free Size / 38 / M / 30 / 4-5Y"
-              >
-              <small>Useful for sarees, blouse, jeans, kids wear, and other categories.</small>
-              {{ form.product_size.errors }}
-            </div>
-
-            <div class="field">
-              <label for="stockQuantity">Available Pieces</label>
+              <label for="stockQuantity">Default Available Pieces</label>
               <input
                 type="number"
                 id="stockQuantity"
@@ -445,7 +432,10 @@
                 min="0"
                 step="1"
               >
-              <small>Set 0 if this product is out of stock.</small>
+              <small>
+                Used when no separate size cards are added. If sizes are added,
+                total stock will be calculated from all size stocks.
+              </small>
               {{ form.stock_quantity.errors }}
             </div>
 
@@ -490,6 +480,39 @@
               placeholder="Write product details, fabric feel, border design, and occasion."
             >{{ request.POST.description|default:'' }}</textarea>
             {{ form.description.errors }}
+          </div>
+
+          <div class="section-panel sizes-panel" id="sizesPanel">
+            <input type="hidden" name="sizes_submitted" value="1">
+
+            <div class="section-head">
+              <div>
+                <h2>Sizes &amp; Measurements</h2>
+                <p>
+                  Add separate size cards for products such as dresses, shirts,
+                  jeans, blouses, and kids wear. Chest, waist, and length are
+                  optional. You can also add custom measurements.
+                </p>
+              </div>
+
+              <button type="button" class="add-size-btn" id="addSizeBtn">
+                + Add Size
+              </button>
+            </div>
+
+            <div class="sizes-empty-state" id="sizesEmptyState">
+              <strong>No separate sizes added.</strong>
+              <span>
+                The default available pieces value above will be used until you
+                add a size.
+              </span>
+            </div>
+
+            <div
+              class="sizes-list"
+              id="sizesList"
+              aria-live="polite"
+            ></div>
           </div>
 
           <div class="section-panel highlights-panel">
@@ -665,6 +688,10 @@
           </div>
 
           <div class="form-actions form-actions--product-submit">
+            <button type="button" class="add-size-btn add-size-btn--bottom" id="addSizeBtnBottom">
+              + Add another size
+            </button>
+
             <button type="button" class="add-variant-btn add-variant-btn--bottom" id="addVariantBtn">
               + Add another colour
             </button>
@@ -678,6 +705,216 @@
     </section>
   </main>
 
+  <template id="productSizeCardTemplate">
+    <article class="size-card" data-size-card data-size-key="__SIZE_KEY__">
+      <input type="hidden" name="size_keys" value="__SIZE_KEY__">
+
+      <div class="size-card__top">
+        <div>
+          <div class="size-card__title">Size __SIZE_NUMBER__</div>
+          <div class="size-card__hint">
+            Size name and stock are required.
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="remove-size-btn"
+          data-remove-size
+          aria-label="Remove size __SIZE_NUMBER__"
+        >
+          Remove Size
+        </button>
+      </div>
+
+      <div class="size-card__grid">
+        <div class="field">
+          <label for="sizeName__SIZE_KEY__">Size Name *</label>
+          <input
+            type="text"
+            id="sizeName__SIZE_KEY__"
+            name="size_names"
+            placeholder="Example: M / XL / 32 / Free Size"
+            maxlength="40"
+            autocomplete="off"
+            spellcheck="true"
+            data-size-name
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label for="sizeStock__SIZE_KEY__">Available Pieces *</label>
+          <input
+            type="number"
+            id="sizeStock__SIZE_KEY__"
+            name="size_stock_quantities"
+            value="0"
+            min="0"
+            step="1"
+            inputmode="numeric"
+            data-size-stock
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label for="sizeUnit__SIZE_KEY__">Measurement Unit</label>
+          <select
+            id="sizeUnit__SIZE_KEY__"
+            name="size_measurement_units"
+            data-size-unit
+          >
+            <option value="in" selected>Inches</option>
+            <option value="cm">Centimeters</option>
+          </select>
+        </div>
+
+        <label class="check-field size-available-field">
+          <input
+            type="checkbox"
+            name="size_is_available"
+            value="__SIZE_KEY__"
+            data-size-available
+            checked
+          >
+          <span>Size Available</span>
+        </label>
+      </div>
+
+      <div class="size-measurements-grid">
+        <div class="field">
+          <label for="sizeChest__SIZE_KEY__">Chest</label>
+          <input
+            type="number"
+            id="sizeChest__SIZE_KEY__"
+            name="size_chests"
+            placeholder="Example: 40"
+            min="0.01"
+            step="0.01"
+            inputmode="decimal"
+            data-size-measurement
+          >
+        </div>
+
+        <div class="field">
+          <label for="sizeWaist__SIZE_KEY__">Waist</label>
+          <input
+            type="number"
+            id="sizeWaist__SIZE_KEY__"
+            name="size_waists"
+            placeholder="Example: 34"
+            min="0.01"
+            step="0.01"
+            inputmode="decimal"
+            data-size-measurement
+          >
+        </div>
+
+        <div class="field">
+          <label for="sizeLength__SIZE_KEY__">Length</label>
+          <input
+            type="number"
+            id="sizeLength__SIZE_KEY__"
+            name="size_lengths"
+            placeholder="Example: 42"
+            min="0.01"
+            step="0.01"
+            inputmode="decimal"
+            data-size-measurement
+          >
+        </div>
+      </div>
+
+      <div class="custom-measurements-section">
+        <div class="custom-measurements-head">
+          <div>
+            <strong>Custom Measurements</strong>
+            <span>
+              Optional: Shoulder, Sleeve Length, Hip, Inseam, Rise, etc.
+            </span>
+          </div>
+
+          <button
+            type="button"
+            class="add-custom-measurement-btn"
+            data-add-custom-measurement
+          >
+            + Add Custom Measurement
+          </button>
+        </div>
+
+        <div
+          class="custom-measurements-list"
+          data-custom-measurements-list
+        ></div>
+      </div>
+    </article>
+  </template>
+
+  <template id="sizeCustomMeasurementTemplate">
+    <div
+      class="custom-measurement-row"
+      data-custom-measurement-row
+    >
+      <input
+        type="hidden"
+        name="size_measurement_size_keys"
+        value="__SIZE_KEY__"
+      >
+
+      <div class="field">
+        <label for="measurementLabel__MEASUREMENT_KEY__">
+          Measurement Name *
+        </label>
+        <input
+          type="text"
+          id="measurementLabel__MEASUREMENT_KEY__"
+          name="size_measurement_labels"
+          placeholder="Example: Shoulder"
+          maxlength="60"
+          autocomplete="off"
+          spellcheck="true"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="measurementValue__MEASUREMENT_KEY__">Value *</label>
+        <input
+          type="number"
+          id="measurementValue__MEASUREMENT_KEY__"
+          name="size_measurement_values"
+          placeholder="Example: 18"
+          min="0.01"
+          step="0.01"
+          inputmode="decimal"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="measurementUnit__MEASUREMENT_KEY__">Unit</label>
+        <select
+          id="measurementUnit__MEASUREMENT_KEY__"
+          name="size_measurement_units_custom"
+        >
+          <option value="in" selected>Inches</option>
+          <option value="cm">Centimeters</option>
+        </select>
+      </div>
+
+      <button
+        type="button"
+        class="remove-custom-measurement-btn"
+        data-remove-custom-measurement
+        aria-label="Remove custom measurement"
+      >
+        Remove
+      </button>
+    </div>
+  </template>
+
     <div class="save-confirm-modal" id="saveConfirmModal" aria-hidden="true" hidden>
     <div class="save-confirm-backdrop" data-save-confirm-cancel></div>
 
@@ -687,7 +924,8 @@
       <h2 id="saveConfirmTitle">Save this product?</h2>
 
       <p>
-        Please check product name, price, stock, images, highlights, and variants before saving.
+        Please check product name, price, stock, sizes, measurements, images,
+        highlights, and variants before saving.
         After this, product details will be created first and extra images will upload one by one.
       </p>
 

@@ -210,6 +210,40 @@
       line-height: 1.35;
     }
 
+    .cart-item-size {
+      width: max-content;
+      max-width: 100%;
+      margin-top: 8px !important;
+      padding: 5px 10px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      color: #0d4c36 !important;
+      background: rgba(23,107,77,.09);
+      border: 1px solid rgba(23,107,77,.15);
+      font-size: 11px !important;
+      line-height: 1.15 !important;
+      font-weight: 850;
+    }
+
+    .cart-item-size b {
+      color: #24191b;
+      font-weight: 900;
+    }
+
+    .cart-item-price-stack {
+      display: grid;
+      gap: 4px;
+    }
+
+    .cart-item-unit-price {
+      color: #7a6d70;
+      font-size: 11px;
+      line-height: 1.1;
+      font-weight: 700;
+    }
+
     .cart-item-bottom {
       margin-top: 18px;
       display: flex;
@@ -421,6 +455,12 @@
         gap: 8px;
       }
 
+      .cart-item-size {
+        margin-top: 6px !important;
+        padding: 4px 8px;
+        font-size: 10.5px !important;
+      }
+
       .cart-summary {
         padding: 15px;
         border-radius: 20px;
@@ -457,42 +497,107 @@
 
       const WHATSAPP_NUMBER = "918333895789";
 
-      function getCart() {
-        try {
-          const cart = JSON.parse(localStorage.getItem("pp_cart") || "[]");
-          return Array.isArray(cart) ? cart : [];
-        } catch (error) {
-          return [];
-        }
-      }
-
-      function saveCart(cart) {
-        localStorage.setItem("pp_cart", JSON.stringify(cart));
-        window.dispatchEvent(new Event("pp-cart-updated"));
+      function safeText(value) {
+        return String(value || "").trim();
       }
 
       function money(value) {
         return Number(value || 0).toLocaleString("en-IN");
       }
 
-      function safeText(value) {
-        return String(value || "");
+      function getItemSizeName(item) {
+        return safeText(
+          item.sizeName ||
+          item.size_name ||
+          item.selectedSize ||
+          item.productSize ||
+          item.size ||
+          ""
+        );
       }
 
-      function getProductLink(url) {
-        const rawUrl = safeText(url);
+      function getItemSizeId(item) {
+        return safeText(
+          item.sizeId ||
+          item.size_id ||
+          item.selectedSizeId ||
+          ""
+        );
+      }
 
-        if (!rawUrl) return "";
+      function getCartKey(item) {
+        const explicitKey = safeText(item.cartKey || item.key);
 
-        if (rawUrl.startsWith("http://") || rawUrl.startsWith("https://")) {
-          return rawUrl;
+        if (explicitKey) {
+          return explicitKey;
         }
 
-        if (rawUrl.startsWith("/")) {
-          return window.location.origin + rawUrl;
+        const productId = safeText(item.id);
+        const sizeKey = getItemSizeId(item) || getItemSizeName(item);
+
+        if (!productId) {
+          return sizeKey ? `unknown::size:${sizeKey}` : "unknown";
         }
 
-        return window.location.origin + "/" + rawUrl;
+        return sizeKey ? `${productId}::size:${sizeKey}` : productId;
+      }
+
+      function normalizeCartItem(item) {
+        const normalized = {
+          ...item,
+          id: safeText(item.id),
+          name: safeText(item.name || "Product"),
+          category: safeText(item.category || "Pallavi Papa Collection"),
+          price: Number(item.price || 0),
+          qty: Math.max(1, Number(item.qty || 1)),
+          image: safeText(item.image),
+          url: safeText(item.url),
+          sizeId: getItemSizeId(item),
+          sizeName: getItemSizeName(item)
+        };
+
+        normalized.cartKey = getCartKey(normalized);
+
+        return normalized;
+      }
+
+      function normalizeCart(cart) {
+        const normalizedItems = [];
+        const itemByKey = new Map();
+
+        cart.forEach(function (rawItem) {
+          const item = normalizeCartItem(rawItem || {});
+
+          if (!item.id && item.cartKey === "unknown") {
+            return;
+          }
+
+          const existingItem = itemByKey.get(item.cartKey);
+
+          if (existingItem) {
+            existingItem.qty += item.qty;
+            return;
+          }
+
+          itemByKey.set(item.cartKey, item);
+          normalizedItems.push(item);
+        });
+
+        return normalizedItems;
+      }
+
+      function getCart() {
+        try {
+          const cart = JSON.parse(localStorage.getItem("pp_cart") || "[]");
+          return Array.isArray(cart) ? normalizeCart(cart) : [];
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function saveCart(cart) {
+        localStorage.setItem("pp_cart", JSON.stringify(normalizeCart(cart)));
+        window.dispatchEvent(new Event("pp-cart-updated"));
       }
 
       function getAbsoluteUrl(url) {
@@ -521,15 +626,26 @@
         cart.forEach(function (item, index) {
           const name = safeText(item.name || "Product");
           const category = safeText(item.category || "Pallavi Papa Collection");
-          const qty = Number(item.qty || 1);
+          const sizeName = getItemSizeName(item);
+          const qty = Math.max(1, Number(item.qty || 1));
           const price = Number(item.price || 0);
+          const lineTotal = price * qty;
           const productLink = getAbsoluteUrl(item.url);
           const imageLink = getAbsoluteUrl(item.image);
 
           lines.push(`${index + 1}. ${name}`);
           lines.push(`Category: ${category}`);
+
+          if (sizeName) {
+            lines.push(`Size: ${sizeName}`);
+          }
+
           lines.push(`Qty: ${qty}`);
           lines.push(`Price: ₹${money(price)}`);
+
+          if (qty > 1) {
+            lines.push(`Line Total: ₹${money(lineTotal)}`);
+          }
 
           if (productLink) {
             lines.push(`Product Link: ${productLink}`);
@@ -547,13 +663,20 @@
 
         return `https://api.whatsapp.com/send?phone=${WHATSAPP_NUMBER}&text=${encodeURIComponent(lines.join("\n"))}`;
       }
-      
-      
+
       function createCartItem(item) {
+        const cartKey = getCartKey(item);
+        const sizeName = getItemSizeName(item);
+        const qty = Math.max(1, Number(item.qty || 1));
+        const unitPrice = Number(item.price || 0);
+        const lineTotal = unitPrice * qty;
+
         const article = document.createElement("article");
         article.className = "cart-item";
         article.dataset.id = safeText(item.id);
-        article.dataset.price = Number(item.price || 0);
+        article.dataset.cartKey = cartKey;
+        article.dataset.sizeId = getItemSizeId(item);
+        article.dataset.price = unitPrice;
 
         const imageWrap = document.createElement("div");
         imageWrap.className = "cart-item-img";
@@ -584,11 +707,41 @@
         const category = document.createElement("p");
         category.textContent = safeText(item.category || "Pallavi Papa Collection");
 
+        info.appendChild(title);
+        info.appendChild(category);
+
+        if (sizeName) {
+          const size = document.createElement("p");
+          size.className = "cart-item-size";
+
+          const label = document.createElement("span");
+          label.textContent = "Size:";
+
+          const value = document.createElement("b");
+          value.textContent = sizeName;
+
+          size.appendChild(label);
+          size.appendChild(value);
+          info.appendChild(size);
+        }
+
         const bottom = document.createElement("div");
         bottom.className = "cart-item-bottom";
 
+        const priceStack = document.createElement("div");
+        priceStack.className = "cart-item-price-stack";
+
         const price = document.createElement("strong");
-        price.textContent = "₹" + money(item.price);
+        price.textContent = "₹" + money(lineTotal);
+
+        priceStack.appendChild(price);
+
+        if (qty > 1) {
+          const unitPriceText = document.createElement("span");
+          unitPriceText.className = "cart-item-unit-price";
+          unitPriceText.textContent = "₹" + money(unitPrice) + " each";
+          priceStack.appendChild(unitPriceText);
+        }
 
         const qtyBox = document.createElement("div");
         qtyBox.className = "cart-qty";
@@ -597,25 +750,25 @@
         minusBtn.type = "button";
         minusBtn.textContent = "-";
         minusBtn.setAttribute("data-qty-minus", "");
+        minusBtn.setAttribute("aria-label", "Decrease quantity");
 
         const qtyValue = document.createElement("span");
-        qtyValue.textContent = Number(item.qty || 1);
+        qtyValue.textContent = qty;
         qtyValue.setAttribute("data-qty-value", "");
 
         const plusBtn = document.createElement("button");
         plusBtn.type = "button";
         plusBtn.textContent = "+";
         plusBtn.setAttribute("data-qty-plus", "");
+        plusBtn.setAttribute("aria-label", "Increase quantity");
 
         qtyBox.appendChild(minusBtn);
         qtyBox.appendChild(qtyValue);
         qtyBox.appendChild(plusBtn);
 
-        bottom.appendChild(price);
+        bottom.appendChild(priceStack);
         bottom.appendChild(qtyBox);
 
-        info.appendChild(title);
-        info.appendChild(category);
         info.appendChild(bottom);
 
         const removeBtn = document.createElement("button");
@@ -629,25 +782,25 @@
         article.appendChild(removeBtn);
 
         minusBtn.addEventListener("click", function () {
-          updateQty(item.id, -1);
+          updateQty(cartKey, -1);
         });
 
         plusBtn.addEventListener("click", function () {
-          updateQty(item.id, 1);
+          updateQty(cartKey, 1);
         });
 
         removeBtn.addEventListener("click", function () {
-          removeItem(item.id);
+          removeItem(cartKey);
         });
 
         return article;
       }
 
-      function updateQty(productId, change) {
+      function updateQty(cartKey, change) {
         const cart = getCart();
 
         const updatedCart = cart.reduce(function (acc, item) {
-          if (String(item.id) === String(productId)) {
+          if (getCartKey(item) === cartKey) {
             const currentQty = Math.max(1, Number(item.qty || 1));
             const nextQty = currentQty + change;
 
@@ -671,9 +824,9 @@
         renderCart();
       }
 
-      function removeItem(productId) {
+      function removeItem(cartKey) {
         const cart = getCart().filter(function (item) {
-          return String(item.id) !== String(productId);
+          return getCartKey(item) !== cartKey;
         });
 
         saveCart(cart);
@@ -691,7 +844,7 @@
         let subtotal = 0;
 
         cart.forEach(function (item) {
-          const qty = Number(item.qty || 1);
+          const qty = Math.max(1, Number(item.qty || 1));
           const price = Number(item.price || 0);
 
           totalQty += qty;

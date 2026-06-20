@@ -1,8 +1,16 @@
+from decimal import Decimal
+
 from django import forms
 from django.db.models import Max
 from django.utils.text import slugify
 
-from .models import Category, OwnerHomePageRow, Product
+from .models import (
+    Category,
+    OwnerHomePageRow,
+    Product,
+    ProductSize,
+    ProductSizeMeasurement,
+)
 
 
 PRODUCT_MAIN_MAX_MB = 5
@@ -17,6 +25,10 @@ CATEGORY_NAME_MAX_SINGLE_WORD_CHARS = 24
 PRODUCT_NAME_MIN_CHARS = 3
 PRODUCT_NAME_MAX_CHARS = 80
 PRODUCT_NAME_MAX_SINGLE_WORD_CHARS = 32
+
+PRODUCT_SIZE_NAME_MAX_CHARS = 40
+PRODUCT_SIZE_MEASUREMENT_LABEL_MAX_CHARS = 60
+PRODUCT_SIZE_MEASUREMENT_MAX_VALUE = Decimal("99999.99")
 
 
 def _validate_image_size(image, max_mb, label):
@@ -56,6 +68,21 @@ def _clean_name_value(
         )
 
     return name
+
+
+def _clean_optional_positive_measurement(value, label):
+    if value in (None, ""):
+        return None
+
+    if value <= 0:
+        raise forms.ValidationError(f"{label} should be greater than 0.")
+
+    if value > PRODUCT_SIZE_MEASUREMENT_MAX_VALUE:
+        raise forms.ValidationError(
+            f"{label} should be under {PRODUCT_SIZE_MEASUREMENT_MAX_VALUE}."
+        )
+
+    return value
 
 
 class CategoryForm(forms.ModelForm):
@@ -446,3 +473,293 @@ class ProductForm(forms.ModelForm):
             )
 
         return cleaned_data
+
+
+class ProductSizeForm(forms.ModelForm):
+    """
+    Validates one dynamic size card from the owner product form.
+
+    Pass product=<Product instance> while editing or saving sizes so duplicate
+    size names can be checked before the database save.
+    """
+
+    class Meta:
+        model = ProductSize
+        fields = [
+            "size_name",
+            "stock_quantity",
+            "measurement_unit",
+            "chest",
+            "waist",
+            "length",
+            "is_available",
+            "sort_order",
+        ]
+
+        widgets = {
+            "size_name": forms.TextInput(attrs={
+                "placeholder": "Example: M / XL / 32 / Free Size",
+                "maxlength": str(PRODUCT_SIZE_NAME_MAX_CHARS),
+                "autocomplete": "off",
+                "spellcheck": "true",
+            }),
+            "stock_quantity": forms.NumberInput(attrs={
+                "placeholder": "Example: 5",
+                "min": "0",
+                "step": "1",
+                "inputmode": "numeric",
+            }),
+            "measurement_unit": forms.Select(attrs={
+                "aria-label": "Measurement unit",
+            }),
+            "chest": forms.NumberInput(attrs={
+                "placeholder": "Example: 40",
+                "min": "0.01",
+                "step": "0.01",
+                "inputmode": "decimal",
+            }),
+            "waist": forms.NumberInput(attrs={
+                "placeholder": "Example: 34",
+                "min": "0.01",
+                "step": "0.01",
+                "inputmode": "decimal",
+            }),
+            "length": forms.NumberInput(attrs={
+                "placeholder": "Example: 42",
+                "min": "0.01",
+                "step": "0.01",
+                "inputmode": "decimal",
+            }),
+            "sort_order": forms.HiddenInput(),
+        }
+
+    def __init__(self, *args, product=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.product = product
+
+        if self.product is None and getattr(self.instance, "product_id", None):
+            self.product = self.instance.product
+
+        self.fields["size_name"].required = True
+        self.fields["stock_quantity"].required = True
+        self.fields["measurement_unit"].required = True
+
+    def clean_size_name(self):
+        size_name = " ".join(
+            (self.cleaned_data.get("size_name") or "").split()
+        )
+
+        if not size_name:
+            raise forms.ValidationError("Size name is required.")
+
+        if len(size_name) > PRODUCT_SIZE_NAME_MAX_CHARS:
+            raise forms.ValidationError(
+                "Size name should be under "
+                f"{PRODUCT_SIZE_NAME_MAX_CHARS} characters."
+            )
+
+        if self.product and getattr(self.product, "pk", None):
+            duplicate_size = ProductSize.objects.filter(
+                product=self.product,
+                size_name__iexact=size_name,
+            )
+
+            if self.instance and self.instance.pk:
+                duplicate_size = duplicate_size.exclude(pk=self.instance.pk)
+
+            if duplicate_size.exists():
+                raise forms.ValidationError(
+                    "This size is already added for the product."
+                )
+
+        return size_name
+
+    def clean_stock_quantity(self):
+        stock_quantity = self.cleaned_data.get("stock_quantity")
+
+        if stock_quantity is None:
+            raise forms.ValidationError("Size stock quantity is required.")
+
+        if stock_quantity < 0:
+            raise forms.ValidationError(
+                "Size stock quantity cannot be negative."
+            )
+
+        return stock_quantity
+
+    def clean_chest(self):
+        return _clean_optional_positive_measurement(
+            self.cleaned_data.get("chest"),
+            "Chest",
+        )
+
+    def clean_waist(self):
+        return _clean_optional_positive_measurement(
+            self.cleaned_data.get("waist"),
+            "Waist",
+        )
+
+    def clean_length(self):
+        return _clean_optional_positive_measurement(
+            self.cleaned_data.get("length"),
+            "Length",
+        )
+
+    def clean_sort_order(self):
+        sort_order = self.cleaned_data.get("sort_order")
+
+        if sort_order is None:
+            return 0
+
+        if sort_order < 0:
+            raise forms.ValidationError("Sort order cannot be negative.")
+
+        return sort_order
+
+    def save(self, commit=True):
+        product_size = super().save(commit=False)
+
+        if self.product is not None:
+            product_size.product = self.product
+
+        if not product_size.product_id:
+            raise ValueError(
+                "ProductSizeForm.save() requires a saved product instance."
+            )
+
+        if product_size.stock_quantity == 0:
+            product_size.is_available = False
+
+        if commit:
+            product_size.save()
+
+        return product_size
+
+
+class ProductSizeMeasurementForm(forms.ModelForm):
+    """
+    Validates a custom measurement inside one ProductSize card.
+
+    Examples: Shoulder, Sleeve Length, Hip, Inseam, Rise.
+    Pass product_size=<ProductSize instance> before save.
+    """
+
+    class Meta:
+        model = ProductSizeMeasurement
+        fields = [
+            "label",
+            "value",
+            "unit",
+            "sort_order",
+        ]
+
+        widgets = {
+            "label": forms.TextInput(attrs={
+                "placeholder": "Example: Shoulder / Sleeve Length / Hip",
+                "maxlength": str(PRODUCT_SIZE_MEASUREMENT_LABEL_MAX_CHARS),
+                "autocomplete": "off",
+                "spellcheck": "true",
+            }),
+            "value": forms.NumberInput(attrs={
+                "placeholder": "Example: 18",
+                "min": "0.01",
+                "step": "0.01",
+                "inputmode": "decimal",
+            }),
+            "unit": forms.Select(attrs={
+                "aria-label": "Custom measurement unit",
+            }),
+            "sort_order": forms.HiddenInput(),
+        }
+
+    def __init__(self, *args, product_size=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.product_size = product_size
+
+        if (
+            self.product_size is None
+            and getattr(self.instance, "product_size_id", None)
+        ):
+            self.product_size = self.instance.product_size
+
+        self.fields["label"].required = True
+        self.fields["value"].required = True
+        self.fields["unit"].required = True
+
+    def clean_label(self):
+        label = " ".join(
+            (self.cleaned_data.get("label") or "").split()
+        )
+
+        if not label:
+            raise forms.ValidationError(
+                "Custom measurement name is required."
+            )
+
+        if len(label) > PRODUCT_SIZE_MEASUREMENT_LABEL_MAX_CHARS:
+            raise forms.ValidationError(
+                "Custom measurement name should be under "
+                f"{PRODUCT_SIZE_MEASUREMENT_LABEL_MAX_CHARS} characters."
+            )
+
+        if self.product_size and getattr(self.product_size, "pk", None):
+            duplicate_measurement = ProductSizeMeasurement.objects.filter(
+                product_size=self.product_size,
+                label__iexact=label,
+            )
+
+            if self.instance and self.instance.pk:
+                duplicate_measurement = duplicate_measurement.exclude(
+                    pk=self.instance.pk
+                )
+
+            if duplicate_measurement.exists():
+                raise forms.ValidationError(
+                    "This custom measurement is already added "
+                    "for the selected size."
+                )
+
+        return label
+
+    def clean_value(self):
+        value = self.cleaned_data.get("value")
+
+        if value is None:
+            raise forms.ValidationError(
+                "Custom measurement value is required."
+            )
+
+        return _clean_optional_positive_measurement(
+            value,
+            "Custom measurement value",
+        )
+
+    def clean_sort_order(self):
+        sort_order = self.cleaned_data.get("sort_order")
+
+        if sort_order is None:
+            return 0
+
+        if sort_order < 0:
+            raise forms.ValidationError("Sort order cannot be negative.")
+
+        return sort_order
+
+    def save(self, commit=True):
+        measurement = super().save(commit=False)
+
+        if self.product_size is not None:
+            measurement.product_size = self.product_size
+
+        if not measurement.product_size_id:
+            raise ValueError(
+                "ProductSizeMeasurementForm.save() requires "
+                "a saved product size instance."
+            )
+
+        if commit:
+            measurement.save()
+
+        return measurement

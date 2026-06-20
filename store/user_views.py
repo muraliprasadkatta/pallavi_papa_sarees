@@ -1,13 +1,13 @@
 from decimal import Decimal
 
-from django.db.models import Q
+from django.db.models import Prefetch, Q
 from django.db.models.functions import Coalesce
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.templatetags.static import static
 from django.utils.cache import patch_vary_headers
-from .models import Category, Product
+from .models import Category, Product, ProductSize, ProductSizeMeasurement, ProductVariant
 
 
 def user_home_view(request):
@@ -391,20 +391,113 @@ def collections_page(request):
     return render(request, "store/collections/collections.html", context)
 
 
+def _format_measurement_value(value):
+    if value is None:
+        return ""
+
+    value = Decimal(value)
+
+    if value == value.to_integral_value():
+        return str(value.quantize(Decimal("1")))
+
+    return str(value.normalize())
+
+
+def _build_size_measurement_groups(product_sizes):
+    groups = []
+
+    for product_size in product_sizes:
+        measurements = []
+        default_unit = product_size.measurement_unit
+
+        for label, value in (
+            ("Chest", product_size.chest),
+            ("Waist", product_size.waist),
+            ("Length", product_size.length),
+        ):
+            if value is None:
+                continue
+
+            measurements.append({
+                "label": label,
+                "value": _format_measurement_value(value),
+                "unit": default_unit,
+            })
+
+        for custom_measurement in getattr(product_size, "prefetched_custom_measurements", []):
+            measurements.append({
+                "label": custom_measurement.label,
+                "value": _format_measurement_value(custom_measurement.value),
+                "unit": custom_measurement.unit,
+            })
+
+        if measurements:
+            groups.append({
+                "size": product_size,
+                "measurements": measurements,
+            })
+
+    return groups
+
+
 def product_detail_view(request, product_id):
+    size_measurements_queryset = ProductSizeMeasurement.objects.order_by(
+        "sort_order",
+        "id",
+    )
+
+    sizes_queryset = (
+        ProductSize.objects
+        .filter(is_available=True)
+        .prefetch_related(
+            Prefetch(
+                "custom_measurements",
+                queryset=size_measurements_queryset,
+                to_attr="prefetched_custom_measurements",
+            )
+        )
+        .order_by("sort_order", "id")
+    )
+
+    variants_queryset = (
+        ProductVariant.objects
+        .filter(is_available=True)
+        .order_by("id")
+    )
+
     product = get_object_or_404(
         Product.objects
         .select_related("category")
         .filter(is_available=True)
-        .prefetch_related("variants"),
+        .prefetch_related(
+            Prefetch(
+                "sizes",
+                queryset=sizes_queryset,
+                to_attr="available_sizes",
+            ),
+            Prefetch(
+                "variants",
+                queryset=variants_queryset,
+                to_attr="available_variants",
+            ),
+        ),
         id=product_id,
     )
 
-    variants = (
-        product.variants
-        .filter(is_available=True)
-        .order_by("id")
+    variants = list(getattr(product, "available_variants", []))
+    available_sizes = list(getattr(product, "available_sizes", []))
+    in_stock_sizes = [
+        product_size
+        for product_size in available_sizes
+        if product_size.stock_quantity > 0
+    ]
+
+    default_size = in_stock_sizes[0] if in_stock_sizes else (
+        available_sizes[0] if available_sizes else None
     )
+
+    legacy_product_size = (product.product_size or "").strip()
+    size_measurement_groups = _build_size_measurement_groups(available_sizes)
 
     related_fields = (
         "id",
@@ -445,6 +538,12 @@ def product_detail_view(request, product_id):
     context = {
         "product": product,
         "variants": variants,
+        "available_sizes": available_sizes,
+        "in_stock_sizes": in_stock_sizes,
+        "default_size": default_size,
+        "legacy_product_size": legacy_product_size,
+        "has_size_options": bool(available_sizes),
+        "size_measurement_groups": size_measurement_groups,
         "same_category_products": same_category_products,
         "different_category_products": different_category_products,
     }

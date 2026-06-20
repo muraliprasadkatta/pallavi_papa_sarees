@@ -210,7 +210,7 @@
 
   function createEmptyDraft(form) {
     return {
-      version: 1,
+      version: 2,
       status: "local_draft",
       mode: getDraftMode(form),
       productId: getProductId(form) || null,
@@ -220,7 +220,8 @@
       checkboxes: {},
       files: {},
       highlights: [],
-      variants: []
+      variants: [],
+      sizes: []
     };
   }
 
@@ -274,6 +275,7 @@
       .querySelectorAll("input, select, textarea")
       .forEach((field) => {
         if (!field.name && !field.id) return;
+        if (field.closest("[data-size-card]")) return;
         if (field.type === "file") return;
         if (field.type === "checkbox") return;
         if (field.type === "radio") return;
@@ -300,6 +302,8 @@
     activeForm
       .querySelectorAll('input[type="checkbox"]')
       .forEach((field) => {
+        if (field.closest("[data-size-card]")) return;
+
         const key = getFieldKey(field);
         if (!key) return;
 
@@ -353,6 +357,48 @@
     });
   }
 
+  function collectSizes() {
+    const sizeCardsApi = window.OwnerProductSizeCards;
+
+    if (
+      sizeCardsApi
+      && typeof sizeCardsApi.collectState === "function"
+    ) {
+      return sizeCardsApi.collectState();
+    }
+
+    const sizesList = document.getElementById("sizesList");
+    if (!sizesList) return [];
+
+    return Array.from(
+      sizesList.querySelectorAll("[data-size-card]")
+    ).map((card) => ({
+      key: card.dataset.sizeKey || "",
+      sizeName: card.querySelector("[data-size-name]")?.value || "",
+      stockQuantity: card.querySelector("[data-size-stock]")?.value || "0",
+      measurementUnit: card.querySelector("[data-size-unit]")?.value || "in",
+      chest: card.querySelector('input[name="size_chests"]')?.value || "",
+      waist: card.querySelector('input[name="size_waists"]')?.value || "",
+      length: card.querySelector('input[name="size_lengths"]')?.value || "",
+      isAvailable: Boolean(
+        card.querySelector("[data-size-available]")?.checked
+      ),
+      customMeasurements: Array.from(
+        card.querySelectorAll("[data-custom-measurement-row]")
+      ).map((row) => ({
+        label: row.querySelector(
+          'input[name="size_measurement_labels"]'
+        )?.value || "",
+        value: row.querySelector(
+          'input[name="size_measurement_values"]'
+        )?.value || "",
+        unit: row.querySelector(
+          'select[name="size_measurement_units_custom"]'
+        )?.value || "in"
+      }))
+    }));
+  }
+
   function hasMeaningfulDraft(draft) {
     if (!draft) return false;
 
@@ -368,7 +414,11 @@
       return Boolean((item.label || "").trim() || (item.value || "").trim());
     });
 
-    if (hasHighlightValues || (draft.variants || []).length > 0) {
+    if (
+      hasHighlightValues
+      || (draft.variants || []).length > 0
+      || (draft.sizes || []).length > 0
+    ) {
       return true;
     }
 
@@ -401,6 +451,7 @@
       checkboxes: collectCheckboxes(),
       highlights: collectHighlights(),
       variants: collectVariants(),
+      sizes: collectSizes(),
       mode: getDraftMode(activeForm),
       productId: draft.productId || getProductId(activeForm) || null
     };
@@ -459,7 +510,8 @@
     saveDraft({
       ...draft,
       files,
-      variants: collectVariants()
+      variants: collectVariants(),
+      sizes: collectSizes()
     });
   }
 
@@ -589,6 +641,37 @@
     });
   }
 
+  async function waitForSizeCardsApi(timeoutMs = 2500) {
+    const startedAt = now();
+
+    while (now() - startedAt < timeoutMs) {
+      const api = window.OwnerProductSizeCards;
+
+      if (api && typeof api.restoreState === "function") {
+        return api;
+      }
+
+      await new Promise((resolve) => {
+        window.setTimeout(resolve, 40);
+      });
+    }
+
+    return null;
+  }
+
+  async function restoreSizes(sizes) {
+    if (!Array.isArray(sizes)) return;
+
+    const api = await waitForSizeCardsApi();
+
+    if (!api) {
+      console.warn("Size cards could not be restored because their UI is unavailable.");
+      return;
+    }
+
+    api.restoreState(sizes);
+  }
+
   async function restoreFilePreview(fileKey, fileMeta) {
     if (!fileKey || !fileMeta) return;
 
@@ -652,6 +735,8 @@
 
     restoreApplied = true;
 
+    await restoreSizes(draft.sizes || []);
+
     Object.values(draft.fields || {}).forEach(setFieldValue);
     Object.values(draft.checkboxes || {}).forEach(setCheckboxValue);
 
@@ -682,6 +767,7 @@
 
     const isServerCreated = draft.status === "server_product_created" && draft.productId;
     const fileCount = Object.keys(draft.files || {}).length;
+    const sizeCount = (draft.sizes || []).length;
     const updatedDate = draft.updatedAt ? new Date(draft.updatedAt).toLocaleString() : "";
 
     box.hidden = false;
@@ -705,7 +791,10 @@
     } else {
       box.innerHTML = `
         <strong>Unsaved product draft found.</strong>
-        <div>Draft images: ${fileCount}. Last saved: ${escapeHtml(updatedDate)}</div>
+        <div>
+          Draft images: ${fileCount}. Sizes: ${sizeCount}.
+          Last saved: ${escapeHtml(updatedDate)}
+        </div>
         <div style="margin-top: 10px;">
           <button type="button" data-draft-restore>Restore draft</button>
           <button type="button" data-draft-clear style="margin-left: 8px;">Delete draft</button>
@@ -778,6 +867,11 @@
       if (
         event.target.closest("#addHighlightBtn") ||
         event.target.closest("#addVariantBtn") ||
+        event.target.closest("#addSizeBtn") ||
+        event.target.closest("#addSizeBtnBottom") ||
+        event.target.closest("[data-add-custom-measurement]") ||
+        event.target.closest("[data-remove-custom-measurement]") ||
+        event.target.closest("[data-remove-size]") ||
         event.target.closest(".remove-highlight-btn") ||
         event.target.closest(".remove-variant-btn")
       ) {

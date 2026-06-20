@@ -2,7 +2,9 @@ from decimal import Decimal, ROUND_HALF_UP
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
+from django.db.models.functions import Lower
 from django.utils.text import slugify
 
 from store.services.product_image_service import (
@@ -374,6 +376,23 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def has_sizes(self):
+        """
+        True when the owner configured one or more separate size cards.
+
+        The old product_size text field is intentionally kept for existing
+        products. New products can use the ProductSize rows below.
+        """
+        return self.sizes.exists()
+
+    @property
+    def available_sizes(self):
+        return self.sizes.filter(
+            is_available=True,
+            stock_quantity__gt=0,
+        ).order_by("sort_order", "id")
+
 
 class ProductHighlight(models.Model):
     product = models.ForeignKey(
@@ -402,6 +421,254 @@ class ProductHighlight(models.Model):
 
     def __str__(self):
         return f"{self.product.name} - {self.label}: {self.value}"
+
+
+class ProductSize(models.Model):
+    class MeasurementUnit(models.TextChoices):
+        INCHES = "in", "Inches"
+        CENTIMETERS = "cm", "Centimeters"
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="sizes",
+    )
+
+    size_name = models.CharField(
+        max_length=40,
+        help_text="Example: S, M, L, XL, 28, 32, Free Size.",
+    )
+
+    stock_quantity = models.PositiveIntegerField(
+        default=0,
+        help_text="Number of pieces available in this size.",
+    )
+
+    measurement_unit = models.CharField(
+        max_length=2,
+        choices=MeasurementUnit.choices,
+        default=MeasurementUnit.INCHES,
+    )
+
+    chest = models.DecimalField(
+        max_digits=7,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(Decimal("0.01"))],
+        help_text="Optional chest measurement for this size.",
+    )
+
+    waist = models.DecimalField(
+        max_digits=7,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(Decimal("0.01"))],
+        help_text="Optional waist measurement for this size.",
+    )
+
+    length = models.DecimalField(
+        max_digits=7,
+        decimal_places=2,
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(Decimal("0.01"))],
+        help_text="Optional product length for this size.",
+    )
+
+    is_available = models.BooleanField(default=True)
+    sort_order = models.PositiveIntegerField(default=0)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["sort_order", "id"]
+        constraints = [
+            models.UniqueConstraint(
+                Lower("size_name"),
+                "product",
+                name="unique_product_size_name_ci",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["product", "is_available", "sort_order"]),
+            models.Index(fields=["size_name"]),
+        ]
+
+    def clean(self):
+        super().clean()
+
+        self.size_name = " ".join((self.size_name or "").split())
+
+        if not self.size_name:
+            raise ValidationError({"size_name": "Size name is required."})
+
+        product_id = getattr(self, "product_id", None)
+
+        if not product_id:
+            return
+
+        duplicate_size = ProductSize.objects.filter(
+            product_id=product_id,
+            size_name__iexact=self.size_name,
+        )
+
+        if self.pk:
+            duplicate_size = duplicate_size.exclude(pk=self.pk)
+
+        if duplicate_size.exists():
+            raise ValidationError(
+                {"size_name": "This size is already added for the product."}
+            )
+
+    @classmethod
+    def sync_product_stock(cls, product_id):
+        if not product_id:
+            return
+
+        total_stock = (
+            cls.objects
+            .filter(product_id=product_id)
+            .aggregate(total_stock=models.Sum("stock_quantity"))
+            .get("total_stock")
+            or 0
+        )
+
+        Product.objects.filter(pk=product_id).update(
+            stock_quantity=total_stock,
+            is_available=total_stock > 0,
+        )
+
+    def save(self, *args, **kwargs):
+        skip_product_stock_sync = kwargs.pop("skip_product_stock_sync", False)
+
+        self.size_name = " ".join((self.size_name or "").split())
+
+        if self.stock_quantity == 0:
+            self.is_available = False
+
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+        if not skip_product_stock_sync:
+            self.sync_product_stock(self.product_id)
+
+    def delete(self, *args, **kwargs):
+        product_id = self.product_id
+        result = super().delete(*args, **kwargs)
+        self.sync_product_stock(product_id)
+        return result
+
+    def __str__(self):
+        product_name = "Product"
+
+        try:
+            if self.product_id and self.product:
+                product_name = self.product.name
+        except Product.DoesNotExist:
+            pass
+
+        return f"{product_name} - {self.size_name}"
+
+
+class ProductSizeMeasurement(models.Model):
+    """
+    Flexible measurements added inside an individual size card.
+
+    Chest, waist and length are first-class ProductSize fields because they
+    are common. This model stores optional custom inputs such as shoulder,
+    sleeve length, hip, inseam, rise, or any future measurement.
+    """
+
+    product_size = models.ForeignKey(
+        ProductSize,
+        on_delete=models.CASCADE,
+        related_name="custom_measurements",
+    )
+
+    label = models.CharField(
+        max_length=60,
+        help_text="Example: Shoulder, Sleeve Length, Hip, Inseam.",
+    )
+
+    value = models.DecimalField(
+        max_digits=7,
+        decimal_places=2,
+        validators=[MinValueValidator(Decimal("0.01"))],
+    )
+
+    unit = models.CharField(
+        max_length=2,
+        choices=ProductSize.MeasurementUnit.choices,
+        default=ProductSize.MeasurementUnit.INCHES,
+    )
+
+    sort_order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["sort_order", "id"]
+        constraints = [
+            models.UniqueConstraint(
+                Lower("label"),
+                "product_size",
+                name="unique_product_size_measurement_label_ci",
+            ),
+        ]
+        indexes = [
+            models.Index(fields=["product_size", "sort_order"]),
+        ]
+
+    def clean(self):
+        super().clean()
+
+        self.label = " ".join((self.label or "").split())
+
+        if not self.label:
+            raise ValidationError({"label": "Measurement label is required."})
+
+        product_size_id = getattr(self, "product_size_id", None)
+
+        if not product_size_id:
+            return
+
+        duplicate_measurement = ProductSizeMeasurement.objects.filter(
+            product_size_id=product_size_id,
+            label__iexact=self.label,
+        )
+
+        if self.pk:
+            duplicate_measurement = duplicate_measurement.exclude(pk=self.pk)
+
+        if duplicate_measurement.exists():
+            raise ValidationError(
+                {
+                    "label": (
+                        "This custom measurement is already added "
+                        "for the selected size."
+                    )
+                }
+            )
+
+    def save(self, *args, **kwargs):
+        self.label = " ".join((self.label or "").split())
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        product_name = "Product"
+        size_name = "Size"
+
+        try:
+            if self.product_size_id and self.product_size:
+                size_name = self.product_size.size_name
+                product_name = self.product_size.product.name
+        except ProductSize.DoesNotExist:
+            pass
+
+        return f"{product_name} - {size_name} - {self.label}: {self.value} {self.unit}"
 
 
 class ProductVariant(models.Model):

@@ -10,8 +10,20 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from .forms import CategoryForm, OwnerHomePageRowForm, ProductForm
-from .models import Product, ProductHighlight, ProductVariant
+from .forms import (
+    CategoryForm,
+    OwnerHomePageRowForm,
+    ProductForm,
+    ProductSizeForm,
+    ProductSizeMeasurementForm,
+)
+from .models import (
+    Product,
+    ProductHighlight,
+    ProductSize,
+    ProductSizeMeasurement,
+    ProductVariant,
+)
 from .services.product_image_service import (
     ARRIVAL_CARD_MAX_SIZE_KB,
     ARRIVAL_CARD_TARGET_HEIGHT,
@@ -95,6 +107,12 @@ def _get_product_edit_context(form, product):
             "id",
         ),
         "variants": ProductVariant.objects.filter(product=product).order_by("id"),
+        "sizes": (
+            ProductSize.objects
+            .filter(product=product)
+            .prefetch_related("custom_measurements")
+            .order_by("sort_order", "id")
+        ),
     }
 
 
@@ -338,6 +356,308 @@ def _save_product_highlights(product, request):
         ProductHighlight.objects.bulk_create(highlight_objects)
 
 
+def _get_list_item(values, index, default=""):
+    if index < len(values):
+        return values[index]
+    return default
+
+
+def _form_error_message(form, prefix):
+    messages_list = []
+
+    for field_name, field_errors in form.errors.items():
+        label = (
+            form.fields[field_name].label
+            if field_name in form.fields
+            else "Details"
+        )
+
+        for error in field_errors:
+            messages_list.append(f"{label}: {error}")
+
+    if not messages_list:
+        return f"{prefix}: please check the entered details."
+
+    return f"{prefix}: {' '.join(messages_list)}"
+
+
+def _save_product_sizes(product, request):
+    """
+    Save dynamic size cards and their nested custom measurements.
+
+    Expected POST fields from the owner product form:
+
+    sizes_submitted=1
+    size_keys[]
+    size_names[]
+    size_stock_quantities[]
+    size_measurement_units[]
+    size_chests[]
+    size_waists[]
+    size_lengths[]
+    size_is_available[]          -> contains checked size keys
+
+    size_measurement_size_keys[]
+    size_measurement_labels[]
+    size_measurement_values[]
+    size_measurement_units_custom[]
+
+    A stable size key keeps every custom measurement connected to the correct
+    size card even when cards are added or removed in JavaScript.
+    """
+    if request.POST.get("sizes_submitted") != "1":
+        return
+
+    # This function is called inside transaction.atomic() by both add and edit
+    # views. Removing old rows before validation prevents the existing size
+    # names from being treated as duplicates while rebuilding the submitted
+    # size cards. Any validation error rolls this deletion back.
+    ProductSize.objects.filter(product=product).delete()
+
+    size_keys = request.POST.getlist("size_keys")
+    size_names = request.POST.getlist("size_names")
+    size_stocks = request.POST.getlist("size_stock_quantities")
+    size_units = request.POST.getlist("size_measurement_units")
+    size_chests = request.POST.getlist("size_chests")
+    size_waists = request.POST.getlist("size_waists")
+    size_lengths = request.POST.getlist("size_lengths")
+    available_size_keys = set(request.POST.getlist("size_is_available"))
+
+    measurement_size_keys = request.POST.getlist(
+        "size_measurement_size_keys"
+    )
+    measurement_labels = request.POST.getlist("size_measurement_labels")
+    measurement_values = request.POST.getlist("size_measurement_values")
+    measurement_units = request.POST.getlist(
+        "size_measurement_units_custom"
+    )
+
+    measurement_count = max(
+        len(measurement_size_keys),
+        len(measurement_labels),
+        len(measurement_values),
+        len(measurement_units),
+        0,
+    )
+
+    measurements_by_size_key = {}
+
+    for index in range(measurement_count):
+        size_key = str(
+            _get_list_item(measurement_size_keys, index)
+        ).strip()
+        label = str(_get_list_item(measurement_labels, index)).strip()
+        value = str(_get_list_item(measurement_values, index)).strip()
+        unit = str(
+            _get_list_item(
+                measurement_units,
+                index,
+                ProductSize.MeasurementUnit.INCHES,
+            )
+        ).strip()
+
+        if not size_key and not label and not value:
+            continue
+
+        if not size_key:
+            raise ValidationError(
+                f"Custom measurement {index + 1}: size reference is missing."
+            )
+
+        if not label and not value:
+            continue
+
+        if not label or not value:
+            raise ValidationError(
+                f"Custom measurement {index + 1}: "
+                "both name and value are required."
+            )
+
+        measurements_by_size_key.setdefault(size_key, []).append(
+            {
+                "label": label,
+                "value": value,
+                "unit": unit,
+            }
+        )
+
+    size_count = max(
+        len(size_keys),
+        len(size_names),
+        len(size_stocks),
+        len(size_units),
+        len(size_chests),
+        len(size_waists),
+        len(size_lengths),
+        0,
+    )
+
+    prepared_sizes = []
+    used_size_keys = set()
+    used_size_names = set()
+
+    for index in range(size_count):
+        size_key = str(
+            _get_list_item(size_keys, index, f"size-{index + 1}")
+        ).strip()
+        size_name = " ".join(
+            str(_get_list_item(size_names, index)).split()
+        )
+        stock_quantity = str(
+            _get_list_item(size_stocks, index, "0")
+        ).strip()
+        measurement_unit = str(
+            _get_list_item(
+                size_units,
+                index,
+                ProductSize.MeasurementUnit.INCHES,
+            )
+        ).strip()
+        chest = str(_get_list_item(size_chests, index)).strip()
+        waist = str(_get_list_item(size_waists, index)).strip()
+        length = str(_get_list_item(size_lengths, index)).strip()
+        custom_measurements = measurements_by_size_key.get(size_key, [])
+
+        is_empty_size = (
+            not size_name
+            and stock_quantity in {"", "0"}
+            and not chest
+            and not waist
+            and not length
+            and not custom_measurements
+        )
+
+        if is_empty_size:
+            continue
+
+        if not size_key:
+            raise ValidationError(
+                f"Size {index + 1}: internal size key is missing."
+            )
+
+        if size_key in used_size_keys:
+            raise ValidationError(
+                f"Size {index + 1}: duplicate internal size key."
+            )
+
+        used_size_keys.add(size_key)
+
+        normalized_size_name = size_name.casefold()
+        if normalized_size_name and normalized_size_name in used_size_names:
+            raise ValidationError(
+                f"Size {index + 1}: duplicate size name '{size_name}'."
+            )
+
+        if normalized_size_name:
+            used_size_names.add(normalized_size_name)
+
+        size_form = ProductSizeForm(
+            data={
+                "size_name": size_name,
+                "stock_quantity": stock_quantity,
+                "measurement_unit": measurement_unit,
+                "chest": chest,
+                "waist": waist,
+                "length": length,
+                "is_available": size_key in available_size_keys,
+                "sort_order": len(prepared_sizes) + 1,
+            },
+            instance=ProductSize(product=product),
+        )
+
+        if not size_form.is_valid():
+            raise ValidationError(
+                _form_error_message(size_form, f"Size {index + 1}")
+            )
+
+        prepared_measurements = []
+        used_measurement_labels = set()
+
+        for measurement_index, measurement_data in enumerate(
+            custom_measurements,
+            start=1,
+        ):
+            normalized_label = measurement_data["label"].casefold()
+
+            if normalized_label in used_measurement_labels:
+                raise ValidationError(
+                    f"Size {index + 1}, custom measurement "
+                    f"{measurement_index}: duplicate measurement name "
+                    f"'{measurement_data['label']}'."
+                )
+
+            used_measurement_labels.add(normalized_label)
+
+            prepared_measurements.append(
+                {
+                    "label": measurement_data["label"],
+                    "value": measurement_data["value"],
+                    "unit": measurement_data["unit"],
+                    "sort_order": measurement_index,
+                }
+            )
+
+        prepared_sizes.append(
+            {
+                "key": size_key,
+                "form": size_form,
+                "measurements": prepared_measurements,
+            }
+        )
+
+    orphan_size_keys = set(measurements_by_size_key) - used_size_keys
+    if orphan_size_keys:
+        raise ValidationError(
+            "One or more custom measurements are not connected "
+            "to a valid size card."
+        )
+
+    saved_sizes = []
+    total_size_stock = 0
+
+    for prepared_size in prepared_sizes:
+        size_form = prepared_size["form"]
+        size_form.product = product
+        product_size = size_form.save()
+
+        total_size_stock += product_size.stock_quantity
+
+        for measurement_index, measurement_data in enumerate(
+            prepared_size["measurements"],
+            start=1,
+        ):
+            measurement_form = ProductSizeMeasurementForm(
+                data=measurement_data,
+                instance=ProductSizeMeasurement(
+                    product_size=product_size,
+                ),
+            )
+
+            if not measurement_form.is_valid():
+                raise ValidationError(
+                    _form_error_message(
+                        measurement_form,
+                        (
+                            f"Size {len(saved_sizes) + 1}, "
+                            f"custom measurement {measurement_index}"
+                        ),
+                    )
+                )
+
+            measurement_form.save()
+
+        saved_sizes.append(product_size)
+
+    if saved_sizes:
+        product.stock_quantity = total_size_stock
+        product.is_available = total_size_stock > 0
+
+        Product.objects.filter(pk=product.pk).update(
+            stock_quantity=product.stock_quantity,
+            is_available=product.is_available,
+        )
+
+
 def owner_login_view(request):
     if request.user.is_authenticated and request.user.is_staff:
         return redirect("store_owner:owner_dashboard")
@@ -470,6 +790,7 @@ def owner_product_add_view(request):
                 with transaction.atomic():
                     product = form.save()
                     _save_product_highlights(product, request)
+                    _save_product_sizes(product, request)
 
                     # AJAX flow:
                     # First request saves only product details + main image.
@@ -542,6 +863,7 @@ def owner_product_edit_view(request, product_id):
                 with transaction.atomic():
                     product = form.save()
                     _save_product_highlights(product, request)
+                    _save_product_sizes(product, request)
 
                     # Non-AJAX fallback only.
                     # Normal edit flow should upload variants separately via AJAX endpoint.

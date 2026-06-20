@@ -56,7 +56,10 @@
 
     function getFieldWrapper(element) {
       if (!element) return null;
-      return element.closest(".field, .category-field, .variant-card, .highlight-row");
+      return element.closest(
+        ".field, .category-field, .variant-card, .highlight-row, " +
+        ".size-card, .custom-measurement-row"
+      );
     }
 
     function getUploadBox(input) {
@@ -1249,6 +1252,360 @@
     setupHighlightRemoveButtons();
     setupAllPriceInputs();
 
+    const addSizeBtn = document.getElementById("addSizeBtn");
+    const addSizeBtnBottom = document.getElementById("addSizeBtnBottom");
+    const sizesList = document.getElementById("sizesList");
+    const sizesEmptyState = document.getElementById("sizesEmptyState");
+    const sizeCardTemplate = document.getElementById("productSizeCardTemplate");
+    const customMeasurementTemplate = document.getElementById("sizeCustomMeasurementTemplate");
+    const defaultStockInput = document.getElementById("stockQuantity");
+
+    let sizeCounter = 0;
+    let measurementCounter = 0;
+    let fallbackStockValue = String(defaultStockInput?.value || "1");
+
+    function createStableKey(prefix, counter) {
+      return `${prefix}-${Date.now().toString(36)}-${counter.toString(36)}`;
+    }
+
+    function replaceTemplateTokens(templateHtml, replacements) {
+      let output = templateHtml;
+
+      Object.entries(replacements).forEach(([token, value]) => {
+        output = output.split(token).join(String(value));
+      });
+
+      return output;
+    }
+
+    function parseMeasurementValue(input) {
+      if (!input) return null;
+
+      const raw = String(input.value || "").trim();
+      if (!raw) return null;
+
+      const value = Number(raw);
+      return Number.isFinite(value) ? value : NaN;
+    }
+
+    function getSizeCards() {
+      if (!sizesList) return [];
+      return Array.from(sizesList.querySelectorAll("[data-size-card]"));
+    }
+
+    function updateSizesEmptyState() {
+      const hasSizes = getSizeCards().length > 0;
+
+      if (sizesEmptyState) {
+        sizesEmptyState.hidden = hasSizes;
+      }
+
+      if (addSizeBtnBottom) {
+        addSizeBtnBottom.hidden = !hasSizes;
+      }
+    }
+
+    function syncProductStockFromSizes() {
+      if (!defaultStockInput) return;
+
+      const cards = getSizeCards();
+
+      if (!cards.length) {
+        defaultStockInput.readOnly = false;
+        defaultStockInput.removeAttribute("aria-readonly");
+        defaultStockInput.value = fallbackStockValue || "0";
+        return;
+      }
+
+      const totalStock = cards.reduce((total, card) => {
+        const stockInput = card.querySelector("[data-size-stock]");
+        const stock = Number(String(stockInput?.value || "0").trim());
+
+        if (!Number.isInteger(stock) || stock < 0) {
+          return total;
+        }
+
+        return total + stock;
+      }, 0);
+
+      defaultStockInput.value = String(totalStock);
+      defaultStockInput.readOnly = true;
+      defaultStockInput.setAttribute("aria-readonly", "true");
+    }
+
+    function refreshSizeCards() {
+      const cards = getSizeCards();
+
+      cards.forEach((card, index) => {
+        const title = card.querySelector(".size-card__title");
+        const removeButton = card.querySelector("[data-remove-size]");
+
+        if (title) {
+          title.textContent = `Size ${index + 1}`;
+        }
+
+        if (removeButton) {
+          removeButton.setAttribute(
+            "aria-label",
+            `Remove size ${index + 1}`
+          );
+        }
+      });
+
+      updateSizesEmptyState();
+      syncProductStockFromSizes();
+    }
+
+    function syncSizeCustomMeasurementUnits(card) {
+      if (!card) return;
+
+      const sizeUnit = card.querySelector("[data-size-unit]")?.value || "in";
+
+      card
+        .querySelectorAll('select[name="size_measurement_units_custom"]')
+        .forEach((unitSelect) => {
+          unitSelect.value = sizeUnit;
+        });
+    }
+
+    function createCustomMeasurementRow(card, values = {}) {
+      if (!card || !customMeasurementTemplate) return null;
+
+      const list = card.querySelector("[data-custom-measurements-list]");
+      const sizeKey = String(card.dataset.sizeKey || "").trim();
+
+      if (!list || !sizeKey) return null;
+
+      measurementCounter += 1;
+      const measurementKey = createStableKey(
+        "measurement",
+        measurementCounter
+      );
+
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = replaceTemplateTokens(
+        customMeasurementTemplate.innerHTML.trim(),
+        {
+          "__SIZE_KEY__": sizeKey,
+          "__MEASUREMENT_KEY__": measurementKey
+        }
+      );
+
+      const row = wrapper.firstElementChild;
+      if (!row) return null;
+
+      const labelInput = row.querySelector(
+        'input[name="size_measurement_labels"]'
+      );
+      const valueInput = row.querySelector(
+        'input[name="size_measurement_values"]'
+      );
+      const unitSelect = row.querySelector(
+        'select[name="size_measurement_units_custom"]'
+      );
+
+      if (labelInput) {
+        labelInput.value = values.label || "";
+      }
+
+      if (valueInput) {
+        valueInput.value = values.value ?? "";
+      }
+
+      if (unitSelect) {
+        unitSelect.value = (
+          values.unit
+          || card.querySelector("[data-size-unit]")?.value
+          || "in"
+        );
+      }
+
+      list.appendChild(row);
+
+      row.querySelector("[data-remove-custom-measurement]")
+        ?.addEventListener("click", function () {
+          row.remove();
+          productForm?.dispatchEvent(
+            new Event("input", { bubbles: true })
+          );
+        });
+
+      productForm?.dispatchEvent(
+        new Event("input", { bubbles: true })
+      );
+
+      if (!values.preventFocus) {
+        window.setTimeout(() => {
+          labelInput?.focus({ preventScroll: true });
+        }, 50);
+      }
+
+      return row;
+    }
+
+    function createSizeCard(values = {}) {
+      if (!sizesList || !sizeCardTemplate) return null;
+
+      if (getSizeCards().length === 0 && defaultStockInput) {
+        fallbackStockValue = String(defaultStockInput.value || "0");
+      }
+
+      sizeCounter += 1;
+      const sizeKey = (
+        values.key
+        || createStableKey("size", sizeCounter)
+      );
+
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = replaceTemplateTokens(
+        sizeCardTemplate.innerHTML.trim(),
+        {
+          "__SIZE_KEY__": sizeKey,
+          "__SIZE_NUMBER__": getSizeCards().length + 1
+        }
+      );
+
+      const card = wrapper.firstElementChild;
+      if (!card) return null;
+
+      card.dataset.sizeKey = sizeKey;
+
+      const sizeNameInput = card.querySelector("[data-size-name]");
+      const stockInput = card.querySelector("[data-size-stock]");
+      const unitSelect = card.querySelector("[data-size-unit]");
+      const availableInput = card.querySelector("[data-size-available]");
+      const chestInput = card.querySelector('input[name="size_chests"]');
+      const waistInput = card.querySelector('input[name="size_waists"]');
+      const lengthInput = card.querySelector('input[name="size_lengths"]');
+
+      if (sizeNameInput) sizeNameInput.value = values.sizeName || "";
+      if (stockInput) stockInput.value = values.stockQuantity ?? "0";
+      if (unitSelect) unitSelect.value = values.measurementUnit || "in";
+      if (availableInput) availableInput.checked = values.isAvailable !== false;
+      if (chestInput) chestInput.value = values.chest ?? "";
+      if (waistInput) waistInput.value = values.waist ?? "";
+      if (lengthInput) lengthInput.value = values.length ?? "";
+
+      sizesList.appendChild(card);
+
+      card.querySelector("[data-remove-size]")
+        ?.addEventListener("click", function () {
+          card.remove();
+          refreshSizeCards();
+          productForm?.dispatchEvent(
+            new Event("input", { bubbles: true })
+          );
+        });
+
+      card.querySelector("[data-add-custom-measurement]")
+        ?.addEventListener("click", function () {
+          createCustomMeasurementRow(card);
+        });
+
+      unitSelect?.addEventListener("change", function () {
+        syncSizeCustomMeasurementUnits(card);
+      });
+
+      stockInput?.addEventListener("input", function () {
+        const stock = Number(String(stockInput.value || "0").trim());
+
+        if (availableInput && Number.isInteger(stock) && stock === 0) {
+          availableInput.checked = false;
+        }
+
+        if (availableInput && Number.isInteger(stock) && stock > 0) {
+          availableInput.checked = true;
+        }
+
+        syncProductStockFromSizes();
+      });
+
+      (values.customMeasurements || []).forEach((measurement) => {
+        createCustomMeasurementRow(card, {
+          ...measurement,
+          preventFocus: Boolean(values.preventScroll)
+        });
+      });
+
+      refreshSizeCards();
+      productForm?.dispatchEvent(
+        new Event("input", { bubbles: true })
+      );
+
+      if (!values.preventScroll) {
+        card.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+
+        window.setTimeout(() => {
+          sizeNameInput?.focus({ preventScroll: true });
+        }, 80);
+      }
+
+      return card;
+    }
+
+    function handleAddSize() {
+      createSizeCard();
+    }
+
+    addSizeBtn?.addEventListener("click", handleAddSize);
+    addSizeBtnBottom?.addEventListener("click", handleAddSize);
+
+    updateSizesEmptyState();
+
+    function collectSizeCardsState() {
+      return getSizeCards().map((card) => ({
+        key: card.dataset.sizeKey || "",
+        sizeName: card.querySelector("[data-size-name]")?.value || "",
+        stockQuantity: card.querySelector("[data-size-stock]")?.value || "0",
+        measurementUnit: card.querySelector("[data-size-unit]")?.value || "in",
+        chest: card.querySelector('input[name="size_chests"]')?.value || "",
+        waist: card.querySelector('input[name="size_waists"]')?.value || "",
+        length: card.querySelector('input[name="size_lengths"]')?.value || "",
+        isAvailable: Boolean(
+          card.querySelector("[data-size-available]")?.checked
+        ),
+        customMeasurements: Array.from(
+          card.querySelectorAll("[data-custom-measurement-row]")
+        ).map((row) => ({
+          label: row.querySelector(
+            'input[name="size_measurement_labels"]'
+          )?.value || "",
+          value: row.querySelector(
+            'input[name="size_measurement_values"]'
+          )?.value || "",
+          unit: row.querySelector(
+            'select[name="size_measurement_units_custom"]'
+          )?.value || "in"
+        }))
+      }));
+    }
+
+    function restoreSizeCards(sizeCards = []) {
+      if (!sizesList || !Array.isArray(sizeCards)) return;
+
+      sizesList.innerHTML = "";
+
+      sizeCards.forEach((sizeData) => {
+        createSizeCard({
+          ...sizeData,
+          preventScroll: true
+        });
+      });
+
+      refreshSizeCards();
+    }
+
+    window.OwnerProductSizeCards = {
+      createSizeCard,
+      createCustomMeasurementRow,
+      collectState: collectSizeCardsState,
+      restoreState: restoreSizeCards,
+      refresh: refreshSizeCards
+    };
+
     function addError(errors, element, message) {
       errors.push({ element, message });
       setFieldError(element, message);
@@ -1364,6 +1721,199 @@
       });
     }
 
+    function validateSizes(errors) {
+      const cards = getSizeCards();
+      const usedSizeNames = new Set();
+
+      cards.forEach((card, index) => {
+        const sizeNumber = index + 1;
+        const sizeNameInput = card.querySelector("[data-size-name]");
+        const stockInput = card.querySelector("[data-size-stock]");
+        const unitSelect = card.querySelector("[data-size-unit]");
+        const chestInput = card.querySelector('input[name="size_chests"]');
+        const waistInput = card.querySelector('input[name="size_waists"]');
+        const lengthInput = card.querySelector('input[name="size_lengths"]');
+
+        const sizeName = String(sizeNameInput?.value || "")
+          .trim()
+          .replace(/\s+/g, " ");
+
+        if (sizeNameInput) {
+          sizeNameInput.value = sizeName;
+        }
+
+        if (!sizeName) {
+          addError(
+            errors,
+            sizeNameInput,
+            `Size ${sizeNumber}: size name is required.`
+          );
+        } else if (sizeName.length > 40) {
+          addError(
+            errors,
+            sizeNameInput,
+            `Size ${sizeNumber}: size name should be under 40 characters.`
+          );
+        } else {
+          const normalizedSizeName = sizeName.toLocaleLowerCase();
+
+          if (usedSizeNames.has(normalizedSizeName)) {
+            addError(
+              errors,
+              sizeNameInput,
+              `Size ${sizeNumber}: duplicate size name "${sizeName}".`
+            );
+          }
+
+          usedSizeNames.add(normalizedSizeName);
+        }
+
+        const rawStock = String(stockInput?.value || "").trim();
+        const stock = rawStock === "" ? null : Number(rawStock);
+
+        if (stock === null || !Number.isFinite(stock)) {
+          addError(
+            errors,
+            stockInput,
+            `Size ${sizeNumber}: available pieces are required.`
+          );
+        } else if (stock < 0) {
+          addError(
+            errors,
+            stockInput,
+            `Size ${sizeNumber}: available pieces cannot be negative.`
+          );
+        } else if (!Number.isInteger(stock)) {
+          addError(
+            errors,
+            stockInput,
+            `Size ${sizeNumber}: available pieces should be a whole number.`
+          );
+        }
+
+        if (!["in", "cm"].includes(String(unitSelect?.value || ""))) {
+          addError(
+            errors,
+            unitSelect,
+            `Size ${sizeNumber}: select a valid measurement unit.`
+          );
+        }
+
+        [
+          { input: chestInput, label: "chest" },
+          { input: waistInput, label: "waist" },
+          { input: lengthInput, label: "length" }
+        ].forEach(({ input, label }) => {
+          const value = parseMeasurementValue(input);
+
+          if (value === null) return;
+
+          if (Number.isNaN(value)) {
+            addError(
+              errors,
+              input,
+              `Size ${sizeNumber}: ${label} should be a valid number.`
+            );
+          } else if (value <= 0) {
+            addError(
+              errors,
+              input,
+              `Size ${sizeNumber}: ${label} should be greater than 0.`
+            );
+          } else if (value > 99999.99) {
+            addError(
+              errors,
+              input,
+              `Size ${sizeNumber}: ${label} value is too large.`
+            );
+          }
+        });
+
+        const usedMeasurementLabels = new Set();
+        const measurementRows = Array.from(
+          card.querySelectorAll("[data-custom-measurement-row]")
+        );
+
+        measurementRows.forEach((row, measurementIndex) => {
+          const measurementNumber = measurementIndex + 1;
+          const labelInput = row.querySelector(
+            'input[name="size_measurement_labels"]'
+          );
+          const valueInput = row.querySelector(
+            'input[name="size_measurement_values"]'
+          );
+          const customUnitSelect = row.querySelector(
+            'select[name="size_measurement_units_custom"]'
+          );
+
+          const label = String(labelInput?.value || "")
+            .trim()
+            .replace(/\s+/g, " ");
+          const value = parseMeasurementValue(valueInput);
+
+          if (labelInput) {
+            labelInput.value = label;
+          }
+
+          if (!label) {
+            addError(
+              errors,
+              labelInput,
+              `Size ${sizeNumber}, custom measurement ${measurementNumber}: name is required.`
+            );
+          } else if (label.length > 60) {
+            addError(
+              errors,
+              labelInput,
+              `Size ${sizeNumber}, custom measurement ${measurementNumber}: name should be under 60 characters.`
+            );
+          } else {
+            const normalizedLabel = label.toLocaleLowerCase();
+
+            if (usedMeasurementLabels.has(normalizedLabel)) {
+              addError(
+                errors,
+                labelInput,
+                `Size ${sizeNumber}: duplicate custom measurement "${label}".`
+              );
+            }
+
+            usedMeasurementLabels.add(normalizedLabel);
+          }
+
+          if (value === null || Number.isNaN(value)) {
+            addError(
+              errors,
+              valueInput,
+              `Size ${sizeNumber}, custom measurement ${measurementNumber}: enter a valid value.`
+            );
+          } else if (value <= 0) {
+            addError(
+              errors,
+              valueInput,
+              `Size ${sizeNumber}, custom measurement ${measurementNumber}: value should be greater than 0.`
+            );
+          } else if (value > 99999.99) {
+            addError(
+              errors,
+              valueInput,
+              `Size ${sizeNumber}, custom measurement ${measurementNumber}: value is too large.`
+            );
+          }
+
+          if (!["in", "cm"].includes(String(customUnitSelect?.value || ""))) {
+            addError(
+              errors,
+              customUnitSelect,
+              `Size ${sizeNumber}, custom measurement ${measurementNumber}: select a valid unit.`
+            );
+          }
+        });
+      });
+
+      syncProductStockFromSizes();
+    }
+
     async function validateVariants(errors) {
       if (!variantsList) return;
 
@@ -1432,6 +1982,7 @@
 
       await validateBaseProduct(errors);
       await validateOptionalSequentialImages(errors);
+      validateSizes(errors);
       validateHighlights(errors);
       await validateVariants(errors);
 
@@ -1498,6 +2049,8 @@
     }
 
     async function buildProductCreateFormData() {
+      syncProductStockFromSizes();
+
       const formData = new FormData(productForm);
 
       sequentialImageInputs.forEach((item) => {

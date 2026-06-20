@@ -8,9 +8,7 @@
 
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'store/css/collections/product_card.css' %}?v=20260615-card-typography1">
-
-  <link rel="stylesheet" href="{% static 'store/css/product_detail/product_detail.css' %}?v=20260615-related-swipe-fix1">
-
+  <link rel="stylesheet" href="{% static 'store/css/product_detail/product_detail.css' %}?v=20260620-size-picker1">
 {% endblock %}
 
 {% block content %}
@@ -19,6 +17,132 @@
 
     <div class="pd-info">
       {% include "store/product_detail/partials/product_summary.html" %}
+
+      {% if available_sizes %}
+        <section
+          class="pd-size-picker"
+          data-size-picker
+          data-requires-size="true"
+          aria-labelledby="productSizePickerTitle"
+        >
+          <div class="pd-size-heading-row">
+            <div>
+              <h2 id="productSizePickerTitle" class="pd-size-title">Select Size</h2>
+              <p class="pd-size-help">Choose your preferred size before adding to cart or ordering on WhatsApp.</p>
+            </div>
+
+            <div class="pd-size-selected-pill" aria-live="polite">
+              Size:
+              <strong id="selectedSizeText">
+                {% if default_size %}{{ default_size.size_name }}{% else %}-{% endif %}
+              </strong>
+            </div>
+          </div>
+
+          <input
+            type="hidden"
+            id="selectedProductSizeId"
+            name="selected_size_id"
+            value="{% if default_size %}{{ default_size.id }}{% endif %}"
+          >
+          <input
+            type="hidden"
+            id="selectedProductSizeName"
+            name="selected_size_name"
+            value="{% if default_size %}{{ default_size.size_name }}{% endif %}"
+          >
+
+          <div class="pd-size-options" role="radiogroup" aria-label="Available sizes">
+            {% for size in available_sizes %}
+              <button
+                type="button"
+                class="pd-size-option{% if default_size and default_size.id == size.id %} is-selected{% endif %}"
+                role="radio"
+                aria-checked="{% if default_size and default_size.id == size.id %}true{% else %}false{% endif %}"
+                data-size-option
+                data-size-id="{{ size.id }}"
+                data-size-name="{{ size.size_name }}"
+                data-size-stock="{{ size.stock_quantity }}"
+                data-size-unit="{{ size.measurement_unit }}"
+                data-size-chest="{% if size.chest %}{{ size.chest|floatformat:'-2' }}{% endif %}"
+                data-size-waist="{% if size.waist %}{{ size.waist|floatformat:'-2' }}{% endif %}"
+                data-size-length="{% if size.length %}{{ size.length|floatformat:'-2' }}{% endif %}"
+              >
+                <span class="pd-size-name">{{ size.size_name }}</span>
+                <span class="pd-size-stock">
+                  {% if size.stock_quantity > 5 %}
+                    In stock
+                  {% elif size.stock_quantity > 0 %}
+                    Only {{ size.stock_quantity }} left
+                  {% else %}
+                    Out of stock
+                  {% endif %}
+                </span>
+              </button>
+            {% endfor %}
+          </div>
+
+          <p class="pd-size-stock-line" id="selectedSizeStockText" aria-live="polite">
+            {% if default_size %}
+              {% if default_size.stock_quantity > 5 %}
+                Selected size is in stock.
+              {% elif default_size.stock_quantity > 0 %}
+                Only {{ default_size.stock_quantity }} piece{% if default_size.stock_quantity != 1 %}s{% endif %} left in selected size.
+              {% endif %}
+            {% endif %}
+          </p>
+
+          <p class="pd-size-error" id="sizePickerError" hidden>Please select a size.</p>
+
+          {% if size_measurement_groups %}
+            <div class="pd-size-measurements" data-size-measurements>
+              <div class="pd-size-measurements__head">
+                <strong>Size Measurements</strong>
+                <span>Measurements are approximate.</span>
+              </div>
+
+              {% for group in size_measurement_groups %}
+                {% if default_size and default_size.id == group.size.id %}
+                  <div class="pd-size-measurement-panel is-visible" data-size-measurement-panel data-size-id="{{ group.size.id }}">
+                {% else %}
+                  <div class="pd-size-measurement-panel" data-size-measurement-panel data-size-id="{{ group.size.id }}" hidden>
+                {% endif %}
+                    <div class="pd-size-measurement-size">{{ group.size.size_name }}</div>
+
+                    <div class="pd-size-measurement-grid">
+                      {% for measurement in group.measurements %}
+                        <div class="pd-size-measurement-item">
+                          <span>{{ measurement.label }}</span>
+                          <strong>{{ measurement.value }} {{ measurement.unit }}</strong>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </section>
+      {% elif legacy_product_size or product.product_size %}
+        <section
+          class="pd-size-picker pd-size-picker--legacy"
+          data-size-picker
+          data-requires-size="false"
+          data-legacy-size="{% if legacy_product_size %}{{ legacy_product_size }}{% else %}{{ product.product_size }}{% endif %}"
+          aria-labelledby="productSizePickerTitle"
+        >
+          <div class="pd-size-heading-row">
+            <div>
+              <h2 id="productSizePickerTitle" class="pd-size-title">Size</h2>
+              <p class="pd-size-help">This product has a fixed size.</p>
+            </div>
+
+            <div class="pd-size-selected-pill">
+              {% if legacy_product_size %}{{ legacy_product_size }}{% else %}{{ product.product_size }}{% endif %}
+            </div>
+          </div>
+        </section>
+      {% endif %}
+
       {% include "store/product_detail/partials/product_highlights.html" %}
       {% include "store/product_detail/partials/product_actions.html" %}
       {% include "store/product_detail/partials/product_service_row.html" %}
@@ -31,74 +155,256 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
-  (function () {
-    const addButtons = document.querySelectorAll("[data-cart-add]");
+  <script>
+    (function () {
+      const picker = document.querySelector("[data-size-picker]");
+      const selectedSizeText = document.getElementById("selectedSizeText");
+      const selectedSizeStockText = document.getElementById("selectedSizeStockText");
+      const selectedSizeIdInput = document.getElementById("selectedProductSizeId");
+      const selectedSizeNameInput = document.getElementById("selectedProductSizeName");
+      const sizeError = document.getElementById("sizePickerError");
+      const sizeOptions = picker ? Array.from(picker.querySelectorAll("[data-size-option]")) : [];
+      const measurementPanels = Array.from(document.querySelectorAll("[data-size-measurement-panel]"));
 
-    function getCart() {
-      try {
-        const cart = JSON.parse(localStorage.getItem("pp_cart") || "[]");
-        return Array.isArray(cart) ? cart : [];
-      } catch (error) {
-        return [];
+      function cleanText(value) {
+        return String(value || "").trim();
       }
-    }
 
-    function saveCart(cart) {
-      localStorage.setItem("pp_cart", JSON.stringify(cart));
-      window.dispatchEvent(new Event("pp-cart-updated"));
-    }
+      function buildSizeFromButton(button) {
+        if (!button) return null;
 
-    addButtons.forEach(function (button) {
-      button.addEventListener("click", function () {
-        const productId = String(button.dataset.productId || "").trim();
-        if (!productId) return;
+        const sizeId = cleanText(button.dataset.sizeId);
+        const sizeName = cleanText(button.dataset.sizeName);
 
-        const productData = {
-          id: productId,
-          name: button.dataset.productName || "Product",
-          category: button.dataset.productCategory || "",
-          price: Number(button.dataset.productPrice || 0),
-          image: button.dataset.productImage || "",
-          url: button.dataset.productUrl || "",
-          qty: 1
+        if (!sizeId && !sizeName) return null;
+
+        return {
+          id: sizeId,
+          name: sizeName,
+          stock: Number(button.dataset.sizeStock || 0),
+          unit: cleanText(button.dataset.sizeUnit),
+          chest: cleanText(button.dataset.sizeChest),
+          waist: cleanText(button.dataset.sizeWaist),
+          length: cleanText(button.dataset.sizeLength)
         };
+      }
 
-        const cart = getCart();
+      function getSelectedButton() {
+        return sizeOptions.find((button) => button.classList.contains("is-selected")) || null;
+      }
 
-        const existingItem = cart.find(function (item) {
-          return String(item.id) === productId;
+      function getSelectedSize() {
+        const selectedButton = getSelectedButton();
+        const selectedSize = buildSizeFromButton(selectedButton);
+
+        if (selectedSize) return selectedSize;
+
+        const legacySize = cleanText(picker?.dataset.legacySize);
+        if (legacySize) {
+          return {
+            id: "",
+            name: legacySize,
+            stock: 0,
+            unit: "",
+            chest: "",
+            waist: "",
+            length: ""
+          };
+        }
+
+        return null;
+      }
+
+      function updateMeasurementPanel(sizeId) {
+        measurementPanels.forEach((panel) => {
+          const isVisible = cleanText(panel.dataset.sizeId) === cleanText(sizeId);
+
+          panel.hidden = !isVisible;
+          panel.classList.toggle("is-visible", isVisible);
+        });
+      }
+
+      function updateStockText(size) {
+        if (!selectedSizeStockText || !size) return;
+
+        if (size.stock > 5) {
+          selectedSizeStockText.textContent = "Selected size is in stock.";
+        } else if (size.stock > 1) {
+          selectedSizeStockText.textContent = `Only ${size.stock} pieces left in selected size.`;
+        } else if (size.stock === 1) {
+          selectedSizeStockText.textContent = "Only 1 piece left in selected size.";
+        } else {
+          selectedSizeStockText.textContent = "Selected size availability will be confirmed on WhatsApp.";
+        }
+      }
+
+      function hideError() {
+        if (!sizeError) return;
+
+        sizeError.hidden = true;
+        if (picker) picker.classList.remove("has-error");
+      }
+
+      function showError(message) {
+        if (!sizeError) return;
+
+        sizeError.textContent = message || "Please select a size.";
+        sizeError.hidden = false;
+        if (picker) picker.classList.add("has-error");
+        picker?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+
+      function selectSize(button) {
+        const size = buildSizeFromButton(button);
+        if (!size) return;
+
+        sizeOptions.forEach((item) => {
+          const isSelected = item === button;
+          item.classList.toggle("is-selected", isSelected);
+          item.setAttribute("aria-checked", isSelected ? "true" : "false");
         });
 
-        const oldHtml = button.innerHTML;
+        if (selectedSizeText) selectedSizeText.textContent = size.name || "-";
+        if (selectedSizeIdInput) selectedSizeIdInput.value = size.id || "";
+        if (selectedSizeNameInput) selectedSizeNameInput.value = size.name || "";
 
-        if (existingItem) {
+        updateStockText(size);
+        updateMeasurementPanel(size.id);
+        hideError();
+
+        window.dispatchEvent(new CustomEvent("pp-product-size-selected", {
+          detail: size
+        }));
+      }
+
+      sizeOptions.forEach((button) => {
+        button.addEventListener("click", function () {
+          selectSize(button);
+        });
+      });
+
+      if (sizeOptions.length && !getSelectedButton()) {
+        selectSize(sizeOptions[0]);
+      } else {
+        const selectedSize = getSelectedSize();
+        if (selectedSize) {
+          updateStockText(selectedSize);
+          updateMeasurementPanel(selectedSize.id);
+        }
+      }
+
+      window.PPProductSize = {
+        hasOptions: sizeOptions.length > 0,
+        requiresSize: picker?.dataset.requiresSize === "true",
+        getSelectedSize,
+        showError,
+        hideError
+      };
+    })();
+  </script>
+
+  <script>
+    (function () {
+      const addButtons = document.querySelectorAll("[data-cart-add]");
+
+      function getSizeApi() {
+        return window.PPProductSize || null;
+      }
+
+      function getValidatedSize() {
+        const sizeApi = getSizeApi();
+        const selectedSize = sizeApi?.getSelectedSize?.() || null;
+
+        if (sizeApi?.requiresSize && !selectedSize) {
+          sizeApi.showError?.("Please select a size before adding this product to cart.");
+          return null;
+        }
+
+        return selectedSize;
+      }
+
+      function getCart() {
+        try {
+          const cart = JSON.parse(localStorage.getItem("pp_cart") || "[]");
+          return Array.isArray(cart) ? cart : [];
+        } catch (error) {
+          return [];
+        }
+      }
+
+      function saveCart(cart) {
+        localStorage.setItem("pp_cart", JSON.stringify(cart));
+        window.dispatchEvent(new Event("pp-cart-updated"));
+      }
+
+      function getCartKey(productId, selectedSize) {
+        const sizePart = selectedSize ? (selectedSize.id || selectedSize.name || "") : "";
+        return sizePart ? `${productId}::size::${sizePart}` : productId;
+      }
+
+      addButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          const productId = String(button.dataset.productId || "").trim();
+          if (!productId) return;
+
+          const selectedSize = getValidatedSize();
+          const sizeApi = getSizeApi();
+
+          if (sizeApi?.requiresSize && !selectedSize) return;
+
+          const cartKey = getCartKey(productId, selectedSize);
+
+          const productData = {
+            id: productId,
+            cartKey: cartKey,
+            name: button.dataset.productName || "Product",
+            category: button.dataset.productCategory || "",
+            price: Number(button.dataset.productPrice || 0),
+            image: button.dataset.productImage || "",
+            url: button.dataset.productUrl || "",
+            sizeId: selectedSize?.id || "",
+            sizeName: selectedSize?.name || "",
+            qty: 1
+          };
+
+          const cart = getCart();
+
+          const existingItem = cart.find(function (item) {
+            if (item.cartKey) {
+              return String(item.cartKey) === cartKey;
+            }
+
+            return String(item.id) === productId && !selectedSize;
+          });
+
+          const oldHtml = button.innerHTML;
+
+          if (existingItem) {
+            button.classList.add("is-added");
+            button.innerHTML = selectedSize ? "Size Already in Cart ✓" : "Already in Cart ✓";
+
+            setTimeout(function () {
+              button.classList.remove("is-added");
+              button.innerHTML = oldHtml;
+            }, 650);
+
+            return;
+          }
+
+          cart.push(productData);
+          saveCart(cart);
+
           button.classList.add("is-added");
-          button.innerHTML = "Already in Cart ✓";
+          button.innerHTML = selectedSize ? "Size Added to Cart ✓" : "Added to Cart ✓";
 
           setTimeout(function () {
             button.classList.remove("is-added");
             button.innerHTML = oldHtml;
           }, 650);
-
-          return;
-        }
-
-        cart.push(productData);
-        saveCart(cart);
-
-        button.classList.add("is-added");
-        button.innerHTML = "Added to Cart ✓";
-
-        setTimeout(function () {
-          button.classList.remove("is-added");
-          button.innerHTML = oldHtml;
-        }, 650);
+        });
       });
-    });
-  })();
-</script>
-
+    })();
+  </script>
 
   <script>
     (function () {
@@ -128,9 +434,26 @@
         return window.location.origin + "/" + rawUrl;
       }
 
+      function getValidatedSizeForWhatsApp() {
+        const sizeApi = window.PPProductSize || null;
+        const selectedSize = sizeApi?.getSelectedSize?.() || null;
+
+        if (sizeApi?.requiresSize && !selectedSize) {
+          sizeApi.showError?.("Please select a size before ordering on WhatsApp.");
+          return null;
+        }
+
+        return selectedSize;
+      }
+
       document.querySelectorAll("[data-direct-whatsapp]").forEach(function (link) {
         link.addEventListener("click", function (event) {
           event.preventDefault();
+
+          const selectedSize = getValidatedSizeForWhatsApp();
+          const sizeApi = window.PPProductSize || null;
+
+          if (sizeApi?.requiresSize && !selectedSize) return;
 
           const productUrl = absoluteUrl(link.dataset.productUrl);
           const imageUrl = absoluteUrl(link.dataset.productImage);
@@ -143,6 +466,10 @@
             "Category: " + safeText(link.dataset.productCategory || "Pallavi Papa Collection"),
             "Price: ₹" + money(link.dataset.productPrice)
           ];
+
+          if (selectedSize?.name) {
+            lines.push("Size: " + selectedSize.name);
+          }
 
           if (productUrl) {
             lines.push("Product Link: " + productUrl);

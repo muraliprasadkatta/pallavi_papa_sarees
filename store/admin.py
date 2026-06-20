@@ -1,7 +1,25 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Category, Product, ProductHighlight, ProductVariant, OwnerHomePageRow
+from .models import (
+    Category,
+    OwnerHomePageRow,
+    Product,
+    ProductHighlight,
+    ProductSize,
+    ProductSizeMeasurement,
+    ProductVariant,
+)
+
+
+class HiddenFromAdminIndexMixin:
+    """
+    Keep the model admin available for relation widgets/direct links,
+    but hide it from the Django admin sidebar and app index.
+    """
+
+    def get_model_perms(self, request):
+        return {}
 
 
 @admin.register(Category)
@@ -71,7 +89,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(OwnerHomePageRow)
-class OwnerHomePageRowAdmin(admin.ModelAdmin):
+class OwnerHomePageRowAdmin(HiddenFromAdminIndexMixin, admin.ModelAdmin):
     list_display = (
         "id",
         "name",
@@ -179,10 +197,35 @@ class ProductVariantInline(admin.StackedInline):
     variant_image_preview.short_description = "Preview"
 
 
+class ProductSizeInline(admin.TabularInline):
+    model = ProductSize
+    verbose_name = "Size"
+    verbose_name_plural = "Sizes & stock"
+    extra = 0
+    show_change_link = True
+
+    fields = (
+        "size_name",
+        "stock_quantity",
+        "measurement_unit",
+        "chest",
+        "waist",
+        "length",
+        "is_available",
+        "sort_order",
+    )
+
+    ordering = (
+        "sort_order",
+        "id",
+    )
+
+
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     inlines = [
         ProductHighlightInline,
+        ProductSizeInline,
         ProductVariantInline,
     ]
 
@@ -192,7 +235,7 @@ class ProductAdmin(admin.ModelAdmin):
         "category",
         "color_name",
         "color_swatch",
-        "product_size",
+        "sizes_summary",
         "stock_quantity",
         "actual_price",
         "offer_price",
@@ -224,6 +267,8 @@ class ProductAdmin(admin.ModelAdmin):
         "color_name",
         "color_code",
         "product_size",
+        "sizes__size_name",
+        "sizes__custom_measurements__label",
         "home_rows__name",
     )
 
@@ -241,9 +286,10 @@ class ProductAdmin(admin.ModelAdmin):
     ordering = ("-created_at",)
     filter_horizontal = ("home_rows",)
     list_select_related = ("category",)
+    list_per_page = 30
 
     fieldsets = (
-        ("Basic Details", {
+        ("Product Details", {
             "fields": (
                 "name",
                 "category",
@@ -303,6 +349,14 @@ class ProductAdmin(admin.ModelAdmin):
         }),
     )
 
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request)
+            .select_related("category")
+            .prefetch_related("sizes")
+        )
+
     def color_swatch(self, obj):
         if obj.color_code:
             return format_html(
@@ -313,6 +367,25 @@ class ProductAdmin(admin.ModelAdmin):
         return "-"
 
     color_swatch.short_description = "Color"
+
+    @admin.display(description="Sizes")
+    def sizes_summary(self, obj):
+        size_names = list(
+            obj.sizes
+            .order_by("sort_order", "id")
+            .values_list("size_name", flat=True)[:5]
+        )
+
+        if not size_names:
+            return obj.product_size or "-"
+
+        summary = ", ".join(size_names)
+        total_sizes = obj.sizes.count()
+
+        if total_sizes > len(size_names):
+            summary = f"{summary} +{total_sizes - len(size_names)}"
+
+        return summary
 
     def main_image_preview(self, obj):
         if obj.main_image:
@@ -373,3 +446,111 @@ class ProductAdmin(admin.ModelAdmin):
         return "-"
 
     sub_image_3_preview.short_description = "Sub Image 3 Preview"
+
+
+class ProductSizeMeasurementInline(admin.TabularInline):
+    model = ProductSizeMeasurement
+    verbose_name = "Custom measurement"
+    verbose_name_plural = "Custom measurements for this size"
+    extra = 0
+    can_delete = True
+
+    fields = (
+        "label",
+        "value",
+        "unit",
+        "sort_order",
+    )
+
+    ordering = (
+        "sort_order",
+        "id",
+    )
+
+
+@admin.register(ProductSize)
+class ProductSizeAdmin(HiddenFromAdminIndexMixin, admin.ModelAdmin):
+    inlines = [
+        ProductSizeMeasurementInline,
+    ]
+
+    list_display = (
+        "id",
+        "product",
+        "size_name",
+        "stock_quantity",
+        "measurement_unit",
+        "chest",
+        "waist",
+        "length",
+        "is_available",
+        "custom_measurement_count",
+        "sort_order",
+        "updated_at",
+    )
+
+    list_filter = (
+        "measurement_unit",
+        "is_available",
+        "product__category",
+        "created_at",
+    )
+
+    search_fields = (
+        "product__name",
+        "product__category__name",
+        "size_name",
+        "custom_measurements__label",
+    )
+
+    list_select_related = (
+        "product",
+        "product__category",
+    )
+
+    readonly_fields = (
+        "created_at",
+        "updated_at",
+    )
+
+    ordering = (
+        "product__name",
+        "sort_order",
+        "id",
+    )
+
+    list_per_page = 40
+
+    fieldsets = (
+        ("Product & Size", {
+            "fields": (
+                "product",
+                "size_name",
+                "stock_quantity",
+                "is_available",
+                "sort_order",
+            )
+        }),
+        ("Standard size measurements", {
+            "fields": (
+                "measurement_unit",
+                "chest",
+                "waist",
+                "length",
+            ),
+            "description": (
+                "Use chest, waist and length for common measurements. "
+                "Add shoulder, sleeve, hip, inseam or other custom values below."
+            ),
+        }),
+        ("Timestamps", {
+            "fields": (
+                "created_at",
+                "updated_at",
+            )
+        }),
+    )
+
+    @admin.display(description="Custom Measurements")
+    def custom_measurement_count(self, obj):
+        return obj.custom_measurements.count()
