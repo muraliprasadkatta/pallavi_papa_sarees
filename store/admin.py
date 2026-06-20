@@ -197,29 +197,36 @@ class ProductVariantInline(admin.StackedInline):
     variant_image_preview.short_description = "Preview"
 
 
-class ProductSizeInline(admin.TabularInline):
+class ProductSizeInline(admin.StackedInline):
     model = ProductSize
     verbose_name = "Size"
     verbose_name_plural = "Sizes & stock"
     extra = 0
     show_change_link = True
 
-    fields = (
-        "size_name",
-        "stock_quantity",
-        "measurement_unit",
-        "chest",
-        "waist",
-        "length",
-        "is_available",
-        "sort_order",
+    fieldsets = (
+        ("Size & Stock", {
+            "fields": (
+                "size_name",
+                "stock_quantity",
+                "measurement_unit",
+                "is_available",
+                "sort_order",
+            )
+        }),
+        ("Measurements", {
+            "fields": (
+                "chest",
+                "waist",
+                "length",
+            )
+        }),
     )
 
     ordering = (
         "sort_order",
         "id",
     )
-
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
