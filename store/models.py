@@ -325,9 +325,6 @@ class Product(models.Model):
         return old_image.name != image.name
 
     def save(self, *args, **kwargs):
-        if self.stock_quantity == 0:
-            self.is_available = False
-
         for field_name in self.IMAGE_FIELDS:
             if self._image_changed(field_name):
                 image = getattr(self, field_name)
@@ -387,11 +384,50 @@ class Product(models.Model):
         return self.sizes.exists()
 
     @property
+    def display_sizes(self):
+        """Sizes that should be shown on the product page.
+
+        Stock 0 sizes are intentionally included so the UI can show them
+        as Sold Out instead of hiding them.
+        """
+        return self.sizes.filter(is_available=True).order_by("sort_order", "id")
+
+    @property
     def available_sizes(self):
-        return self.sizes.filter(
-            is_available=True,
-            stock_quantity__gt=0,
-        ).order_by("sort_order", "id")
+        """Backward-compatible in-stock size list."""
+        return self.display_sizes.filter(stock_quantity__gt=0)
+
+    @property
+    def is_sold_out(self):
+        """True when the product is visible but cannot be purchased.
+
+        `is_available` controls publish/show/hide. Stock controls Sold Out.
+        For products with dynamic sizes, only visible size rows count as
+        customer-buyable stock.
+        """
+        if not self.pk:
+            return self.stock_quantity <= 0
+
+        prefetched_sizes = getattr(self, "display_sizes_for_detail", None)
+
+        if prefetched_sizes is not None:
+            visible_sizes = list(prefetched_sizes)
+
+            if visible_sizes:
+                return not any(size.stock_quantity > 0 for size in visible_sizes)
+
+            return self.stock_quantity <= 0
+
+        visible_sizes = self.sizes.filter(is_available=True)
+
+        if visible_sizes.exists():
+            return not visible_sizes.filter(stock_quantity__gt=0).exists()
+
+        return self.stock_quantity <= 0
+
+    @property
+    def is_in_stock(self):
+        return not self.is_sold_out
 
 
 class ProductHighlight(models.Model):
@@ -538,16 +574,12 @@ class ProductSize(models.Model):
 
         Product.objects.filter(pk=product_id).update(
             stock_quantity=total_stock,
-            is_available=total_stock > 0,
         )
 
     def save(self, *args, **kwargs):
         skip_product_stock_sync = kwargs.pop("skip_product_stock_sync", False)
 
         self.size_name = " ".join((self.size_name or "").split())
-
-        if self.stock_quantity == 0:
-            self.is_available = False
 
         self.full_clean()
         super().save(*args, **kwargs)

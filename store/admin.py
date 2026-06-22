@@ -89,16 +89,29 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(OwnerHomePageRow)
-class OwnerHomePageRowAdmin(HiddenFromAdminIndexMixin, admin.ModelAdmin):
+class OwnerHomePageRowAdmin(admin.ModelAdmin):
+    """
+    Show custom homepage rows in Django admin.
+
+    Owner can quickly control where each custom row appears on the
+    homepage using Display After + Sort Order.
+    """
+
     list_display = (
         "id",
         "name",
-        "slug",
-        "subtitle",
         "display_after",
-        "is_active",
         "sort_order",
+        "is_active",
+        "subtitle",
+        "slug",
         "created_at",
+    )
+
+    list_editable = (
+        "display_after",
+        "sort_order",
+        "is_active",
     )
 
     list_filter = (
@@ -122,9 +135,12 @@ class OwnerHomePageRowAdmin(HiddenFromAdminIndexMixin, admin.ModelAdmin):
     }
 
     ordering = (
+        "display_after",
         "sort_order",
         "name",
     )
+
+    list_per_page = 40
 
     fieldsets = (
         ("Home Row Details", {
@@ -134,12 +150,16 @@ class OwnerHomePageRowAdmin(HiddenFromAdminIndexMixin, admin.ModelAdmin):
                 "subtitle",
             )
         }),
-        ("Status & Order", {
+        ("Homepage Position", {
             "fields": (
                 "display_after",
-                "is_active",
                 "sort_order",
-            )
+                "is_active",
+            ),
+            "description": (
+                "Rows with the same Display After value are shown one below "
+                "another by Sort Order. Lower number shows first."
+            ),
         }),
         ("Timestamp", {
             "fields": (
@@ -147,7 +167,7 @@ class OwnerHomePageRowAdmin(HiddenFromAdminIndexMixin, admin.ModelAdmin):
             )
         }),
     )
-    
+
 
 class ProductHighlightInline(admin.TabularInline):
     model = ProductHighlight

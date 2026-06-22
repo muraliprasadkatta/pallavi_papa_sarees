@@ -36,9 +36,13 @@
       <div class="trend-track" id="trendTrack">
 
         {% with product=top_selling_products.0 %}
-          <article class="trend-product {% if not product %}trend-product--placeholder{% endif %}" data-trend-type="selling">
-            <div class="trend-badge">
-              {% if product %}Best Pick{% else %}Coming Soon{% endif %}
+          <article class="trend-product {% if not product %}trend-product--placeholder{% elif product.is_sold_out %}trend-product--sold-out{% endif %}" data-trend-type="selling">
+            <div class="trend-badge {% if product and product.is_sold_out %}trend-badge--sold-out{% endif %}">
+              {% if product %}
+                {% if product.is_sold_out %}Sold Out{% else %}Best Pick{% endif %}
+              {% else %}
+                Coming Soon
+              {% endif %}
             </div>
 
             {% if product %}
@@ -91,6 +95,10 @@
                     <strong>₹{{ product.actual_price|floatformat:0 }}</strong>
                   {% endif %}
                 </div>
+
+                {% if product.is_sold_out %}
+                  <div class="trend-stock-note">Currently unavailable</div>
+                {% endif %}
 
                 <p>
                   {% if product.category %}
@@ -102,13 +110,13 @@
 
                 <a
                   class="trend-whatsapp trend-whatsapp--solid"
-                  href="https://wa.me/918333895789?text=Hi%20Pallavi%20Papa%20Collections%2C%0A%0AI%20am%20interested%20in%20this%20product%3A%0A%0AProduct%3A%20{{ product.name|urlencode }}%0APrice%3A%20{% if product.offer_price %}₹{{ product.offer_price|floatformat:0 }}{% else %}₹{{ product.actual_price|floatformat:0 }}{% endif %}%0A{% if product.category %}Category%3A%20{{ product.category.name|urlencode }}%0A{% endif %}{% if product.top_showcase_image %}Image%3A%20{{ product.top_showcase_image.url|urlencode }}%0A{% elif product.main_image %}Image%3A%20{{ product.main_image.url|urlencode }}%0A{% endif %}Product%20Link%3A%20{{ request.scheme }}%3A//{{ request.get_host }}{% url 'store:product_detail' product.id %}"
+                  href="https://wa.me/918333895789?text=Hi%20Pallavi%20Papa%20Collections%2C%0A%0AI%20am%20interested%20in%20this%20product%3A%0A%0AProduct%3A%20{{ product.name|urlencode }}%0APrice%3A%20{% if product.offer_price %}₹{{ product.offer_price|floatformat:0 }}{% else %}₹{{ product.actual_price|floatformat:0 }}{% endif %}%0A{% if product.is_sold_out %}Availability%3A%20Sold%20Out%0A{% endif %}{% if product.category %}Category%3A%20{{ product.category.name|urlencode }}%0A{% endif %}{% if product.top_showcase_image %}Image%3A%20{{ product.top_showcase_image.url|urlencode }}%0A{% elif product.main_image %}Image%3A%20{{ product.main_image.url|urlencode }}%0A{% endif %}Product%20Link%3A%20{{ request.scheme }}%3A//{{ request.get_host }}{% url 'store:product_detail' product.id %}"
                   target="_blank"
                   rel="noopener"
-                  aria-label="Ask about {{ product.name }} on WhatsApp"
+                  aria-label="{% if product.is_sold_out %}Ask availability for {{ product.name }} on WhatsApp{% else %}Ask about {{ product.name }} on WhatsApp{% endif %}"
                 >
 
-                  WhatsApp
+                  {% if product.is_sold_out %}Ask{% else %}WhatsApp{% endif %}
                 </a>
               {% else %}
                 <h3>Best Picks Soon</h3>
@@ -119,9 +127,13 @@
         {% endwith %}
 
         {% with product=most_liked_products.0 %}
-          <article class="trend-product {% if not product %}trend-product--placeholder{% endif %}" data-trend-type="liked">
-            <div class="trend-badge {% if product %}trend-badge--pink{% endif %}">
-              {% if product %}Most Loved{% else %}Coming Soon{% endif %}
+          <article class="trend-product {% if not product %}trend-product--placeholder{% elif product.is_sold_out %}trend-product--sold-out{% endif %}" data-trend-type="liked">
+            <div class="trend-badge {% if product and product.is_sold_out %}trend-badge--sold-out{% elif product %}trend-badge--loved{% endif %}">
+              {% if product %}
+                {% if product.is_sold_out %}Sold Out{% else %}Most Loved{% endif %}
+              {% else %}
+                Coming Soon
+              {% endif %}
             </div>
 
             {% if product %}
@@ -174,6 +186,10 @@
                     <strong>₹{{ product.actual_price|floatformat:0 }}</strong>
                   {% endif %}
                 </div>
+
+                {% if product.is_sold_out %}
+                  <div class="trend-stock-note">Currently unavailable</div>
+                {% endif %}
 
                 <p>
                   {% if product.category %}
@@ -185,13 +201,13 @@
 
                 <a
                   class="trend-whatsapp trend-whatsapp--solid"
-                  href="https://wa.me/918333895789?text=Hi%20Pallavi%20Papa%20Collections%2C%0A%0AI%20am%20interested%20in%20this%20product%3A%0A%0AProduct%3A%20{{ product.name|urlencode }}%0APrice%3A%20{% if product.offer_price %}₹{{ product.offer_price|floatformat:0 }}{% else %}₹{{ product.actual_price|floatformat:0 }}{% endif %}%0A{% if product.category %}Category%3A%20{{ product.category.name|urlencode }}%0A{% endif %}{% if product.top_showcase_image %}Image%3A%20{{ product.top_showcase_image.url|urlencode }}%0A{% elif product.main_image %}Image%3A%20{{ product.main_image.url|urlencode }}%0A{% endif %}Product%20Link%3A%20{{ request.scheme }}%3A//{{ request.get_host }}{% url 'store:product_detail' product.id %}"
+                  href="https://wa.me/918333895789?text=Hi%20Pallavi%20Papa%20Collections%2C%0A%0AI%20am%20interested%20in%20this%20product%3A%0A%0AProduct%3A%20{{ product.name|urlencode }}%0APrice%3A%20{% if product.offer_price %}₹{{ product.offer_price|floatformat:0 }}{% else %}₹{{ product.actual_price|floatformat:0 }}{% endif %}%0A{% if product.is_sold_out %}Availability%3A%20Sold%20Out%0A{% endif %}{% if product.category %}Category%3A%20{{ product.category.name|urlencode }}%0A{% endif %}{% if product.top_showcase_image %}Image%3A%20{{ product.top_showcase_image.url|urlencode }}%0A{% elif product.main_image %}Image%3A%20{{ product.main_image.url|urlencode }}%0A{% endif %}Product%20Link%3A%20{{ request.scheme }}%3A//{{ request.get_host }}{% url 'store:product_detail' product.id %}"
                   target="_blank"
                   rel="noopener"
-                  aria-label="Ask about {{ product.name }} on WhatsApp"
+                  aria-label="{% if product.is_sold_out %}Ask availability for {{ product.name }} on WhatsApp{% else %}Ask about {{ product.name }} on WhatsApp{% endif %}"
                 >
 
-                  WhatsApp
+                  {% if product.is_sold_out %}Ask{% else %}WhatsApp{% endif %}
                 </a>
               {% else %}
                 <h3>Most Loved Soon</h3>
@@ -202,9 +218,13 @@
         {% endwith %}
 
         {% with product=most_carted_products.0 %}
-          <article class="trend-product {% if not product %}trend-product--placeholder{% endif %}" data-trend-type="carted">
-            <div class="trend-badge {% if product %}trend-badge--gold{% endif %}">
-              {% if product %}Popular{% else %}Coming Soon{% endif %}
+          <article class="trend-product {% if not product %}trend-product--placeholder{% elif product.is_sold_out %}trend-product--sold-out{% endif %}" data-trend-type="carted">
+            <div class="trend-badge {% if product and product.is_sold_out %}trend-badge--sold-out{% elif product %}trend-badge--popular{% endif %}">
+              {% if product %}
+                {% if product.is_sold_out %}Sold Out{% else %}Popular{% endif %}
+              {% else %}
+                Coming Soon
+              {% endif %}
             </div>
 
             {% if product %}
@@ -258,6 +278,10 @@
                   {% endif %}
                 </div>
 
+                {% if product.is_sold_out %}
+                  <div class="trend-stock-note">Currently unavailable</div>
+                {% endif %}
+
                 <p>
                   {% if product.category %}
                     {{ product.category.name }}
@@ -268,13 +292,13 @@
 
                 <a
                   class="trend-whatsapp trend-whatsapp--solid"
-                  href="https://wa.me/918333895789?text=Hi%20Pallavi%20Papa%20Collections%2C%0A%0AI%20am%20interested%20in%20this%20product%3A%0A%0AProduct%3A%20{{ product.name|urlencode }}%0APrice%3A%20{% if product.offer_price %}₹{{ product.offer_price|floatformat:0 }}{% else %}₹{{ product.actual_price|floatformat:0 }}{% endif %}%0A{% if product.category %}Category%3A%20{{ product.category.name|urlencode }}%0A{% endif %}{% if product.top_showcase_image %}Image%3A%20{{ product.top_showcase_image.url|urlencode }}%0A{% elif product.main_image %}Image%3A%20{{ product.main_image.url|urlencode }}%0A{% endif %}Product%20Link%3A%20{{ request.scheme }}%3A//{{ request.get_host }}{% url 'store:product_detail' product.id %}"
+                  href="https://wa.me/918333895789?text=Hi%20Pallavi%20Papa%20Collections%2C%0A%0AI%20am%20interested%20in%20this%20product%3A%0A%0AProduct%3A%20{{ product.name|urlencode }}%0APrice%3A%20{% if product.offer_price %}₹{{ product.offer_price|floatformat:0 }}{% else %}₹{{ product.actual_price|floatformat:0 }}{% endif %}%0A{% if product.is_sold_out %}Availability%3A%20Sold%20Out%0A{% endif %}{% if product.category %}Category%3A%20{{ product.category.name|urlencode }}%0A{% endif %}{% if product.top_showcase_image %}Image%3A%20{{ product.top_showcase_image.url|urlencode }}%0A{% elif product.main_image %}Image%3A%20{{ product.main_image.url|urlencode }}%0A{% endif %}Product%20Link%3A%20{{ request.scheme }}%3A//{{ request.get_host }}{% url 'store:product_detail' product.id %}"
                   target="_blank"
                   rel="noopener"
-                  aria-label="Ask about {{ product.name }} on WhatsApp"
+                  aria-label="{% if product.is_sold_out %}Ask availability for {{ product.name }} on WhatsApp{% else %}Ask about {{ product.name }} on WhatsApp{% endif %}"
                 >
 
-                  WhatsApp
+                  {% if product.is_sold_out %}Ask{% else %}WhatsApp{% endif %}
                 </a>
               {% else %}
                 <h3>Popular Picks Soon</h3>
@@ -300,10 +324,10 @@
   }
 
   .trend-showcase {
-    --trend-maroon: #9b1c31;
-    --trend-maroon-dark: #5f1020;
-    --trend-text: #3d2430;
-    --trend-muted: #82757b;
+    --trend-primary: #176b4d;
+    --trend-primary-dark: #0f5138;
+    --trend-text: #1f2937;
+    --trend-muted: #64748b;
     --trend-gold: #c79243;
 
     width: 100%;
@@ -314,7 +338,7 @@
 
     background:
       radial-gradient(circle at 8% 12%, rgba(199, 146, 67, 0.10), transparent 28%),
-      radial-gradient(circle at 92% 20%, rgba(143, 23, 49, 0.08), transparent 28%),
+      radial-gradient(circle at 92% 20%, rgba(23, 107, 77, 0.08), transparent 28%),
       linear-gradient(180deg, rgba(255, 250, 247, 0.72), rgba(255, 244, 238, 0.72));
   }
 
@@ -322,11 +346,11 @@
     width: min(100% - 8px, 1680px);
     margin-inline: auto;
     border-radius: clamp(18px, 4vw, 32px);
-    border: 1px solid rgba(143, 23, 49, 0.10);
+    border: 1px solid rgba(23, 107, 77, 0.10);
     background:
       radial-gradient(circle at 50% 0%, rgba(199, 146, 67, 0.09), transparent 30%),
       linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 247, 241, 0.95));
-    box-shadow: 0 18px 44px rgba(70, 28, 35, 0.12);
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.12);
     overflow: hidden;
     padding: clamp(14px, 2.2vw, 26px);
   }
@@ -352,7 +376,7 @@
 
   .trend-head h2 {
     margin: 0;
-    color: var(--trend-maroon-dark);
+    color: var(--trend-primary-dark);
     font-family: var(--font-serif);
     font-size: clamp(24px, 3.8vw, 46px);
     line-height: 1.02;
@@ -381,8 +405,8 @@
     min-height: 36px;
     padding: 0 14px;
     border-radius: 999px;
-    color: #7a1429;
-    background: rgba(143, 23, 49, 0.07);
+    color: #176b4d;
+    background: rgba(23, 107, 77, 0.07);
     font-size: 13px;
     font-weight: 700;
     text-decoration: none;
@@ -420,8 +444,8 @@
     flex-direction: column;
     border-radius: clamp(15px, 1.8vw, 22px);
     background: rgba(255, 255, 255, 0.96);
-    border: 1px solid rgba(143, 23, 49, 0.12);
-    box-shadow: 0 12px 24px rgba(68, 31, 38, 0.10);
+    border: 1px solid rgba(23, 107, 77, 0.12);
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.10);
     overflow: hidden;
     transition:
       transform 220ms ease,
@@ -431,8 +455,8 @@
 
   .trend-product:hover {
     transform: translateY(-4px);
-    border-color: rgba(143, 23, 49, 0.22);
-    box-shadow: 0 18px 36px rgba(68, 31, 38, 0.15);
+    border-color: rgba(23, 107, 77, 0.22);
+    box-shadow: 0 18px 36px rgba(15, 23, 42, 0.15);
   }
 
   .trend-product--placeholder {
@@ -476,15 +500,21 @@
     line-height: 1.05;
     letter-spacing: 0.01em;
     text-transform: uppercase;
-    box-shadow: 0 8px 16px rgba(95, 16, 32, 0.16);
+    box-shadow: 0 8px 16px rgba(15, 23, 42, 0.16);
   }
 
-  .trend-badge--pink {
-    background: linear-gradient(135deg, #c53767, #8f1731);
+  .trend-badge--loved {
+    background: linear-gradient(135deg, #334155, #176b4d);
   }
 
-  .trend-badge--gold {
-    background: linear-gradient(135deg, #c79243, #8f5d1e);
+  .trend-badge--popular {
+    background: linear-gradient(135deg, #c79243, #176b4d);
+  }
+
+  .trend-badge--sold-out,
+  .trend-product--sold-out .trend-badge {
+    background: linear-gradient(135deg, #334155, #111827);
+    box-shadow: 0 8px 16px rgba(15, 23, 42, 0.18);
   }
 
   .trend-heart {
@@ -497,11 +527,11 @@
     border: 0;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.92);
-    color: var(--trend-maroon);
+    color: var(--trend-primary);
     font-size: clamp(10px, 0.95vw, 12px);
     display: grid;
     place-items: center;
-    box-shadow: 0 7px 15px rgba(68, 31, 38, 0.11);
+    box-shadow: 0 7px 15px rgba(15, 23, 42, 0.11);
     cursor: pointer;
     line-height: 1;
   }
@@ -579,15 +609,15 @@
   }
 
   .trend-price strong {
-    color: var(--trend-maroon-dark);
+    color: var(--trend-primary-dark);
     font-size: clamp(16px, 1.55vw, 23px);
     font-weight: 680;
     letter-spacing: -0.02em;
   }
 
   .trend-price del {
-    color: #b66b73;
-    text-decoration-color: #b66b73;
+    color: #94a3b8;
+    text-decoration-color: #94a3b8;
     text-decoration-thickness: 1.35px;
     font-size: clamp(8px, 0.78vw, 11px);
     font-weight: 650;
@@ -619,7 +649,7 @@
     width: clamp(27px, 2.35vw, 33px);
     height: clamp(27px, 2.35vw, 33px);
     border-radius: 50%;
-    border: 1px solid rgba(143, 23, 49, 0.28);
+    border: 1px solid rgba(23, 107, 77, 0.28);
 
     display: flex;
     align-items: center;
@@ -641,7 +671,7 @@
     align-items: center;
     justify-content: center;
 
-    color: var(--trend-maroon);
+    color: var(--trend-primary);
     font-family: var(--font-sans);
     font-size: clamp(12px, 1.05vw, 15px);
     font-weight: 900;
@@ -650,13 +680,49 @@
   }
 
   .trend-whatsapp--solid {
-    background: linear-gradient(135deg, var(--trend-maroon), #651020);
+    background: linear-gradient(135deg, var(--trend-primary), #0f5138);
     border-color: transparent;
-    box-shadow: 0 12px 22px rgba(143, 23, 49, 0.20);
+    box-shadow: 0 12px 22px rgba(23, 107, 77, 0.20);
   }
 
   .trend-whatsapp--solid::before {
     color: #fff;
+  }
+
+
+  .trend-product--sold-out .trend-art img {
+    filter: grayscale(0.45) saturate(0.7) opacity(0.78);
+  }
+
+  .trend-product--sold-out .trend-price strong {
+    color: #111827;
+  }
+
+  .trend-stock-note {
+    margin: 0 0 4px;
+    color: #334155;
+    font-size: clamp(8.5px, 0.75vw, 10px);
+    line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .trend-product--sold-out .trend-whatsapp--solid {
+    background: linear-gradient(135deg, #334155, #111827);
+    box-shadow: 0 12px 22px rgba(15, 23, 42, 0.18);
+  }
+
+  .trend-heart.product-heart {
+    border-color: #176b4d !important;
+    color: #176b4d !important;
+    background: rgba(255, 255, 255, 0.94) !important;
+  }
+
+  .trend-heart.product-heart.is-favorited {
+    border-color: #176b4d !important;
+    color: #ffffff !important;
+    background: #176b4d !important;
   }
 
   .trend-dots {
@@ -707,10 +773,10 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.78);
-      border: 1px solid rgba(143, 23, 49, 0.10);
+      border: 1px solid rgba(23, 107, 77, 0.10);
       box-shadow:
         inset 0 1px 0 rgba(255, 255, 255, 0.95),
-        0 10px 24px rgba(70, 28, 35, 0.06);
+        0 10px 24px rgba(15, 23, 42, 0.06);
       position: relative;
       isolation: isolate;
       overflow: hidden;
@@ -727,9 +793,9 @@
       left: var(--trend-active-tab-x, 4px);
       width: var(--trend-active-tab-w, 33.333%);
       border-radius: 999px;
-      background: linear-gradient(135deg, var(--trend-maroon), #651020);
+      background: linear-gradient(135deg, var(--trend-primary), #0f5138);
       box-shadow:
-        0 12px 24px rgba(143, 23, 49, 0.22),
+        0 12px 24px rgba(23, 107, 77, 0.22),
         inset 0 1px 0 rgba(255, 255, 255, 0.18);
       transition:
         left 260ms cubic-bezier(.22, 1, .36, 1),
@@ -757,7 +823,7 @@
       padding-inline: 4px;
       border-radius: 999px;
       background: transparent;
-      color: #6f3b45;
+      color: #334155;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -861,7 +927,7 @@
       border-color: rgba(199, 146, 67, 0.52);
       box-shadow:
         0 0 0 1px rgba(199, 146, 67, 0.20),
-        0 15px 32px rgba(91, 40, 33, 0.18);
+        0 15px 32px rgba(15, 23, 42, 0.18);
       transform: translate3d(-50%, -50%, 0) scale(1.03);
     }
 
@@ -967,13 +1033,13 @@
       width: 7px;
       height: 7px;
       border-radius: 99px;
-      background: rgba(143, 23, 49, 0.18);
+      background: rgba(23, 107, 77, 0.18);
       transition: width 220ms ease, background 220ms ease;
     }
 
     .trend-dots span.is-active {
       width: 26px;
-      background: var(--trend-maroon);
+      background: var(--trend-primary);
     }
   }
 

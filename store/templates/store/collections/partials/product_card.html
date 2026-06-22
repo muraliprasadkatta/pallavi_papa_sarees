@@ -3,7 +3,7 @@
 
 {% if p.arrival_card_image %}
   {% with card_image=p.arrival_card_image %}
-    <article class="product-card">
+    <article class="product-card{% if p.is_sold_out %} product-card--sold-out{% endif %}">
       <a
         {% if link_to_category %}
           href="{{ collections_url }}?category={% if p.category %}{{ p.category.slug|urlencode }}{% else %}all{% endif %}"
@@ -22,7 +22,9 @@
           loading="lazy"
         >
 
-        {% if not hide_product_overlays %}
+        {% if p.is_sold_out %}
+          <span class="product-soldout-badge">Sold Out</span>
+        {% elif not hide_product_overlays %}
           {% if p.has_offer %}
             <span class="product-offer">
               {% if p.discount_percentage %}
@@ -34,7 +36,9 @@
           {% elif p.is_new_arrival %}
             <span class="product-offer">New</span>
           {% endif %}
+        {% endif %}
 
+        {% if not hide_product_overlays %}
           <button
             class="product-heart"
             type="button"
@@ -76,13 +80,17 @@
             <strong>₹{{ p.actual_price|floatformat:0 }}</strong>
           {% endif %}
         </div>
+
+        {% if p.is_sold_out %}
+          <div class="product-stock-note">Currently unavailable</div>
+        {% endif %}
       </div>
     </article>
   {% endwith %}
 
 {% else %}
   {% with card_image=p.main_image %}
-    <article class="product-card">
+    <article class="product-card{% if p.is_sold_out %} product-card--sold-out{% endif %}">
       <a
         {% if link_to_category %}
           href="{{ collections_url }}?category={% if p.category %}{{ p.category.slug|urlencode }}{% else %}all{% endif %}"
@@ -103,7 +111,9 @@
           >
         {% endif %}
 
-        {% if not hide_product_overlays %}
+        {% if p.is_sold_out %}
+          <span class="product-soldout-badge">Sold Out</span>
+        {% elif not hide_product_overlays %}
           {% if p.has_offer %}
             <span class="product-offer">
               {% if p.discount_percentage %}
@@ -115,7 +125,9 @@
           {% elif p.is_new_arrival %}
             <span class="product-offer">New</span>
           {% endif %}
+        {% endif %}
 
+        {% if not hide_product_overlays %}
           <button
             class="product-heart"
             type="button"
@@ -157,6 +169,10 @@
             <strong>₹{{ p.actual_price|floatformat:0 }}</strong>
           {% endif %}
         </div>
+
+        {% if p.is_sold_out %}
+          <div class="product-stock-note">Currently unavailable</div>
+        {% endif %}
       </div>
     </article>
   {% endwith %}

@@ -649,12 +649,13 @@ def _save_product_sizes(product, request):
         saved_sizes.append(product_size)
 
     if saved_sizes:
+        # Size cards control stock quantity. Product visibility is controlled
+        # only by the owner's publish/show checkbox (`is_available`).
+        # This keeps stock 0 products visible as Sold Out instead of hiding them.
         product.stock_quantity = total_size_stock
-        product.is_available = total_size_stock > 0
 
         Product.objects.filter(pk=product.pk).update(
             stock_quantity=product.stock_quantity,
-            is_available=product.is_available,
         )
 
 

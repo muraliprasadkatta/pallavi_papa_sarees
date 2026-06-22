@@ -103,6 +103,59 @@
   text-transform: uppercase;
 }
 
+.product-card--sold-out .product-media img {
+  filter: grayscale(0.28) brightness(0.9);
+}
+
+.product-card--sold-out .product-media::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background: rgba(17, 24, 39, 0.20);
+  pointer-events: none;
+}
+
+.product-soldout-badge {
+  position: absolute;
+  z-index: 6 !important;
+  top: 8px !important;
+  left: 8px !important;
+  padding: 5px 9px !important;
+  border-radius: 3px !important;
+  color: #ffffff;
+  background: #111827 !important;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  box-shadow: 0 6px 14px rgba(17, 24, 39, 0.22) !important;
+  font-family: var(--font-sans);
+  font-size: 10px !important;
+  line-height: 1 !important;
+  font-weight: 850 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase;
+}
+
+.product-stock-note {
+  margin-top: 6px;
+  color: #4b5563;
+  font-family: var(--font-sans);
+  font-size: clamp(10px, 2.2vw, 12px);
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.product-card--sold-out .product-price strong,
+.product-card--sold-out .product-price del {
+  color: #6b7280;
+  text-decoration-color: #6b7280;
+}
+
+.product-card--sold-out:hover {
+  transform: translateY(-2px);
+}
+
 .product-heart {
   position: absolute !important;
   z-index: 5 !important;
@@ -330,13 +383,20 @@
     font-size: 10.5px;
   }
 
-  .product-offer {
+  .product-offer,
+  .product-soldout-badge {
     top: 7px !important;
     left: 7px !important;
     padding: 4px 7px !important;
     font-size: 8.5px !important;
     font-weight: 700 !important;
     letter-spacing: 0.02em !important;
+  }
+
+  .product-stock-note {
+    margin-top: 5px;
+    font-size: 9.5px;
+    letter-spacing: 0.04em;
   }
 
   .product-heart {
@@ -347,8 +407,6 @@
     font-size: 18px !important;
   }
 }
-
-
 
 @media (max-width: 360px) {
   .product-card {
@@ -387,9 +445,14 @@
     font-size: 10px;
   }
 
-  .product-offer {
+  .product-offer,
+  .product-soldout-badge {
     padding: 4px 6px !important;
     font-size: 8px !important;
+  }
+
+  .product-stock-note {
+    font-size: 8.8px;
   }
 
   .product-heart {

@@ -20,7 +20,7 @@
 
       {% for p in popular_items %}
         {% url 'store:product_detail' p.id as product_detail_url %}
-        <article class="popular-items-card">
+        <article class="popular-items-card{% if p.is_sold_out %} popular-items-card--sold-out{% endif %}">
           <a href="{{ product_detail_url }}" class="popular-items-card-link">
             <div class="popular-items-art">
               {% if p.arrival_card_image %}
@@ -38,9 +38,13 @@
               {% else %}
                 <span class="popular-items-shine"></span>
               {% endif %}
+
+              {% if p.is_sold_out %}
+                <span class="popular-items-soldout-badge">Sold Out</span>
+              {% endif %}
             </div>
 
-            <strong class="popular-items-tag">
+            <strong class="popular-items-tag{% if p.is_sold_out %} popular-items-tag--sold-out{% endif %}">
               {% if p.offer_price %}
                 ₹{{ p.offer_price|floatformat:0 }}
               {% else %}
@@ -119,7 +123,7 @@
   margin: 0;
   padding: 14px 0 18px;
   box-sizing: border-box;
-  background: linear-gradient(180deg, #fff8f1 0%, #fff4ec 100%);
+  background: linear-gradient(180deg, #f8fbf8 0%, #eef7f1 100%);
   overflow-x: hidden;
 }
 
@@ -131,11 +135,11 @@
   box-sizing: border-box;
   border-radius: 24px;
   background:
-    radial-gradient(circle at 10% 0%, rgba(255, 220, 185, .35), transparent 28%),
-    radial-gradient(circle at 90% 15%, rgba(255, 185, 195, .28), transparent 26%),
-    rgba(255, 255, 255, .74);
-  box-shadow: 0 12px 34px rgba(92, 30, 30, .08);
-  border: 1px solid rgba(98, 28, 28, .08);
+    radial-gradient(circle at 10% 0%, rgba(186, 219, 93, .22), transparent 28%),
+    radial-gradient(circle at 90% 15%, rgba(13, 107, 97, .12), transparent 26%),
+    rgba(255, 255, 255, .78);
+  box-shadow: 0 12px 34px rgba(15, 23, 42, .07);
+  border: 1px solid rgba(23, 107, 77, .10);
 }
 
 .popular-items-head {
@@ -152,8 +156,8 @@
   min-height: 20px;
   padding: 4px 10px;
   border-radius: 999px;
-  background: #f2dfb3;
-  color: #7a3a07;
+  background: #e6f4dc;
+  color: #176b4d;
   font-size: 9px;
   line-height: 1;
   font-weight: 900;
@@ -163,7 +167,7 @@
 
 .popular-items-head h2 {
   margin: 7px 0 4px;
-  color: #5b0710;
+  color: #176b4d;
   font-family: var(--font-serif);
   font-size: clamp(22px, 4.8vw, 38px);
   line-height: .95;
@@ -173,7 +177,7 @@
 .popular-items-head p {
   margin: 0;
   max-width: 520px;
-  color: #6f4c4c;
+  color: #586a64;
   font-size: clamp(11px, 2.6vw, 14px);
   line-height: 1.35;
 }
@@ -181,7 +185,7 @@
 .popular-items-view {
   flex: 0 0 auto;
   margin-top: 8px;
-  color: #7a0814;
+  color: #176b4d;
   text-decoration: none;
   font-size: 12px;
   font-weight: 900;
@@ -202,8 +206,8 @@
   border-radius: 18px;
   text-decoration: none;
   background: #fff;
-  box-shadow: 0 10px 24px rgba(82, 20, 30, .10);
-  border: 1px solid rgba(91, 7, 16, .09);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, .09);
+  border: 1px solid rgba(23, 107, 77, .10);
   transform: translateZ(0);
 }
 
@@ -228,6 +232,40 @@
   aspect-ratio: 4 / 5;
   overflow: hidden;
   border-radius: 18px;
+}
+
+.popular-items-card--sold-out .popular-items-art img {
+  filter: grayscale(.34) saturate(.74) brightness(.84);
+}
+
+.popular-items-card--sold-out .popular-items-art::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: rgba(15, 23, 42, .14);
+}
+
+.popular-items-soldout-badge {
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  z-index: 4;
+  min-height: 24px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: rgba(30, 41, 59, .94);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, .18);
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 950;
+  letter-spacing: .10em;
+  text-transform: uppercase;
 }
 
 .popular-items-art::before {
@@ -260,14 +298,14 @@
 
 .popular-items-art--one {
   background:
-    radial-gradient(circle at 50% 15%, rgba(255,242,204,.78), transparent 23%),
-    linear-gradient(135deg, #7b3c12 0%, #c58a30 50%, #2b1309 100%);
+    radial-gradient(circle at 50% 15%, rgba(255,255,255,.70), transparent 23%),
+    linear-gradient(135deg, #176b4d 0%, #3d8d64 52%, #c89445 100%);
 }
 
 .popular-items-art--two {
   background:
-    radial-gradient(circle at 48% 16%, rgba(255,255,255,.75), transparent 23%),
-    linear-gradient(135deg, #eec5c2 0%, #b33b55 48%, #ffcf7a 100%);
+    radial-gradient(circle at 48% 16%, rgba(255,255,255,.74), transparent 23%),
+    linear-gradient(135deg, #d7f1e1 0%, #0d6b61 48%, #8fc7a3 100%);
 }
 
 .popular-items-art--three {
@@ -306,11 +344,39 @@
   align-items: center;
   justify-content: center;
   background: rgba(255,255,255,.94);
-  color: #5b0710;
+  color: #176b4d;
   font-size: clamp(14px, 2.4vw, 18px);
   line-height: 1;
   font-weight: 950;
-  box-shadow: 0 8px 18px rgba(45, 8, 12, .16);
+  box-shadow: 0 8px 18px rgba(15, 23, 42, .14);
+}
+
+.popular-items-tag--sold-out {
+  color: #334155;
+}
+
+.popular-items-heart {
+  border-color: #176b4d !important;
+  color: #176b4d !important;
+  box-shadow:
+    0 5px 14px rgba(23, 107, 77, 0.22),
+    0 1px 3px rgba(0, 0, 0, 0.14) !important;
+}
+
+.popular-items-heart.is-favorited {
+  color: #ffffff !important;
+  background: #176b4d !important;
+  border-color: #176b4d !important;
+  box-shadow:
+    0 6px 16px rgba(23, 107, 77, 0.28),
+    0 0 0 2px rgba(255, 255, 255, 0.72) !important;
+}
+
+.popular-items-heart:hover,
+.popular-items-heart:focus-visible {
+  box-shadow:
+    0 7px 18px rgba(23, 107, 77, 0.28),
+    0 0 0 3px rgba(255, 255, 255, 0.78) !important;
 }
 
 @media (hover: hover) {
@@ -320,7 +386,7 @@
 
   .popular-items-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 14px 30px rgba(82, 20, 30, .14);
+    box-shadow: 0 14px 30px rgba(15, 23, 42, .12);
   }
 }
 
@@ -362,6 +428,14 @@
     height: 100%;
     border-radius: 16px;
     aspect-ratio: auto;
+  }
+
+  .popular-items-soldout-badge {
+    top: 8px;
+    left: 8px;
+    min-height: 22px;
+    padding: 5px 8px;
+    font-size: 8px;
   }
 
   .popular-items-tag {

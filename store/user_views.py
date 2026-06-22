@@ -23,6 +23,8 @@ def user_home_view(request):
             "category__slug",
             "actual_price",
             "offer_price",
+            "stock_quantity",
+            "is_available",
             "main_image",
             "arrival_card_image",
             "created_at",
@@ -42,6 +44,8 @@ def user_home_view(request):
             "category__slug",
             "actual_price",
             "offer_price",
+            "stock_quantity",
+            "is_available",
             "main_image",
             "arrival_card_image",
             "created_at",
@@ -66,6 +70,8 @@ def user_home_view(request):
             "category__slug",
             "actual_price",
             "offer_price",
+            "stock_quantity",
+            "is_available",
             "main_image",
             "arrival_card_image",
             "created_at",
@@ -85,6 +91,8 @@ def user_home_view(request):
             "category__slug",
             "actual_price",
             "offer_price",
+            "stock_quantity",
+            "is_available",
             "main_image",
             "top_showcase_image",
             "is_top_selling",
@@ -302,6 +310,8 @@ def collections_page(request):
             "category__slug",
             "actual_price",
             "offer_price",
+            "stock_quantity",
+            "is_available",
             "main_image",
             "arrival_card_image",
             "is_new_arrival",
@@ -473,7 +483,7 @@ def product_detail_view(request, product_id):
             Prefetch(
                 "sizes",
                 queryset=sizes_queryset,
-                to_attr="available_sizes",
+                to_attr="display_sizes_for_detail",
             ),
             Prefetch(
                 "variants",
@@ -485,7 +495,9 @@ def product_detail_view(request, product_id):
     )
 
     variants = list(getattr(product, "available_variants", []))
-    available_sizes = list(getattr(product, "available_sizes", []))
+    # Keep stock-0 sizes in this list so the template can show them as
+    # disabled Sold Out options instead of hiding them.
+    available_sizes = list(getattr(product, "display_sizes_for_detail", []))
     in_stock_sizes = [
         product_size
         for product_size in available_sizes
@@ -498,6 +510,13 @@ def product_detail_view(request, product_id):
 
     legacy_product_size = (product.product_size or "").strip()
     size_measurement_groups = _build_size_measurement_groups(available_sizes)
+    product_is_sold_out = (
+        bool(available_sizes)
+        and not in_stock_sizes
+    ) or (
+        not available_sizes
+        and product.stock_quantity <= 0
+    )
 
     related_fields = (
         "id",
@@ -510,6 +529,8 @@ def product_detail_view(request, product_id):
         "material",
         "actual_price",
         "offer_price",
+        "stock_quantity",
+        "is_available",
         "main_image",
         "arrival_card_image",
         "is_new_arrival",
@@ -543,6 +564,7 @@ def product_detail_view(request, product_id):
         "default_size": default_size,
         "legacy_product_size": legacy_product_size,
         "has_size_options": bool(available_sizes),
+        "product_is_sold_out": product_is_sold_out,
         "size_measurement_groups": size_measurement_groups,
         "same_category_products": same_category_products,
         "different_category_products": different_category_products,

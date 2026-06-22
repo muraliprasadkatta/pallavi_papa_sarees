@@ -8,7 +8,7 @@
 
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'store/css/collections/product_card.css' %}?v=20260615-card-typography1">
-  <link rel="stylesheet" href="{% static 'store/css/product_detail/product_detail.css' %}?v=20260620-size-picker1">
+  <link rel="stylesheet" href="{% static 'store/css/product_detail/product_detail.css' %}?v=20260622-soldout-detail1">
 {% endblock %}
 
 {% block content %}
@@ -18,17 +18,30 @@
     <div class="pd-info">
       {% include "store/product_detail/partials/product_summary.html" %}
 
+      {% if available_sizes and not in_stock_sizes %}
+        <section class="pd-soldout-panel" data-product-sold-out-banner aria-live="polite">
+          <strong>Sold Out</strong>
+          <p>This product is currently out of stock. You can still ask us on WhatsApp to notify you when it is available again.</p>
+        </section>
+      {% elif not available_sizes and product.stock_quantity <= 0 %}
+        <section class="pd-soldout-panel" data-product-sold-out-banner aria-live="polite">
+          <strong>Sold Out</strong>
+          <p>This product is currently out of stock. You can still ask us on WhatsApp to notify you when it is available again.</p>
+        </section>
+      {% endif %}
+
       {% if available_sizes %}
         <section
-          class="pd-size-picker"
+          class="pd-size-picker{% if available_sizes and not in_stock_sizes %} pd-size-picker--sold-out{% endif %}"
           data-size-picker
           data-requires-size="true"
+          data-product-sold-out="{% if available_sizes and not in_stock_sizes %}true{% else %}false{% endif %}"
           aria-labelledby="productSizePickerTitle"
         >
           <div class="pd-size-heading-row">
             <div>
               <h2 id="productSizePickerTitle" class="pd-size-title">Select Size</h2>
-              <p class="pd-size-help">Choose your preferred size before adding to cart or ordering on WhatsApp.</p>
+              <p class="pd-size-help">Choose an available size before adding to cart. Sold-out sizes are shown but cannot be selected.</p>
             </div>
 
             <div class="pd-size-selected-pill" aria-live="polite">
@@ -56,9 +69,11 @@
             {% for size in available_sizes %}
               <button
                 type="button"
-                class="pd-size-option{% if default_size and default_size.id == size.id %} is-selected{% endif %}"
+                class="pd-size-option{% if default_size and default_size.id == size.id %} is-selected{% endif %}{% if size.stock_quantity <= 0 %} is-sold-out{% endif %}"
                 role="radio"
                 aria-checked="{% if default_size and default_size.id == size.id %}true{% else %}false{% endif %}"
+                aria-disabled="{% if size.stock_quantity <= 0 %}true{% else %}false{% endif %}"
+                {% if size.stock_quantity <= 0 %}disabled{% endif %}
                 data-size-option
                 data-size-id="{{ size.id }}"
                 data-size-name="{{ size.size_name }}"
@@ -88,6 +103,8 @@
                 Selected size is in stock.
               {% elif default_size.stock_quantity > 0 %}
                 Only {{ default_size.stock_quantity }} piece{% if default_size.stock_quantity != 1 %}s{% endif %} left in selected size.
+              {% else %}
+                Selected size is sold out. Ask us on WhatsApp for restock updates.
               {% endif %}
             {% endif %}
           </p>
@@ -128,6 +145,8 @@
           data-size-picker
           data-requires-size="false"
           data-legacy-size="{% if legacy_product_size %}{{ legacy_product_size }}{% else %}{{ product.product_size }}{% endif %}"
+          data-legacy-stock="{{ product.stock_quantity }}"
+          data-product-sold-out="{% if product.stock_quantity <= 0 %}true{% else %}false{% endif %}"
           aria-labelledby="productSizePickerTitle"
         >
           <div class="pd-size-heading-row">
@@ -156,6 +175,14 @@
 
 {% block extra_js %}
   <script>
+    window.PP_PRODUCT_DETAIL_STOCK = {
+      isSoldOut: {% if available_sizes and not in_stock_sizes %}true{% elif not available_sizes and product.stock_quantity <= 0 %}true{% else %}false{% endif %},
+      hasSizeOptions: {% if available_sizes %}true{% else %}false{% endif %},
+      stockQuantity: Number("{{ product.stock_quantity|default:0 }}") || 0
+    };
+  </script>
+
+  <script>
     (function () {
       const picker = document.querySelector("[data-size-picker]");
       const selectedSizeText = document.getElementById("selectedSizeText");
@@ -165,9 +192,19 @@
       const sizeError = document.getElementById("sizePickerError");
       const sizeOptions = picker ? Array.from(picker.querySelectorAll("[data-size-option]")) : [];
       const measurementPanels = Array.from(document.querySelectorAll("[data-size-measurement-panel]"));
+      const stockState = window.PP_PRODUCT_DETAIL_STOCK || {};
 
       function cleanText(value) {
         return String(value || "").trim();
+      }
+
+      function numberFromDataset(value) {
+        const parsed = Number(value || 0);
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
+
+      function isButtonSelectable(button) {
+        return Boolean(button) && !button.disabled && numberFromDataset(button.dataset.sizeStock) > 0;
       }
 
       function buildSizeFromButton(button) {
@@ -181,16 +218,21 @@
         return {
           id: sizeId,
           name: sizeName,
-          stock: Number(button.dataset.sizeStock || 0),
+          stock: numberFromDataset(button.dataset.sizeStock),
           unit: cleanText(button.dataset.sizeUnit),
           chest: cleanText(button.dataset.sizeChest),
           waist: cleanText(button.dataset.sizeWaist),
-          length: cleanText(button.dataset.sizeLength)
+          length: cleanText(button.dataset.sizeLength),
+          isSoldOut: numberFromDataset(button.dataset.sizeStock) <= 0
         };
       }
 
       function getSelectedButton() {
         return sizeOptions.find((button) => button.classList.contains("is-selected")) || null;
+      }
+
+      function getFirstSelectableButton() {
+        return sizeOptions.find(isButtonSelectable) || null;
       }
 
       function getSelectedSize() {
@@ -201,18 +243,37 @@
 
         const legacySize = cleanText(picker?.dataset.legacySize);
         if (legacySize) {
+          const legacyStock = numberFromDataset(picker?.dataset.legacyStock || stockState.stockQuantity);
+
           return {
             id: "",
             name: legacySize,
-            stock: 0,
+            stock: legacyStock,
             unit: "",
             chest: "",
             waist: "",
-            length: ""
+            length: "",
+            isSoldOut: legacyStock <= 0
           };
         }
 
         return null;
+      }
+
+      function hasSelectedInStockSize() {
+        const selectedSize = getSelectedSize();
+        return Boolean(selectedSize && selectedSize.stock > 0);
+      }
+
+      function isSoldOut() {
+        if (stockState.isSoldOut) return true;
+
+        if (sizeOptions.length) {
+          return !sizeOptions.some((button) => numberFromDataset(button.dataset.sizeStock) > 0);
+        }
+
+        const legacyStock = numberFromDataset(picker?.dataset.legacyStock || stockState.stockQuantity);
+        return legacyStock <= 0;
       }
 
       function updateMeasurementPanel(sizeId) {
@@ -227,6 +288,8 @@
       function updateStockText(size) {
         if (!selectedSizeStockText || !size) return;
 
+        selectedSizeStockText.classList.toggle("is-sold-out", size.stock <= 0);
+
         if (size.stock > 5) {
           selectedSizeStockText.textContent = "Selected size is in stock.";
         } else if (size.stock > 1) {
@@ -234,7 +297,7 @@
         } else if (size.stock === 1) {
           selectedSizeStockText.textContent = "Only 1 piece left in selected size.";
         } else {
-          selectedSizeStockText.textContent = "Selected size availability will be confirmed on WhatsApp.";
+          selectedSizeStockText.textContent = "Selected size is sold out. Ask us on WhatsApp for restock updates.";
         }
       }
 
@@ -248,7 +311,7 @@
       function showError(message) {
         if (!sizeError) return;
 
-        sizeError.textContent = message || "Please select a size.";
+        sizeError.textContent = message || "Please select an available size.";
         sizeError.hidden = false;
         if (picker) picker.classList.add("has-error");
         picker?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -257,6 +320,13 @@
       function selectSize(button) {
         const size = buildSizeFromButton(button);
         if (!size) return;
+
+        if (!isButtonSelectable(button)) {
+          updateStockText(size);
+          updateMeasurementPanel(size.id);
+          showError("This size is sold out. Please choose another available size.");
+          return;
+        }
 
         sizeOptions.forEach((item) => {
           const isSelected = item === button;
@@ -283,8 +353,11 @@
         });
       });
 
-      if (sizeOptions.length && !getSelectedButton()) {
-        selectSize(sizeOptions[0]);
+      const firstSelectableButton = getFirstSelectableButton();
+      const selectedButton = getSelectedButton();
+
+      if (firstSelectableButton && (!selectedButton || !isButtonSelectable(selectedButton))) {
+        selectSize(firstSelectableButton);
       } else {
         const selectedSize = getSelectedSize();
         if (selectedSize) {
@@ -297,6 +370,8 @@
         hasOptions: sizeOptions.length > 0,
         requiresSize: picker?.dataset.requiresSize === "true",
         getSelectedSize,
+        hasSelectedInStockSize,
+        isSoldOut,
         showError,
         hideError
       };
@@ -315,8 +390,18 @@
         const sizeApi = getSizeApi();
         const selectedSize = sizeApi?.getSelectedSize?.() || null;
 
+        if (sizeApi?.isSoldOut?.()) {
+          sizeApi.showError?.("This product is sold out. You can ask us on WhatsApp for restock updates.");
+          return null;
+        }
+
         if (sizeApi?.requiresSize && !selectedSize) {
-          sizeApi.showError?.("Please select a size before adding this product to cart.");
+          sizeApi.showError?.("Please select an available size before adding this product to cart.");
+          return null;
+        }
+
+        if (selectedSize && selectedSize.stock <= 0) {
+          sizeApi?.showError?.("Selected size is sold out. Please choose another available size.");
           return null;
         }
 
@@ -342,15 +427,29 @@
         return sizePart ? `${productId}::size::${sizePart}` : productId;
       }
 
+      function disableSoldOutCartButton(button) {
+        button.disabled = true;
+        button.setAttribute("aria-disabled", "true");
+        button.classList.add("is-disabled", "is-sold-out");
+        button.textContent = "Sold Out";
+      }
+
       addButtons.forEach(function (button) {
+        const sizeApi = getSizeApi();
+
+        if (sizeApi?.isSoldOut?.()) {
+          disableSoldOutCartButton(button);
+        }
+
         button.addEventListener("click", function () {
           const productId = String(button.dataset.productId || "").trim();
-          if (!productId) return;
+          if (!productId || button.disabled) return;
 
           const selectedSize = getValidatedSize();
           const sizeApi = getSizeApi();
 
           if (sizeApi?.requiresSize && !selectedSize) return;
+          if (!selectedSize && sizeApi?.isSoldOut?.()) return;
 
           const cartKey = getCartKey(productId, selectedSize);
 
@@ -438,29 +537,42 @@
         const sizeApi = window.PPProductSize || null;
         const selectedSize = sizeApi?.getSelectedSize?.() || null;
 
-        if (sizeApi?.requiresSize && !selectedSize) {
-          sizeApi.showError?.("Please select a size before ordering on WhatsApp.");
+        if (sizeApi?.requiresSize && !selectedSize && !sizeApi?.isSoldOut?.()) {
+          sizeApi.showError?.("Please select an available size before ordering on WhatsApp.");
           return null;
         }
 
         return selectedSize;
       }
 
+      function setSoldOutWhatsappText(link) {
+        const sizeApi = window.PPProductSize || null;
+        if (!sizeApi?.isSoldOut?.()) return;
+
+        const icon = link.querySelector(".pd-action-icon");
+        const iconHtml = icon ? icon.outerHTML : "";
+        link.innerHTML = `${iconHtml} Ask Availability on WhatsApp`;
+      }
+
       document.querySelectorAll("[data-direct-whatsapp]").forEach(function (link) {
+        setSoldOutWhatsappText(link);
+
         link.addEventListener("click", function (event) {
           event.preventDefault();
 
           const selectedSize = getValidatedSizeForWhatsApp();
           const sizeApi = window.PPProductSize || null;
 
-          if (sizeApi?.requiresSize && !selectedSize) return;
+          if (sizeApi?.requiresSize && !selectedSize && !sizeApi?.isSoldOut?.()) return;
 
           const productUrl = absoluteUrl(link.dataset.productUrl);
           const imageUrl = absoluteUrl(link.dataset.productImage);
 
           const lines = [
             "Hi Pallavi Papa Collections,",
-            "I am interested in this product:",
+            sizeApi?.isSoldOut?.()
+              ? "Please notify me when this product is back in stock:"
+              : "I am interested in this product:",
             "",
             "Product: " + safeText(link.dataset.productName || "Product"),
             "Category: " + safeText(link.dataset.productCategory || "Pallavi Papa Collection"),
@@ -469,6 +581,10 @@
 
           if (selectedSize?.name) {
             lines.push("Size: " + selectedSize.name);
+          }
+
+          if (sizeApi?.isSoldOut?.() || selectedSize?.stock <= 0) {
+            lines.push("Availability: Sold Out");
           }
 
           if (productUrl) {

@@ -1507,16 +1507,9 @@
       });
 
       stockInput?.addEventListener("input", function () {
-        const stock = Number(String(stockInput.value || "0").trim());
-
-        if (availableInput && Number.isInteger(stock) && stock === 0) {
-          availableInput.checked = false;
-        }
-
-        if (availableInput && Number.isInteger(stock) && stock > 0) {
-          availableInput.checked = true;
-        }
-
+        // Stock controls sold-out status.
+        // The availability checkbox controls whether this size is shown on the product page.
+        // Do not auto-hide a size just because its stock is 0; it should remain visible as Sold Out.
         syncProductStockFromSizes();
       });
 

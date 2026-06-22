@@ -1,38 +1,64 @@
 {% url 'store:product_detail' product.id as product_detail_url %}
 
-<div class="pd-actions">
-  <a
-    class="pd-whatsapp"
-    href="#"
-    target="_blank"
-    rel="noopener"
-    data-direct-whatsapp
-    data-product-name="{{ product.name }}"
-    data-product-category="{% if product.category %}{{ product.category.name }}{% endif %}"
-    data-product-price="{% if product.offer_price %}{{ product.offer_price|floatformat:0 }}{% else %}{{ product.actual_price|floatformat:0 }}{% endif %}"
-    data-product-image="{% if product.main_image %}{{ product.main_image.url }}{% endif %}"
-    data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
+{% with is_product_sold_out=product.is_sold_out %}
+  <div
+    class="pd-actions{% if is_product_sold_out %} pd-actions--sold-out{% endif %}"
+    data-product-sold-out="{% if is_product_sold_out %}1{% else %}0{% endif %}"
   >
-    <span class="pd-action-icon" aria-hidden="true">
-      <svg viewBox="0 0 24 24">
-        <path d="M20.5 11.8A8.5 8.5 0 0 1 8 19.3L4 20.5l1.2-3.9A8.5 8.5 0 1 1 20.5 11.8Z"></path>
-        <path d="M9.1 8.4c.2-.5.4-.5.7-.5h.5c.2 0 .4 0 .6.4l.8 1.9c.1.3.1.5-.1.7l-.4.5c-.1.1-.2.3-.1.5.3.6.8 1.2 1.3 1.6.6.5 1.2.9 1.9 1.1.2.1.4 0 .5-.1l.7-.8c.2-.2.4-.2.7-.1l1.8.8c.3.1.4.3.4.6 0 .5-.2 1.3-.8 1.7-.5.4-1.2.5-2 .3-2.9-.7-5.5-2.9-6.8-5.5-.5-1-.6-1.8-.3-2.4l.6-.7Z"></path>
-      </svg>
-    </span>
-    Order on WhatsApp
-  </a>
+    <a
+      class="pd-whatsapp{% if is_product_sold_out %} pd-whatsapp--ask-availability{% endif %}"
+      href="#"
+      target="_blank"
+      rel="noopener"
+      data-direct-whatsapp
+      data-product-sold-out="{% if is_product_sold_out %}1{% else %}0{% endif %}"
+      data-product-stock="{{ product.stock_quantity }}"
+      data-product-name="{{ product.name }}"
+      data-product-category="{% if product.category %}{{ product.category.name }}{% endif %}"
+      data-product-price="{% if product.offer_price %}{{ product.offer_price|floatformat:0 }}{% else %}{{ product.actual_price|floatformat:0 }}{% endif %}"
+      data-product-image="{% if product.main_image %}{{ product.main_image.url }}{% endif %}"
+      data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
+      aria-label="{% if is_product_sold_out %}Ask availability for {{ product.name }} on WhatsApp{% else %}Order {{ product.name }} on WhatsApp{% endif %}"
+    >
+      <span class="pd-action-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M20.5 11.8A8.5 8.5 0 0 1 8 19.3L4 20.5l1.2-3.9A8.5 8.5 0 1 1 20.5 11.8Z"></path>
+          <path d="M9.1 8.4c.2-.5.4-.5.7-.5h.5c.2 0 .4 0 .6.4l.8 1.9c.1.3.1.5-.1.7l-.4.5c-.1.1-.2.3-.1.5.3.6.8 1.2 1.3 1.6.6.5 1.2.9 1.9 1.1.2.1.4 0 .5-.1l.7-.8c.2-.2.4-.2.7-.1l1.8.8c.3.1.4.3.4.6 0 .5-.2 1.3-.8 1.7-.5.4-1.2.5-2 .3-2.9-.7-5.5-2.9-6.8-5.5-.5-1-.6-1.8-.3-2.4l.6-.7Z"></path>
+        </svg>
+      </span>
 
-  <button
-    class="pd-secondary"
-    type="button"
-    data-cart-add
-    data-product-id="{{ product.id }}"
-    data-product-name="{{ product.name }}"
-    data-product-category="{% if product.category %}{{ product.category.name }}{% endif %}"
-    data-product-price="{% if product.offer_price %}{{ product.offer_price|floatformat:0 }}{% else %}{{ product.actual_price|floatformat:0 }}{% endif %}"
-    data-product-image="{% if product.main_image %}{{ product.main_image.url }}{% endif %}"
-    data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
-  >
-    Add to Cart
-  </button>
-</div>
+      {% if is_product_sold_out %}
+        Ask Availability on WhatsApp
+      {% else %}
+        Order on WhatsApp
+      {% endif %}
+    </a>
+
+    <button
+      class="pd-secondary{% if is_product_sold_out %} pd-secondary--sold-out{% endif %}"
+      type="button"
+      data-cart-add
+      data-product-sold-out="{% if is_product_sold_out %}1{% else %}0{% endif %}"
+      data-product-stock="{{ product.stock_quantity }}"
+      data-product-id="{{ product.id }}"
+      data-product-name="{{ product.name }}"
+      data-product-category="{% if product.category %}{{ product.category.name }}{% endif %}"
+      data-product-price="{% if product.offer_price %}{{ product.offer_price|floatformat:0 }}{% else %}{{ product.actual_price|floatformat:0 }}{% endif %}"
+      data-product-image="{% if product.main_image %}{{ product.main_image.url }}{% endif %}"
+      data-product-url="{{ request.scheme }}://{{ request.get_host }}{{ product_detail_url }}"
+      {% if is_product_sold_out %}disabled aria-disabled="true"{% endif %}
+    >
+      {% if is_product_sold_out %}
+        Sold Out
+      {% else %}
+        Add to Cart
+      {% endif %}
+    </button>
+
+    {% if is_product_sold_out %}
+      <p class="pd-soldout-action-note">
+        This product is currently sold out. Message us on WhatsApp to check restock availability.
+      </p>
+    {% endif %}
+  </div>
+{% endwith %}

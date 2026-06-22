@@ -17,11 +17,11 @@
 
         {% for p in new_arrivals %}
           {% url 'store:product_detail' p.id as product_detail_url %}
-          <article class="arrival-product">
+          <article class="arrival-product{% if p.is_sold_out %} arrival-product--sold-out{% endif %}">
             <a
               class="arrival-product-link"
               href="{{ product_detail_url }}"
-              aria-label="{{ p.name }}"
+              aria-label="{{ p.name }}{% if p.is_sold_out %} - Sold Out{% endif %}"
             >
               <div class="arrival-image-box">
                 {% if p.arrival_card_image %}
@@ -41,7 +41,11 @@
                 {% endif %}
               </div>
 
-              <span class="arrival-pill">New ✨</span>
+              {% if p.is_sold_out %}
+                <span class="arrival-pill arrival-pill--sold-out">Sold Out</span>
+              {% else %}
+                <span class="arrival-pill">New ✨</span>
+              {% endif %}
             </a>
 
             <button
@@ -106,7 +110,7 @@
 
   .arrival-head h2 {
     margin: 0;
-    color: var(--pp-maroon-dark, #5f1020);
+    color: var(--pp-green, #176b4d);
     font-family: var(--font-serif);
     font-size: clamp(22px, 4.8vw, 38px);
     line-height: .95;
@@ -116,7 +120,7 @@
 
   .arrival-head a {
     flex: 0 0 auto;
-    color: var(--pp-maroon, #8f1731);
+    color: var(--pp-green, #176b4d);
     text-decoration: none;
     font-size: 12px;
     font-weight: 900;
@@ -125,7 +129,7 @@
   }
 
   .arrival-head a span {
-    color: var(--pp-gold, #c79243);
+    color: #475569;
     font-size: 1.35em;
     vertical-align: -2px;
     margin-left: 3px;
@@ -146,8 +150,8 @@
     border-radius: 18px;
     background: #fff;
     text-decoration: none;
-    border: 1px solid rgba(91, 7, 16, .09);
-    box-shadow: 0 10px 24px rgba(82, 20, 30, .10);
+    border: 1px solid rgba(23, 107, 77, .12);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, .08);
     transform: translateZ(0);
   }
 
@@ -173,7 +177,7 @@
     height: 100%;
     overflow: hidden;
     border-radius: 18px;
-    background: #f7efe8;
+    background: #f3f7f5;
   }
 
   .arrival-image-box img {
@@ -182,7 +186,20 @@
     display: block;
     object-fit: cover;
     object-position: center;
-    transition: transform 220ms ease;
+    transition: transform 220ms ease, filter 220ms ease, opacity 220ms ease;
+  }
+
+  .arrival-product--sold-out .arrival-image-box img {
+    filter: grayscale(.35);
+    opacity: .72;
+  }
+
+  .arrival-product--sold-out .arrival-image-box::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, .12);
+    pointer-events: none;
   }
 
   .arrival-pill {
@@ -197,8 +214,8 @@
     padding: 0 9px;
     border-radius: 999px;
     color: #fff;
-    background: #c2185b;
-    box-shadow: 0 6px 16px rgba(64, 15, 27, 0.20);
+    background: #176b4d;
+    box-shadow: 0 6px 16px rgba(23, 107, 77, 0.20);
     font-size: 9px;
     line-height: 1;
     font-weight: 900;
@@ -206,27 +223,42 @@
     text-transform: uppercase;
   }
 
+  .arrival-pill--sold-out {
+    background: #1f2937;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.22);
+    letter-spacing: .06em;
+  }
+
   .arrival-heart {
-    position: absolute;
-    top: 9px;
-    right: 9px;
-    z-index: 4;
-    width: 26px;
-    height: 26px;
-    display: grid;
-    place-items: center;
-    border-radius: 999px;
-    color: #fff;
-    font-size: 16px;
-    line-height: 1;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.30);
+    position: absolute !important;
+    top: 9px !important;
+    right: 9px !important;
+    z-index: 5 !important;
+    width: 28px !important;
+    height: 28px !important;
+    display: grid !important;
+    place-items: center !important;
+    border: 1.4px solid #176b4d !important;
+    border-radius: 999px !important;
+    color: #176b4d !important;
+    background: rgba(255, 255, 255, .96) !important;
+    font-size: 16px !important;
+    line-height: 1 !important;
+    text-shadow: none !important;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, .16) !important;
+  }
+
+  .arrival-heart.is-favorited {
+    color: #fff !important;
+    background: #176b4d !important;
+    border-color: #176b4d !important;
   }
 
   .arrival-empty {
     padding: clamp(12px, 3vw, 16px);
     border-radius: 16px;
-    color: #8f1731;
-    background: rgba(143, 23, 49, 0.06);
+    color: #176b4d;
+    background: rgba(23, 107, 77, 0.07);
     font-size: clamp(12px, 3vw, 13px);
     font-weight: 700;
   }
@@ -238,7 +270,7 @@
 
     .arrival-product:hover {
       transform: translateY(-3px);
-      box-shadow: 0 14px 30px rgba(82, 20, 30, .14);
+      box-shadow: 0 14px 30px rgba(15, 23, 42, .12);
     }
 
     .arrival-product:hover .arrival-image-box img {
@@ -292,11 +324,11 @@
     }
 
     .arrival-heart {
-      top: 8px;
-      right: 8px;
-      width: 24px;
-      height: 24px;
-      font-size: 15px;
+      top: 8px !important;
+      right: 8px !important;
+      width: 26px !important;
+      height: 26px !important;
+      font-size: 15px !important;
     }
   }
 

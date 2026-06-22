@@ -628,9 +628,9 @@ class ProductSizeForm(forms.ModelForm):
                 "ProductSizeForm.save() requires a saved product instance."
             )
 
-        if product_size.stock_quantity == 0:
-            product_size.is_available = False
-
+        # Do not auto-hide a size when its stock is 0.
+        # In the sold-out design, is_available means “show this size”,
+        # while stock_quantity controls whether it is in stock or sold out.
         if commit:
             product_size.save()
 
