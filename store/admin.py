@@ -258,6 +258,7 @@ class ProductAdmin(admin.ModelAdmin):
 
     list_display = (
         "id",
+        "merchant_sku",
         "name",
         "category",
         "color_name",
@@ -287,6 +288,7 @@ class ProductAdmin(admin.ModelAdmin):
     )
 
     search_fields = (
+        "merchant_sku",
         "name",
         "category__name",
         "category__slug",
@@ -319,6 +321,7 @@ class ProductAdmin(admin.ModelAdmin):
         ("Product Details", {
             "fields": (
                 "name",
+                "merchant_sku",
                 "category",
                 "home_rows",
                 "material",

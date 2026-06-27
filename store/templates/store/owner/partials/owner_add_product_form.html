@@ -369,6 +369,22 @@
             </div>
 
             <div class="field">
+              <label for="merchantSku">Merchant SKU / Google Feed ID</label>
+              <input
+                type="text"
+                id="merchantSku"
+                name="merchant_sku"
+                value="{{ form.merchant_sku.value|default:'' }}"
+                placeholder="Auto: PPS00001"
+                maxlength="32"
+                autocomplete="off"
+                spellcheck="false"
+              >
+              <small>Leave empty to auto-create. Keep this same forever for Google Merchant Center.</small>
+              {{ form.merchant_sku.errors }}
+            </div>
+
+            <div class="field">
               <label for="material">Material</label>
               <input
                 type="text"

@@ -25,6 +25,7 @@ CATEGORY_NAME_MAX_SINGLE_WORD_CHARS = 24
 PRODUCT_NAME_MIN_CHARS = 3
 PRODUCT_NAME_MAX_CHARS = 80
 PRODUCT_NAME_MAX_SINGLE_WORD_CHARS = 32
+MERCHANT_SKU_MAX_CHARS = 32
 
 PRODUCT_SIZE_NAME_MAX_CHARS = 40
 PRODUCT_SIZE_MEASUREMENT_LABEL_MAX_CHARS = 60
@@ -258,6 +259,7 @@ class ProductForm(forms.ModelForm):
             "sub_image_3",
 
             "name",
+            "merchant_sku",
             "material",
             "color_name",
             "color_code",
@@ -281,6 +283,12 @@ class ProductForm(forms.ModelForm):
                 "maxlength": str(PRODUCT_NAME_MAX_CHARS),
                 "autocomplete": "off",
                 "spellcheck": "true",
+            }),
+            "merchant_sku": forms.TextInput(attrs={
+                "placeholder": "Auto: PPS00001",
+                "maxlength": str(MERCHANT_SKU_MAX_CHARS),
+                "autocomplete": "off",
+                "spellcheck": "false",
             }),
             "main_image": forms.ClearableFileInput(
                 attrs={"accept": "image/*"}
@@ -321,6 +329,28 @@ class ProductForm(forms.ModelForm):
             max_chars=PRODUCT_NAME_MAX_CHARS,
             max_single_word_chars=PRODUCT_NAME_MAX_SINGLE_WORD_CHARS,
         )
+
+    def clean_merchant_sku(self):
+        merchant_sku = Product.normalize_merchant_sku(
+            self.cleaned_data.get("merchant_sku")
+        )
+
+        if not merchant_sku:
+            return None
+
+        duplicate_product = Product.objects.filter(
+            merchant_sku__iexact=merchant_sku
+        )
+
+        if self.instance and self.instance.pk:
+            duplicate_product = duplicate_product.exclude(pk=self.instance.pk)
+
+        if duplicate_product.exists():
+            raise forms.ValidationError(
+                "This Merchant SKU is already used by another product."
+            )
+
+        return merchant_sku
 
     def clean_main_image(self):
         image = self.cleaned_data.get("main_image")

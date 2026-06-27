@@ -1,4 +1,5 @@
 from decimal import Decimal, ROUND_HALF_UP
+import re
 
 from django.conf import settings
 from django.core.exceptions import ValidationError
@@ -165,6 +166,18 @@ class OwnerHomePageRow(models.Model):
 class Product(models.Model):
     name = models.CharField(max_length=140)
 
+    merchant_sku = models.CharField(
+        max_length=32,
+        unique=True,
+        blank=True,
+        null=True,
+        db_index=True,
+        help_text=(
+            "Stable Google Merchant / product feed ID. "
+            "Example: PPS00001. Do not change this after the product is listed."
+        ),
+    )
+
     category = models.ForeignKey(
         Category,
         on_delete=models.PROTECT,
@@ -300,8 +313,29 @@ class Product(models.Model):
 
         return int(discount.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
 
+    @staticmethod
+    def normalize_merchant_sku(value):
+        value = (value or "").strip().upper()
+        value = re.sub(r"\s+", "-", value)
+
+        if not value:
+            return None
+
+        if not re.fullmatch(r"[A-Z0-9][A-Z0-9_-]{2,31}", value):
+            raise ValidationError(
+                "Merchant SKU should be 3-32 characters and use only letters, "
+                "numbers, hyphen or underscore. Example: PPS00001."
+            )
+
+        return value
+
+    def _generate_merchant_sku(self):
+        return f"PPS{self.pk:05d}"
+
     def clean(self):
         super().clean()
+
+        self.merchant_sku = self.normalize_merchant_sku(self.merchant_sku)
 
         if self.offer_price and self.offer_price > self.actual_price:
             raise ValidationError("Offer price cannot be greater than actual price.")
@@ -325,6 +359,8 @@ class Product(models.Model):
         return old_image.name != image.name
 
     def save(self, *args, **kwargs):
+        self.merchant_sku = self.normalize_merchant_sku(self.merchant_sku)
+
         for field_name in self.IMAGE_FIELDS:
             if self._image_changed(field_name):
                 image = getattr(self, field_name)
@@ -369,6 +405,14 @@ class Product(models.Model):
                     setattr(self, field_name, converted_image)
 
         super().save(*args, **kwargs)
+
+        if not self.merchant_sku and self.pk:
+            merchant_sku = self._generate_merchant_sku()
+            type(self).objects.filter(
+                pk=self.pk,
+                merchant_sku__isnull=True,
+            ).update(merchant_sku=merchant_sku)
+            self.merchant_sku = merchant_sku
 
     def __str__(self):
         return self.name
