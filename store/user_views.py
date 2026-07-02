@@ -10,10 +10,29 @@ from django.utils.cache import patch_vary_headers
 from .models import Category, Product, ProductSize, ProductSizeMeasurement, ProductVariant
 
 
+def _card_variants_prefetch():
+    return Prefetch(
+        "variants",
+        queryset=(
+            ProductVariant.objects
+            .filter(is_available=True)
+            .only(
+                "id",
+                "product_id",
+                "color_name",
+                "color_code",
+            )
+            .order_by("id")
+        ),
+        to_attr="card_available_variants",
+    )
+
+
 def user_home_view(request):
     new_arrivals = (
         Product.objects
         .select_related("category")
+        .prefetch_related(_card_variants_prefetch())
         .filter(is_available=True, is_new_arrival=True)
         .only(
             "id",
@@ -21,6 +40,8 @@ def user_home_view(request):
             "category",
             "category__name",
             "category__slug",
+            "color_name",
+            "color_code",
             "actual_price",
             "offer_price",
             "stock_quantity",
@@ -35,6 +56,7 @@ def user_home_view(request):
     latest_products = (
         Product.objects
         .select_related("category")
+        .prefetch_related(_card_variants_prefetch())
         .filter(is_available=True)
         .only(
             "id",
@@ -42,6 +64,8 @@ def user_home_view(request):
             "category",
             "category__name",
             "category__slug",
+            "color_name",
+            "color_code",
             "actual_price",
             "offer_price",
             "stock_quantity",
@@ -59,6 +83,7 @@ def user_home_view(request):
     popular_items = (
         Product.objects
         .select_related("category")
+        .prefetch_related(_card_variants_prefetch())
         .filter(is_available=True)
         .exclude(main_image="")
         .annotate(display_price=Coalesce("offer_price", "actual_price"))
@@ -68,6 +93,8 @@ def user_home_view(request):
             "category",
             "category__name",
             "category__slug",
+            "color_name",
+            "color_code",
             "actual_price",
             "offer_price",
             "stock_quantity",
@@ -82,6 +109,7 @@ def user_home_view(request):
     showcase_products = (
         Product.objects
         .select_related("category")
+        .prefetch_related(_card_variants_prefetch())
         .filter(is_available=True)
         .only(
             "id",
@@ -89,6 +117,8 @@ def user_home_view(request):
             "category",
             "category__name",
             "category__slug",
+            "color_name",
+            "color_code",
             "actual_price",
             "offer_price",
             "stock_quantity",
@@ -200,6 +230,7 @@ def collections_page(request):
     all_products = (
         Product.objects
         .select_related("category")
+        .prefetch_related(_card_variants_prefetch())
         .filter(is_available=True)
         .annotate(display_price=Coalesce("offer_price", "actual_price"))
         .only(
@@ -301,6 +332,7 @@ def collections_page(request):
     new_arrivals = (
         Product.objects
         .select_related("category")
+        .prefetch_related(_card_variants_prefetch())
         .filter(is_available=True, is_new_arrival=True)
         .only(
             "id",
@@ -308,6 +340,8 @@ def collections_page(request):
             "category",
             "category__name",
             "category__slug",
+            "color_name",
+            "color_code",
             "actual_price",
             "offer_price",
             "stock_quantity",
@@ -540,6 +574,7 @@ def product_detail_view(request, product_id):
     same_category_products = (
         Product.objects
         .select_related("category")
+        .prefetch_related(_card_variants_prefetch())
         .filter(is_available=True, category=product.category)
         .exclude(id=product.id)
         .only(*related_fields)
@@ -549,6 +584,7 @@ def product_detail_view(request, product_id):
     different_category_products = (
         Product.objects
         .select_related("category")
+        .prefetch_related(_card_variants_prefetch())
         .filter(is_available=True)
         .exclude(id=product.id)
         .exclude(category=product.category)

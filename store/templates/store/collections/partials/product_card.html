@@ -81,6 +81,26 @@
           {% endif %}
         </div>
 
+        {% with preview_colors=p.card_preview_colors more_colors_count=p.card_more_colors_count %}
+          {% if preview_colors %}
+            <div class="product-card-colors" aria-label="Available color options">
+              {% for color in preview_colors %}
+                <span
+                  class="product-card-color-dot"
+                  style="--swatch: {{ color.code|default:'#8f1731' }};"
+                  title="{{ color.name|default:'Available color' }}"
+                ></span>
+              {% endfor %}
+
+              {% if more_colors_count %}
+                <span class="product-card-colors-more">+{{ more_colors_count }} more</span>
+              {% endif %}
+            </div>
+          {% else %}
+            <div class="product-card-colors product-card-colors--empty" aria-hidden="true"></div>
+          {% endif %}
+        {% endwith %}
+
         {% if p.is_sold_out %}
           <div class="product-stock-note">Currently unavailable</div>
         {% endif %}
@@ -169,6 +189,26 @@
             <strong>₹{{ p.actual_price|floatformat:0 }}</strong>
           {% endif %}
         </div>
+
+        {% with preview_colors=p.card_preview_colors more_colors_count=p.card_more_colors_count %}
+          {% if preview_colors %}
+            <div class="product-card-colors" aria-label="Available color options">
+              {% for color in preview_colors %}
+                <span
+                  class="product-card-color-dot"
+                  style="--swatch: {{ color.code|default:'#8f1731' }};"
+                  title="{{ color.name|default:'Available color' }}"
+                ></span>
+              {% endfor %}
+
+              {% if more_colors_count %}
+                <span class="product-card-colors-more">+{{ more_colors_count }} more</span>
+              {% endif %}
+            </div>
+          {% else %}
+            <div class="product-card-colors product-card-colors--empty" aria-hidden="true"></div>
+          {% endif %}
+        {% endwith %}
 
         {% if p.is_sold_out %}
           <div class="product-stock-note">Currently unavailable</div>

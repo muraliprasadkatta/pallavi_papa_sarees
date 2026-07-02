@@ -386,6 +386,44 @@
         return window.PPProductSize || null;
       }
 
+      function getVariantApi() {
+        return window.PPProductVariant || null;
+      }
+
+      function cleanText(value) {
+        return String(value || "").trim();
+      }
+
+      function getMeaningfulColor(value) {
+        const color = cleanText(value);
+        const lowerColor = color.toLowerCase();
+
+        if (lowerColor === "base color" || lowerColor === "variant") {
+          return "";
+        }
+
+        return color;
+      }
+
+      function getSelectedVariant(button) {
+        const variantApi = getVariantApi();
+        const selectedVariant = variantApi?.getSelectedVariant?.() || null;
+
+        if (selectedVariant) return selectedVariant;
+
+        return {
+          id: "base",
+          type: "base",
+          isBase: true,
+          colorName: "",
+          price: Number(button.dataset.productPrice || 0),
+          priceLabel: button.dataset.productPrice ? "₹" + Number(button.dataset.productPrice || 0).toLocaleString("en-IN") : "",
+          oldPrice: 0,
+          oldPriceLabel: "",
+          image: button.dataset.productImage || ""
+        };
+      }
+
       function getValidatedSize() {
         const sizeApi = getSizeApi();
         const selectedSize = sizeApi?.getSelectedSize?.() || null;
@@ -422,9 +460,16 @@
         window.dispatchEvent(new Event("pp-cart-updated"));
       }
 
-      function getCartKey(productId, selectedSize) {
-        const sizePart = selectedSize ? (selectedSize.id || selectedSize.name || "") : "";
-        return sizePart ? `${productId}::size::${sizePart}` : productId;
+      function getCartKey(productId, selectedSize, selectedVariant) {
+        const variantId = cleanText(selectedVariant?.id) || "base";
+        const sizePart = selectedSize ? cleanText(selectedSize.id || selectedSize.name || "") : "";
+        const parts = [productId, "variant", variantId];
+
+        if (sizePart) {
+          parts.push("size", sizePart);
+        }
+
+        return parts.join("::");
       }
 
       function disableSoldOutCartButton(button) {
@@ -446,21 +491,27 @@
           if (!productId || button.disabled) return;
 
           const selectedSize = getValidatedSize();
+          const selectedVariant = getSelectedVariant(button);
           const sizeApi = getSizeApi();
 
           if (sizeApi?.requiresSize && !selectedSize) return;
           if (!selectedSize && sizeApi?.isSoldOut?.()) return;
 
-          const cartKey = getCartKey(productId, selectedSize);
+          const cartKey = getCartKey(productId, selectedSize, selectedVariant);
 
           const productData = {
             id: productId,
             cartKey: cartKey,
             name: button.dataset.productName || "Product",
             category: button.dataset.productCategory || "",
-            price: Number(button.dataset.productPrice || 0),
-            image: button.dataset.productImage || "",
+            price: Number(selectedVariant?.price || button.dataset.productPrice || 0),
+            image: selectedVariant?.image || button.dataset.productImage || "",
             url: button.dataset.productUrl || "",
+            variantId: selectedVariant?.id || "base",
+            variantType: selectedVariant?.type || "base",
+            variantColor: getMeaningfulColor(selectedVariant?.colorName),
+            variantImage: selectedVariant?.image || "",
+            variantPrice: Number(selectedVariant?.price || button.dataset.productPrice || 0),
             sizeId: selectedSize?.id || "",
             sizeName: selectedSize?.name || "",
             qty: 1
@@ -469,11 +520,20 @@
           const cart = getCart();
 
           const existingItem = cart.find(function (item) {
-            if (item.cartKey) {
-              return String(item.cartKey) === cartKey;
+            const explicitKey = cleanText(item.cartKey || item.key);
+
+            if (explicitKey === cartKey) {
+              return true;
             }
 
-            return String(item.id) === productId && !selectedSize;
+            const itemVariantId = cleanText(item.variantId || item.variant_id || "base") || "base";
+            const itemSizePart = cleanText(item.sizeId || item.sizeName || item.size || "");
+            const selectedVariantId = cleanText(selectedVariant?.id || "base") || "base";
+            const selectedSizePart = selectedSize ? cleanText(selectedSize.id || selectedSize.name || "") : "";
+
+            return String(item.id) === productId
+              && itemVariantId === selectedVariantId
+              && itemSizePart === selectedSizePart;
           });
 
           const oldHtml = button.innerHTML;
@@ -513,6 +573,17 @@
         return String(value || "").trim();
       }
 
+      function meaningfulColor(value) {
+        const color = safeText(value);
+        const lowerColor = color.toLowerCase();
+
+        if (lowerColor === "base color" || lowerColor === "variant") {
+          return "";
+        }
+
+        return color;
+      }
+
       function money(value) {
         return Number(value || 0).toLocaleString("en-IN");
       }
@@ -545,6 +616,11 @@
         return selectedSize;
       }
 
+      function getSelectedVariantForWhatsApp() {
+        const variantApi = window.PPProductVariant || null;
+        return variantApi?.getSelectedVariant?.() || null;
+      }
+
       function setSoldOutWhatsappText(link) {
         const sizeApi = window.PPProductSize || null;
         if (!sizeApi?.isSoldOut?.()) return;
@@ -565,8 +641,11 @@
 
           if (sizeApi?.requiresSize && !selectedSize && !sizeApi?.isSoldOut?.()) return;
 
+          const selectedVariant = getSelectedVariantForWhatsApp();
           const productUrl = absoluteUrl(link.dataset.productUrl);
-          const imageUrl = absoluteUrl(link.dataset.productImage);
+          const imageUrl = absoluteUrl(selectedVariant?.image || link.dataset.productImage);
+          const productPrice = Number(selectedVariant?.price || link.dataset.productPrice || 0);
+          const selectedColor = meaningfulColor(selectedVariant?.colorName);
 
           const lines = [
             "Hi Pallavi Papa Collections,",
@@ -575,9 +654,14 @@
               : "I am interested in this product:",
             "",
             "Product: " + safeText(link.dataset.productName || "Product"),
-            "Category: " + safeText(link.dataset.productCategory || "Pallavi Papa Collection"),
-            "Price: ₹" + money(link.dataset.productPrice)
+            "Category: " + safeText(link.dataset.productCategory || "Pallavi Papa Collection")
           ];
+
+          if (selectedColor) {
+            lines.push("Color: " + selectedColor);
+          }
+
+          lines.push("Price: ₹" + money(productPrice));
 
           if (selectedSize?.name) {
             lines.push("Size: " + selectedSize.name);
@@ -611,127 +695,110 @@
   </script>
 
   <script>
-    const mainProductImage = document.getElementById("mainProductImage");
-    const productSwipeArea = document.getElementById("productSwipeArea");
-    const productPrice = document.getElementById("productPrice");
-    const productOldPrice = document.getElementById("productOldPrice");
-    const selectedColorText = document.getElementById("selectedColorText");
+    (function () {
+      const mainProductImage = document.getElementById("mainProductImage");
+      const productSwipeArea = document.getElementById("productSwipeArea");
+      const productPrice = document.getElementById("productPrice");
+      const productOldPrice = document.getElementById("productOldPrice");
+      const selectedColorText = document.getElementById("selectedColorText");
 
-    const thumbs = Array.from(document.querySelectorAll(".pd-thumb"));
-    const imageCount = document.getElementById("imageCount");
-    const galleryPrevBtn = document.querySelector(".pd-gallery-arrow--prev");
-    const galleryNextBtn = document.querySelector(".pd-gallery-arrow--next");
+      const thumbs = Array.from(document.querySelectorAll(".pd-thumb"));
+      const variantButtons = Array.from(document.querySelectorAll(".pd-variant"));
+      const imageCount = document.getElementById("imageCount");
+      const galleryPrevBtn = document.querySelector(".pd-gallery-arrow--prev");
+      const galleryNextBtn = document.querySelector(".pd-gallery-arrow--next");
 
-    let currentImageIndex = 0;
-    let swipeStartX = 0;
-    let swipeStartY = 0;
-    let swipeEndX = 0;
-    let swipeEndY = 0;
+      let currentImageIndex = 0;
+      let swipeStartX = 0;
+      let swipeStartY = 0;
+      let swipeEndX = 0;
+      let swipeEndY = 0;
 
-    function updateImageCount(activeIndex) {
-      if (!imageCount) return;
+      function cleanText(value) {
+        return String(value || "").trim();
+      }
 
-      const total = thumbs.length || 1;
-      imageCount.textContent = `${activeIndex + 1} / ${total}`;
-    }
+      function numberFromValue(value) {
+        const parsed = Number(String(value || "").replace(/[^0-9.-]/g, ""));
+        return Number.isFinite(parsed) ? parsed : 0;
+      }
 
-    function showGalleryImage(index) {
-      if (!mainProductImage || !thumbs.length) return;
+      function buildVariantFromButton(button) {
+        if (!button) return null;
 
-      const total = thumbs.length;
-      const safeIndex = (index + total) % total;
-      const activeThumb = thumbs[safeIndex];
-      const imageUrl = activeThumb.dataset.image;
+        const variantId = cleanText(button.dataset.variantId) || "base";
+        const variantType = cleanText(button.dataset.variantType) || (variantId === "base" ? "base" : "variant");
+        const priceValue = numberFromValue(button.dataset.priceValue || button.dataset.price);
+        const oldPriceValue = numberFromValue(button.dataset.oldPriceValue || button.dataset.oldPrice);
 
-      if (!imageUrl) return;
+        return {
+          id: variantId,
+          type: variantType,
+          isBase: variantType === "base" || variantId === "base",
+          colorName: cleanText(button.dataset.color),
+          image: cleanText(button.dataset.image),
+          price: priceValue,
+          priceLabel: cleanText(button.dataset.price) || (priceValue ? "₹" + priceValue.toLocaleString("en-IN") : ""),
+          oldPrice: oldPriceValue,
+          oldPriceLabel: cleanText(button.dataset.oldPrice) || (oldPriceValue ? "₹" + oldPriceValue.toLocaleString("en-IN") : "")
+        };
+      }
 
-      mainProductImage.src = imageUrl;
-      currentImageIndex = safeIndex;
+      function getActiveVariantButton() {
+        return variantButtons.find((button) => button.classList.contains("is-active")) || variantButtons[0] || null;
+      }
 
-      thumbs.forEach((item) => {
-        item.classList.remove("is-active");
-      });
+      function getSelectedVariant() {
+        return buildVariantFromButton(getActiveVariantButton());
+      }
 
-      activeThumb.classList.add("is-active");
-      updateImageCount(safeIndex);
-    }
+      function updateImageCount(activeIndex) {
+        if (!imageCount) return;
 
-    if (galleryPrevBtn) {
-      galleryPrevBtn.addEventListener("click", () => {
-        showGalleryImage(currentImageIndex - 1);
-      });
-    }
+        const total = thumbs.length || 1;
+        imageCount.textContent = `${activeIndex + 1} / ${total}`;
+      }
 
-    if (galleryNextBtn) {
-      galleryNextBtn.addEventListener("click", () => {
-        showGalleryImage(currentImageIndex + 1);
-      });
-    }
+      function showGalleryImage(index) {
+        if (!mainProductImage || !thumbs.length) return;
 
-    if (thumbs.length <= 1) {
-      if (galleryPrevBtn) galleryPrevBtn.hidden = true;
-      if (galleryNextBtn) galleryNextBtn.hidden = true;
-    }
+        const total = thumbs.length;
+        const safeIndex = (index + total) % total;
+        const activeThumb = thumbs[safeIndex];
+        const imageUrl = activeThumb.dataset.image;
 
-    thumbs.forEach((thumb, index) => {
-      thumb.addEventListener("click", () => {
-        showGalleryImage(index);
-      });
-    });
+        if (!imageUrl) return;
 
-    updateImageCount(0);
+        mainProductImage.src = imageUrl;
+        currentImageIndex = safeIndex;
 
-    if (productSwipeArea && thumbs.length > 1) {
-      productSwipeArea.addEventListener("touchstart", (event) => {
-        const touch = event.touches[0];
+        thumbs.forEach((item) => {
+          item.classList.remove("is-active");
+        });
 
-        swipeStartX = touch.clientX;
-        swipeStartY = touch.clientY;
-      }, { passive: true });
+        activeThumb.classList.add("is-active");
+        updateImageCount(safeIndex);
+      }
 
-      productSwipeArea.addEventListener("touchend", (event) => {
-        const touch = event.changedTouches[0];
+      function selectVariant(variant) {
+        const selectedVariant = buildVariantFromButton(variant);
+        if (!selectedVariant) return null;
 
-        swipeEndX = touch.clientX;
-        swipeEndY = touch.clientY;
-
-        const diffX = swipeEndX - swipeStartX;
-        const diffY = swipeEndY - swipeStartY;
-
-        const isHorizontalSwipe = Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY) * 1.2;
-
-        if (!isHorizontalSwipe) return;
-
-        if (diffX < 0) {
-          showGalleryImage(currentImageIndex + 1);
-        } else {
-          showGalleryImage(currentImageIndex - 1);
-        }
-      }, { passive: true });
-    }
-
-    document.querySelectorAll(".pd-variant").forEach((variant) => {
-      variant.addEventListener("click", () => {
-        const imageUrl = variant.dataset.image;
-        const price = variant.dataset.price;
-        const oldPrice = variant.dataset.oldPrice;
-        const colorName = variant.dataset.color;
-
-        if (mainProductImage && imageUrl) {
-          mainProductImage.src = imageUrl;
+        if (mainProductImage && selectedVariant.image) {
+          mainProductImage.src = selectedVariant.image;
         }
 
-        if (productPrice && price) {
-          productPrice.textContent = price;
+        if (productPrice && selectedVariant.priceLabel) {
+          productPrice.textContent = selectedVariant.priceLabel;
         }
 
-        if (selectedColorText && colorName) {
-          selectedColorText.textContent = colorName;
+        if (selectedColorText && selectedVariant.colorName) {
+          selectedColorText.textContent = selectedVariant.colorName;
         }
 
         if (productOldPrice) {
-          if (oldPrice) {
-            productOldPrice.textContent = oldPrice;
+          if (selectedVariant.oldPriceLabel) {
+            productOldPrice.textContent = selectedVariant.oldPriceLabel;
             productOldPrice.hidden = false;
           } else {
             productOldPrice.textContent = "";
@@ -739,22 +806,97 @@
           }
         }
 
+        let matchedThumb = false;
         thumbs.forEach((thumb, index) => {
-          if (thumb.dataset.image === imageUrl) {
+          if (thumb.dataset.image === selectedVariant.image) {
             currentImageIndex = index;
             thumb.classList.add("is-active");
             updateImageCount(index);
+            matchedThumb = true;
           } else {
             thumb.classList.remove("is-active");
           }
         });
 
-        document.querySelectorAll(".pd-variant").forEach((item) => {
-          item.classList.remove("is-active");
+        if (!matchedThumb) {
+          updateImageCount(currentImageIndex);
+        }
+
+        variantButtons.forEach((item) => {
+          item.classList.toggle("is-active", item === variant);
         });
 
-        variant.classList.add("is-active");
+        window.dispatchEvent(new CustomEvent("pp-product-variant-selected", {
+          detail: selectedVariant
+        }));
+
+        return selectedVariant;
+      }
+
+      window.PPProductVariant = {
+        getSelectedVariant,
+        selectVariantByButton: selectVariant
+      };
+
+      if (galleryPrevBtn) {
+        galleryPrevBtn.addEventListener("click", () => {
+          showGalleryImage(currentImageIndex - 1);
+        });
+      }
+
+      if (galleryNextBtn) {
+        galleryNextBtn.addEventListener("click", () => {
+          showGalleryImage(currentImageIndex + 1);
+        });
+      }
+
+      if (thumbs.length <= 1) {
+        if (galleryPrevBtn) galleryPrevBtn.hidden = true;
+        if (galleryNextBtn) galleryNextBtn.hidden = true;
+      }
+
+      thumbs.forEach((thumb, index) => {
+        thumb.addEventListener("click", () => {
+          showGalleryImage(index);
+        });
       });
-    });
+
+      updateImageCount(0);
+
+      if (productSwipeArea && thumbs.length > 1) {
+        productSwipeArea.addEventListener("touchstart", (event) => {
+          const touch = event.touches[0];
+
+          swipeStartX = touch.clientX;
+          swipeStartY = touch.clientY;
+        }, { passive: true });
+
+        productSwipeArea.addEventListener("touchend", (event) => {
+          const touch = event.changedTouches[0];
+
+          swipeEndX = touch.clientX;
+          swipeEndY = touch.clientY;
+
+          const diffX = swipeEndX - swipeStartX;
+          const diffY = swipeEndY - swipeStartY;
+
+          const isHorizontalSwipe = Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY) * 1.2;
+
+          if (!isHorizontalSwipe) return;
+
+          if (diffX < 0) {
+            showGalleryImage(currentImageIndex + 1);
+          } else {
+            showGalleryImage(currentImageIndex - 1);
+          }
+        }, { passive: true });
+      }
+
+      variantButtons.forEach((variant) => {
+        variant.addEventListener("click", () => {
+          selectVariant(variant);
+        });
+      });
+    })();
   </script>
 {% endblock %}

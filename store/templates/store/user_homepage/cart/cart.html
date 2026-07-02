@@ -525,21 +525,50 @@
         );
       }
 
+      function getItemVariantId(item) {
+        return safeText(
+          item.variantId ||
+          item.variant_id ||
+          item.selectedVariantId ||
+          ""
+        );
+      }
+
+      function getItemVariantColor(item) {
+        const color = safeText(
+          item.variantColor ||
+          item.variant_color ||
+          item.colorName ||
+          item.color ||
+          ""
+        );
+
+        const lowerColor = color.toLowerCase();
+        if (lowerColor === "base color" || lowerColor === "variant") {
+          return "";
+        }
+
+        return color;
+      }
+
       function getCartKey(item) {
         const explicitKey = safeText(item.cartKey || item.key);
 
-        if (explicitKey) {
+        if (explicitKey && explicitKey.includes("::variant::")) {
           return explicitKey;
         }
 
         const productId = safeText(item.id);
+        const variantKey = getItemVariantId(item) || "base";
         const sizeKey = getItemSizeId(item) || getItemSizeName(item);
 
         if (!productId) {
-          return sizeKey ? `unknown::size:${sizeKey}` : "unknown";
+          return sizeKey ? `unknown::variant::${variantKey}::size::${sizeKey}` : `unknown::variant::${variantKey}`;
         }
 
-        return sizeKey ? `${productId}::size:${sizeKey}` : productId;
+        return sizeKey
+          ? `${productId}::variant::${variantKey}::size::${sizeKey}`
+          : `${productId}::variant::${variantKey}`;
       }
 
       function normalizeCartItem(item) {
@@ -548,10 +577,15 @@
           id: safeText(item.id),
           name: safeText(item.name || "Product"),
           category: safeText(item.category || "Pallavi Papa Collection"),
-          price: Number(item.price || 0),
+          price: Number(item.price || item.variantPrice || item.variant_price || 0),
           qty: Math.max(1, Number(item.qty || 1)),
-          image: safeText(item.image),
+          image: safeText(item.image || item.variantImage),
           url: safeText(item.url),
+          variantId: getItemVariantId(item) || "base",
+          variantType: safeText(item.variantType || item.variant_type || ""),
+          variantColor: getItemVariantColor(item),
+          variantImage: safeText(item.variantImage || item.variant_image || item.image),
+          variantPrice: Number(item.variantPrice || item.variant_price || item.price || 0),
           sizeId: getItemSizeId(item),
           sizeName: getItemSizeName(item)
         };
@@ -626,6 +660,7 @@
         cart.forEach(function (item, index) {
           const name = safeText(item.name || "Product");
           const category = safeText(item.category || "Pallavi Papa Collection");
+          const variantColor = getItemVariantColor(item);
           const sizeName = getItemSizeName(item);
           const qty = Math.max(1, Number(item.qty || 1));
           const price = Number(item.price || 0);
@@ -635,6 +670,10 @@
 
           lines.push(`${index + 1}. ${name}`);
           lines.push(`Category: ${category}`);
+
+          if (variantColor) {
+            lines.push(`Color: ${variantColor}`);
+          }
 
           if (sizeName) {
             lines.push(`Size: ${sizeName}`);
@@ -666,6 +705,7 @@
 
       function createCartItem(item) {
         const cartKey = getCartKey(item);
+        const variantColor = getItemVariantColor(item);
         const sizeName = getItemSizeName(item);
         const qty = Math.max(1, Number(item.qty || 1));
         const unitPrice = Number(item.price || 0);
@@ -675,6 +715,7 @@
         article.className = "cart-item";
         article.dataset.id = safeText(item.id);
         article.dataset.cartKey = cartKey;
+        article.dataset.variantId = getItemVariantId(item) || "base";
         article.dataset.sizeId = getItemSizeId(item);
         article.dataset.price = unitPrice;
 
@@ -709,6 +750,21 @@
 
         info.appendChild(title);
         info.appendChild(category);
+
+        if (variantColor) {
+          const color = document.createElement("p");
+          color.className = "cart-item-size";
+
+          const label = document.createElement("span");
+          label.textContent = "Color:";
+
+          const value = document.createElement("b");
+          value.textContent = variantColor;
+
+          color.appendChild(label);
+          color.appendChild(value);
+          info.appendChild(color);
+        }
 
         if (sizeName) {
           const size = document.createElement("p");

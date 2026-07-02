@@ -469,6 +469,77 @@ class Product(models.Model):
 
         return self.stock_quantity <= 0
 
+    def _get_card_color_options(self):
+        """Color swatches used on product cards.
+
+        The card should only show a color row when the product actually has
+        available variants. When variants exist, include the base product color
+        first and then the variant colors so customers can understand that more
+        color options are available before opening the product detail page.
+        """
+        cached_options = getattr(self, "_card_color_options_cache", None)
+
+        if cached_options is not None:
+            return cached_options
+
+        prefetched_variants = getattr(self, "card_available_variants", None)
+
+        if prefetched_variants is None:
+            if not self.pk:
+                variants = []
+            else:
+                variants = self.variants.filter(is_available=True).only(
+                    "id",
+                    "product_id",
+                    "color_name",
+                    "color_code",
+                ).order_by("id")
+        else:
+            variants = prefetched_variants
+
+        variants = list(variants)
+
+        if not variants:
+            self._card_color_options_cache = []
+            return self._card_color_options_cache
+
+        color_options = []
+        seen = set()
+
+        def add_color(name, code):
+            name = (name or "").strip()
+            code = (code or "").strip()
+
+            if not name and not code:
+                return
+
+            dedupe_key = (code or name).lower()
+
+            if dedupe_key in seen:
+                return
+
+            seen.add(dedupe_key)
+            color_options.append({
+                "name": name or "Available color",
+                "code": code or "#8f1731",
+            })
+
+        add_color(self.color_name, self.color_code)
+
+        for variant in variants:
+            add_color(variant.color_name, variant.color_code)
+
+        self._card_color_options_cache = color_options
+        return self._card_color_options_cache
+
+    @property
+    def card_preview_colors(self):
+        return self._get_card_color_options()[:3]
+
+    @property
+    def card_more_colors_count(self):
+        return max(len(self._get_card_color_options()) - 3, 0)
+
     @property
     def is_in_stock(self):
         return not self.is_sold_out
