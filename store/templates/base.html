@@ -24,9 +24,37 @@
     <link rel="canonical" href="https://pallavipapacollections.online/">
   {% endblock %}
 
+  <!-- Preload splash background for faster first-open splash -->
+  <link
+    rel="preload"
+    as="image"
+    href="{% static 'store/brand/splash-bg.webp' %}"
+  >
+
+  <!-- Old page loader CSS/head restore -->
   {% include "store/partials/page_loader_head.html" %}
 
+  <!-- Prevent brand splash blink on refresh / same-tab navigation after already seen -->
+  <script>
+    (function () {
+      try {
+        if (sessionStorage.getItem("pallaviPapaSareesSplashSeen") === "1") {
+          document.documentElement.classList.add("ps-splash-seen");
+        }
+      } catch (error) {
+        /*
+          If sessionStorage is blocked by browser settings,
+          fallback to normal splash behavior.
+        */
+      }
+    })();
+  </script>
+
   <style>
+    html.ps-splash-seen .ps-splash {
+      display: none !important;
+    }
+
     :root {
       --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --font-serif: Georgia, "Times New Roman", serif;
@@ -38,10 +66,64 @@
     }
   </style>
 
+  <!-- Brand first-open splash CSS -->
+  <link rel="stylesheet" href="{% static 'store/css/brand/splash.css' %}?v=33">
+
   {% block extra_css %}{% endblock %}
 </head>
 
 <body class="{% block body_class %}{% endblock %}">
+
+  <!-- Brand Splash: only first visit in same tab -->
+  <div class="ps-splash" data-brand-splash data-once="true">
+
+    <div class="ps-splash__brand" aria-label="Pallavi Papa Collections">
+      <div class="ps-splash__brand-main">PALLAVI PAPA</div>
+      <div class="ps-splash__brand-sub">
+        <span></span>
+        <strong>COLLECTIONS</strong>
+        <span></span>
+      </div>
+    </div>
+
+    <div class="ps-splash__content">
+      <div class="ps-splash__glow"></div>
+
+      <div class="ps-splash__orbit" aria-hidden="true">
+        <span class="ps-splash__orbit-ring"></span>
+
+        <span class="ps-splash__icon ps-splash__icon--home">
+          <img src="{% static 'store/brand/splash-icons/home.svg' %}" alt="">
+        </span>
+
+        <span class="ps-splash__icon ps-splash__icon--wallet">
+          <img src="{% static 'store/brand/splash-icons/wallet.svg' %}" alt="">
+        </span>
+
+        <span class="ps-splash__icon ps-splash__icon--shopping">
+          <img src="{% static 'store/brand/splash-icons/shopping.svg' %}" alt="">
+        </span>
+
+        <span class="ps-splash__icon ps-splash__icon--saving">
+          <img src="{% static 'store/brand/splash-icons/saving.svg' %}" alt="">
+        </span>
+
+        <span class="ps-splash__icon ps-splash__icon--stats">
+          <img src="{% static 'store/brand/splash-icons/stats.svg' %}" alt="">
+        </span>
+      </div>
+
+      <div class="ps-splash__logo-shell">
+        <img
+          class="ps-splash__logo"
+          src="{% static 'store/brand/splash_logo.svg' %}"
+          alt="Pallavi Papa Collections"
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Old redirect/page loader restore -->
   {% include "store/partials/page_loader.html" %}
 
   <div class="page">
@@ -55,6 +137,9 @@
   {% block footer %}{% endblock %}
 
   <script src="{% static 'store/js/favorite_base.js' %}"></script>
+
+  <!-- Brand first-open splash JS -->
+  <script src="{% static 'store/js/brand/splash.js' %}?v=33"></script>
 
   {% block extra_js %}{% endblock %}
 </body>

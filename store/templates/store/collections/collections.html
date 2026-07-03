@@ -30,6 +30,7 @@
 {% block main_class %}collections-page{% endblock %}
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'store/css/collections/product_card.css' %}?v=20260615-card-typography1">
+  <link rel="stylesheet" href="{% static 'store/css/collections/collection_spacing.css' %}?v=20260702-collection-spacing1">
 
 <style>
   html,
@@ -205,6 +206,111 @@
           subtree: true
         });
       }
+    })();
+  </script>
+
+
+  <!-- Explore other sarees AJAX load-more -->
+  <script>
+    (function () {
+      const ajaxContent = document.getElementById("collectionsAjaxContent");
+      if (!ajaxContent) return;
+
+      function buildPartialUrl(href) {
+        const url = new URL(href, window.location.origin);
+        url.searchParams.set("partial", "products");
+        return url;
+      }
+
+      function extendExploreSection(html) {
+        const parser = new DOMParser();
+        const nextDocument = parser.parseFromString(html, "text/html");
+        const nextExplore = nextDocument.getElementById("explore-other");
+        const currentExplore = document.getElementById("explore-other");
+
+        if (!nextExplore || !currentExplore) {
+          return false;
+        }
+
+        const currentGrid = currentExplore.querySelector(".collection-products__grid");
+        const nextGrid = nextExplore.querySelector(".collection-products__grid");
+
+        if (!currentGrid || !nextGrid) {
+          currentExplore.replaceWith(nextExplore);
+          return true;
+        }
+
+        const alreadyVisibleCount = currentGrid.children.length;
+        const nextCards = Array.from(nextGrid.children).slice(alreadyVisibleCount);
+
+        nextCards.forEach(function (card) {
+          currentGrid.appendChild(card);
+        });
+
+        const currentButtonWrap = currentExplore.querySelector(".collection-products__load-more-wrap");
+        const nextButtonWrap = nextExplore.querySelector(".collection-products__load-more-wrap");
+
+        if (currentButtonWrap && nextButtonWrap) {
+          currentButtonWrap.replaceWith(nextButtonWrap);
+        } else if (currentButtonWrap) {
+          currentButtonWrap.remove();
+        } else if (nextButtonWrap) {
+          currentExplore.appendChild(nextButtonWrap);
+        }
+
+        return true;
+      }
+
+      ajaxContent.addEventListener("click", function (event) {
+        const loadMoreLink = event.target.closest("[data-explore-load-more]");
+        if (!loadMoreLink) return;
+
+        event.preventDefault();
+
+        if (loadMoreLink.classList.contains("is-loading")) return;
+
+        const originalText = loadMoreLink.textContent.trim() || "Show more sarees";
+        loadMoreLink.classList.add("is-loading");
+        loadMoreLink.setAttribute("aria-busy", "true");
+        loadMoreLink.textContent = "Loading sarees...";
+
+        const partialUrl = buildPartialUrl(loadMoreLink.href);
+
+        fetch(partialUrl.toString(), {
+          headers: {
+            "X-Requested-With": "XMLHttpRequest"
+          }
+        })
+          .then(function (response) {
+            if (!response.ok) {
+              throw new Error("Could not load more products");
+            }
+            return response.json();
+          })
+          .then(function (data) {
+            if (!data || !data.ok || !data.html) {
+              throw new Error("Invalid response");
+            }
+
+            const replaced = extendExploreSection(data.html);
+            if (!replaced) {
+              throw new Error("Explore section not found");
+            }
+
+            window.history.replaceState(null, "", loadMoreLink.href);
+          })
+          .catch(function () {
+            window.location.href = loadMoreLink.href;
+          })
+          .finally(function () {
+            const activeLink = document.querySelector("[data-explore-load-more].is-loading");
+            if (activeLink) {
+              activeLink.classList.remove("is-loading");
+              activeLink.removeAttribute("aria-busy");
+              activeLink.textContent = originalText;
+            }
+          });
+      });
     })();
   </script>
 

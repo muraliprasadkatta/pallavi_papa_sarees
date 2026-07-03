@@ -1,0 +1,552 @@
+/* Brand Splash Screen - Image Background + Circular Orbit Icons + Brand Title */
+
+:root {
+  --splash-bg: #fff8ee;
+  --splash-gold: #c89b3c;
+
+  /* Royal maroon + antique gold title palette */
+  --splash-title-maroon: #7b2638;
+  --splash-title-maroon-dark: #541827;
+  --splash-title-gold: #c99a35;
+  --splash-title-gold-soft: #dfbd68;
+
+  --splash-shadow: rgba(118, 74, 12, 0.2);
+}
+
+.ps-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(rgba(255, 248, 238, 0.04), rgba(255, 248, 238, 0.04)),
+    url("/static/store/brand/splash-bg.webp") center / cover no-repeat,
+    var(--splash-bg) !important;
+
+  opacity: 1 !important;
+  visibility: visible;
+  pointer-events: all;
+  overflow: hidden;
+}
+
+.ps-splash.is-hidden {
+  display: none !important;
+}
+
+.ps-splash.is-leaving {
+  pointer-events: none;
+}
+
+body.ps-splash-active {
+  overflow: hidden;
+}
+
+/* Brand title */
+.ps-splash__brand {
+  position: absolute;
+  left: 50%;
+  top: clamp(38px, 6.8vh, 76px);
+  z-index: 4;
+
+  width: min(88vw, 430px);
+  text-align: center;
+  pointer-events: none;
+
+  transform: translate3d(-50%, 0, 0);
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+
+  animation: psBrandEnter 1050ms linear both;
+}
+
+.ps-splash.is-leaving .ps-splash__brand {
+  animation: psBrandClose 1050ms linear both;
+}
+
+.ps-splash__brand-main {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.9rem, 8.1vw, 3.35rem);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: 0.052em;
+  text-transform: uppercase;
+
+  color: var(--splash-title-maroon);
+  -webkit-text-fill-color: var(--splash-title-maroon);
+  -webkit-text-stroke: 0.45px rgba(201, 154, 53, 0.58);
+
+  text-shadow:
+    0 1px 0 rgba(255, 246, 224, 0.82),
+    0 2px 0 rgba(201, 154, 53, 0.16),
+    0 5px 14px rgba(84, 24, 39, 0.18),
+    0 0 18px rgba(255, 255, 255, 0.72);
+}
+
+.ps-splash__brand-sub {
+  margin-top: clamp(7px, 1.1vh, 12px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(9px, 2.4vw, 18px);
+
+  font-family: Georgia, "Times New Roman", serif;
+  color: var(--splash-title-gold);
+}
+
+.ps-splash__brand-sub strong {
+  font-size: clamp(0.62rem, 2.35vw, 0.96rem);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.42em;
+  padding-left: 0.42em;
+  text-transform: uppercase;
+
+  color: var(--splash-title-gold);
+
+  text-shadow:
+    0 1px 0 rgba(255, 246, 224, 0.85),
+    0 2px 8px rgba(118, 74, 12, 0.16),
+    0 0 12px rgba(255, 255, 255, 0.58);
+}
+
+.ps-splash__brand-sub span {
+  width: clamp(42px, 15vw, 78px);
+  height: 1px;
+  display: block;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(123, 38, 56, 0.36),
+    rgba(201, 154, 53, 0.96),
+    rgba(123, 38, 56, 0.28),
+    transparent
+  );
+}
+
+/* Soft spotlight behind whole splash */
+.ps-splash::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  z-index: 1;
+
+  width: min(88vw, 620px);
+  height: min(88vw, 620px);
+  border-radius: 999px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.9) 0%,
+      rgba(255, 252, 245, 0.64) 34%,
+      rgba(255, 244, 220, 0.24) 58%,
+      transparent 76%
+    );
+
+  filter: blur(18px);
+  opacity: 0.96;
+  transform: translate(-50%, -50%);
+}
+
+.ps-splash.is-leaving::after {
+  animation: psSpotlightClose 1050ms linear both;
+}
+
+/* Main circular stage */
+.ps-splash__content {
+  position: relative !important;
+  z-index: 3;
+
+  width: min(92vw, 560px) !important;
+  height: min(92vw, 560px) !important;
+
+  --orbit-radius: min(36vw, 202px);
+  --stage-y: clamp(26px, 5.5vh, 56px);
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  transform: translate3d(0, var(--stage-y), 0) scale(1);
+  transform-origin: center center;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+
+  animation: psStageBalloon 1050ms linear both;
+}
+
+/* Close: exact reverse of open */
+.ps-splash.is-leaving .ps-splash__content {
+  animation: psStageBalloonClose 1050ms linear both;
+}
+
+/* Inner glow */
+.ps-splash__glow {
+  position: absolute !important;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+
+  width: 72%;
+  height: 72%;
+  border-radius: 999px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.96) 0%,
+      rgba(255, 255, 255, 0.66) 42%,
+      rgba(255, 236, 178, 0.18) 70%,
+      transparent 100%
+    );
+
+  filter: blur(20px);
+  transform: translate(-50%, -50%);
+  animation: psGlowPulse 1050ms linear both;
+}
+
+.ps-splash.is-leaving .ps-splash__glow {
+  animation: psGlowPulseClose 1050ms linear both;
+}
+
+/* Orbit wrapper - rotates clockwise */
+.ps-splash__orbit {
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 2;
+
+  width: 100%;
+  height: 100%;
+
+  pointer-events: none;
+  transform-origin: center center;
+  backface-visibility: hidden;
+  will-change: transform;
+  animation: psOrbitSpin 18s linear infinite;
+}
+
+/* Equal broken circular gold ring */
+.ps-splash__orbit-ring {
+  position: absolute !important;
+  left: 50%;
+  top: 50%;
+
+  width: 72%;
+  height: 72%;
+  border-radius: 50%;
+
+  transform: translate(-50%, -50%);
+
+  background: repeating-conic-gradient(
+    from -105deg,
+    transparent 0deg 30deg,
+    rgba(238, 177, 35, 0.95) 30deg 66deg,
+    transparent 66deg 72deg
+  );
+
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 3px),
+    #000 calc(100% - 2px)
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 3px),
+    #000 calc(100% - 2px)
+  );
+
+  filter: drop-shadow(0 0 12px rgba(238, 177, 35, 0.25));
+}
+
+/* Small icon circles */
+.ps-splash__icon {
+  position: absolute !important;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+
+  width: clamp(54px, 14vw, 96px);
+  height: clamp(54px, 14vw, 96px);
+  border-radius: 999px;
+
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(circle, #fffdf6 0%, #fff7e7 100%);
+
+  box-shadow:
+    0 14px 34px rgba(128, 83, 18, 0.14),
+    0 0 0 1px rgba(246, 214, 141, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+
+  transform-origin: 0 0;
+  backface-visibility: hidden;
+  will-change: transform;
+
+  transform:
+    rotate(var(--angle))
+    translateX(var(--orbit-radius))
+    translate(-50%, -50%);
+}
+
+.ps-splash__icon img {
+  width: 48%;
+  height: 48%;
+  object-fit: contain;
+  display: block;
+
+  backface-visibility: hidden;
+  will-change: transform;
+  animation: psIconCounterSpin 18s linear infinite;
+}
+
+/* Equal 5-icon circular positions */
+.ps-splash__icon--wallet {
+  --angle: -90deg;
+}
+
+.ps-splash__icon--shopping {
+  --angle: -18deg;
+}
+
+.ps-splash__icon--saving {
+  --angle: 54deg;
+}
+
+.ps-splash__icon--stats {
+  --angle: 126deg;
+}
+
+.ps-splash__icon--home {
+  --angle: 198deg;
+}
+
+/* Center logo circle */
+.ps-splash__logo-shell {
+  position: relative !important;
+  z-index: 4;
+
+  width: clamp(126px, 32vw, 210px);
+  height: clamp(126px, 32vw, 210px);
+  border-radius: 999px;
+
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.96), rgba(255, 247, 226, 0.78));
+
+  box-shadow:
+    0 20px 50px rgba(128, 83, 18, 0.16),
+    0 0 0 4px rgba(222, 164, 28, 0.74),
+    inset 0 0 34px rgba(255, 237, 181, 0.55);
+}
+
+.ps-splash__logo {
+  position: relative;
+  z-index: 5;
+
+  width: 74% !important;
+  height: 74% !important;
+  object-fit: contain;
+  display: block;
+
+  filter:
+    drop-shadow(0 10px 20px var(--splash-shadow))
+    drop-shadow(0 0 10px rgba(255, 255, 255, 0.82));
+}
+
+/* Animations */
+@keyframes psBrandEnter {
+  from {
+    opacity: 0;
+    transform: translate3d(-50%, -8px, 0) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(-50%, 0, 0) scale(1);
+  }
+}
+
+@keyframes psBrandClose {
+  from {
+    opacity: 1;
+    transform: translate3d(-50%, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(-50%, -8px, 0) scale(0.96);
+  }
+}
+
+@keyframes psStageBalloon {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--stage-y), 0) scale(0.62);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, var(--stage-y), 0) scale(1);
+  }
+}
+
+@keyframes psStageBalloonClose {
+  from {
+    opacity: 1;
+    transform: translate3d(0, var(--stage-y), 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(0, var(--stage-y), 0) scale(0.62);
+  }
+}
+
+@keyframes psGlowPulse {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.82);
+  }
+
+  to {
+    opacity: 0.84;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes psGlowPulseClose {
+  from {
+    opacity: 0.84;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.82);
+  }
+}
+
+@keyframes psSpotlightClose {
+  from {
+    opacity: 0.96;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+}
+
+@keyframes psOrbitSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes psIconCounterSpin {
+  from {
+    transform: rotate(calc(-1 * var(--angle)));
+  }
+
+  to {
+    transform: rotate(calc(-1 * var(--angle) - 360deg));
+  }
+}
+
+/* Mobile polish */
+@media (max-width: 430px) {
+  .ps-splash__brand {
+    top: 46px;
+    width: min(90vw, 360px);
+  }
+
+  .ps-splash__content {
+    width: min(96vw, 390px) !important;
+    height: min(96vw, 390px) !important;
+    --orbit-radius: 36vw;
+    --stage-y: 38px;
+  }
+
+  .ps-splash__orbit-ring {
+    width: 74%;
+    height: 74%;
+  }
+
+  .ps-splash__icon {
+    width: 54px;
+    height: 54px;
+  }
+
+  .ps-splash__logo-shell {
+    width: 128px;
+    height: 128px;
+  }
+
+  .ps-splash::after {
+    top: 53%;
+    width: 380px;
+    height: 380px;
+  }
+}
+
+@media (max-width: 360px) {
+  .ps-splash__brand {
+    top: 40px;
+  }
+
+  .ps-splash__brand-main {
+    font-size: clamp(1.72rem, 7.8vw, 2rem);
+  }
+
+  .ps-splash__brand-sub strong {
+    font-size: 0.58rem;
+    letter-spacing: 0.36em;
+    padding-left: 0.36em;
+  }
+
+  .ps-splash__content {
+    width: min(98vw, 350px) !important;
+    height: min(98vw, 350px) !important;
+    --orbit-radius: 36vw;
+    --stage-y: 34px;
+  }
+
+  .ps-splash__icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .ps-splash__logo-shell {
+    width: 116px;
+    height: 116px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ps-splash::after,
+  .ps-splash__brand,
+  .ps-splash__content,
+  .ps-splash__glow,
+  .ps-splash__orbit,
+  .ps-splash__icon img {
+    animation: none;
+  }
+}

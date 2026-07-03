@@ -42,7 +42,7 @@
   {% endif %}
 
   {% if show_more_products %}
-    <div class="collection-products__more">
+    <div id="explore-other" class="collection-products__more">
       <div class="collection-products__more-head">
         <span class="collection-products__kicker">More Collections</span>
         <h2>Explore other sarees</h2>
@@ -56,6 +56,19 @@
           {% include "store/collections/partials/product_card.html" with p=p %}
         {% endfor %}
       </div>
+
+      {% if has_more_products and show_more_products_url %}
+        <div class="collection-products__load-more-wrap">
+          <a
+            class="collection-products__load-more"
+            href="{{ show_more_products_url }}"
+            data-explore-load-more="1"
+            data-no-loader="true"
+          >
+            Show more sarees
+          </a>
+        </div>
+      {% endif %}
     </div>
   {% endif %}
 
@@ -137,6 +150,48 @@
 
   .collection-products__more {
     margin-top: clamp(28px, 5vw, 54px);
+    scroll-margin-top: 92px;
+  }
+
+  .collection-products__load-more-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: clamp(18px, 4vw, 30px);
+  }
+
+  .collection-products__load-more {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 24px;
+    border-radius: 999px;
+    background: #5f1020;
+    color: #fffaf6;
+    text-decoration: none;
+    font-size: clamp(13px, 2.8vw, 15px);
+    font-weight: 850;
+    letter-spacing: 0.01em;
+    border: 1px solid rgba(95, 16, 32, 0.22);
+    box-shadow: 0 10px 22px rgba(95, 16, 32, 0.18);
+    transition:
+      transform 160ms ease,
+      box-shadow 160ms ease,
+      background-color 160ms ease;
+  }
+
+  .collection-products__load-more:hover,
+  .collection-products__load-more:focus-visible {
+    background: #7a1729;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 26px rgba(95, 16, 32, 0.24);
+    outline: none;
+  }
+
+  .collection-products__load-more.is-loading {
+    pointer-events: none;
+    opacity: 0.72;
+    transform: none;
   }
 
   .collection-products__more-head {

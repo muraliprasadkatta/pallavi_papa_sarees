@@ -169,6 +169,14 @@ def collections_page(request):
     focus = request.GET.get("focus", "shop")
     active_price = request.GET.get("price", "").strip()
 
+    try:
+        more_page = int(request.GET.get("more_page", "1"))
+    except (TypeError, ValueError):
+        more_page = 1
+
+    more_page = max(1, more_page)
+    more_products_per_page = 8
+
     categories = (
         Category.objects
         .filter(is_active=True)
@@ -276,14 +284,12 @@ def collections_page(request):
     products = base_products
     more_products = all_products.none()
     show_more_products = False
-    more_products_limit = None
+    more_products_use_round_robin = False
 
     if focus == "new" and not search_query and active_category == "all":
         products = base_products
 
         more_products = all_products.exclude(is_new_arrival=True)
-        show_more_products = more_products.exists()
-        more_products_limit = 8
 
     elif search_query:
         products = base_products.filter(
@@ -301,8 +307,7 @@ def collections_page(request):
                 products = category_products
 
                 more_products = all_products.exclude(category=selected_category)
-                show_more_products = more_products.exists()
-                more_products_limit = 8
+                more_products_use_round_robin = True
 
             else:
                 fallback_category_missing = True
@@ -323,11 +328,51 @@ def collections_page(request):
 
         return queryset.order_by("-created_at")
 
+    def build_round_robin_products_by_category(queryset):
+        grouped_products = {}
+
+        for product in queryset:
+            category_key = product.category_id or 0
+            grouped_products.setdefault(category_key, []).append(product)
+
+        category_groups = list(grouped_products.values())
+        round_robin_products = []
+        index = 0
+
+        while True:
+            added_product = False
+
+            for category_items in category_groups:
+                if index < len(category_items):
+                    round_robin_products.append(category_items[index])
+                    added_product = True
+
+            if not added_product:
+                break
+
+            index += 1
+
+        return round_robin_products
+
     products = apply_sort(products)
     more_products = apply_sort(more_products)
 
-    if more_products_limit:
-        more_products = more_products[:more_products_limit]
+    if more_products_use_round_robin:
+        more_products = build_round_robin_products_by_category(more_products)
+    else:
+        more_products = list(more_products)
+
+    more_products_visible_count = more_page * more_products_per_page
+    has_more_products = len(more_products) > more_products_visible_count
+    show_more_products = bool(more_products)
+    more_products = more_products[:more_products_visible_count]
+
+    show_more_products_url = ""
+    if has_more_products:
+        show_more_query = request.GET.copy()
+        show_more_query["more_page"] = str(more_page + 1)
+        show_more_query.pop("partial", None)
+        show_more_products_url = f"{request.path}?{show_more_query.urlencode()}#explore-other"
 
     new_arrivals = (
         Product.objects
@@ -397,6 +442,8 @@ def collections_page(request):
 
         "show_more_products": show_more_products,
         "more_products": more_products,
+        "has_more_products": has_more_products,
+        "show_more_products_url": show_more_products_url,
 
         "page_title": page_title,
         "page_description": page_description,

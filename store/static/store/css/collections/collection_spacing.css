@@ -1,0 +1,83 @@
+body.collections-template {
+  --collection-section-edge-space: clamp(16px, 2.8vw, 32px);
+  --collection-inner-gap: clamp(16px, 2.4vw, 26px);
+  --collection-row-gap: clamp(18px, 3vw, 34px);
+  --collection-side-gutter: clamp(14px, 3vw, 32px);
+}
+
+body.collections-template .collections-page {
+  background: #fffaf6;
+}
+
+/* Do NOT force .collection-tabs-wrap margin-bottom here.
+   The sticky/compression script adjusts that margin to keep scroll height stable. */
+
+body.collections-template .collection-toolbar {
+  margin-top: 0 !important;
+  margin-bottom: var(--collection-inner-gap) !important;
+  padding-top: 0 !important;
+  padding-bottom: clamp(10px, 1.8vw, 16px) !important;
+}
+
+body.collections-template #collectionsAjaxContent {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+body.collections-template .collection-products {
+  width: 100% !important;
+  max-width: 1280px !important;
+  margin: 0 auto !important;
+  padding: 0 var(--collection-side-gutter) var(--collection-section-edge-space) !important;
+}
+
+body.collections-template .collection-products__head,
+body.collections-template .collection-products__more-head,
+body.collections-template .new-arrivals__head {
+  margin-bottom: var(--collection-inner-gap) !important;
+}
+
+body.collections-template .collection-products__grid,
+body.collections-template .new-arrivals__grid {
+  row-gap: var(--collection-row-gap) !important;
+  column-gap: clamp(14px, 2.6vw, 32px) !important;
+}
+
+body.collections-template .collection-products__more {
+  margin-top: var(--collection-section-edge-space) !important;
+}
+
+body.collections-template .collection-products__load-more-wrap {
+  width: 100% !important;
+  margin: clamp(22px, 3vw, 34px) 0 clamp(28px, 4vw, 46px) !important;
+  padding: 0 !important;
+}
+
+body.collections-template .new-arrivals {
+  width: 100% !important;
+  max-width: 1280px !important;
+  margin: 0 auto !important;
+  padding: clamp(18px, 2.8vw, 30px) var(--collection-side-gutter) calc(var(--collection-section-edge-space) + 18px) !important;
+}
+
+body.collections-template .site-footer {
+  margin-top: 0 !important;
+}
+
+@media (max-width: 767px) {
+  body.collections-template {
+    --collection-section-edge-space: 14px;
+    --collection-inner-gap: 14px;
+    --collection-row-gap: 16px;
+    --collection-side-gutter: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  body.collections-template {
+    --collection-section-edge-space: 12px;
+    --collection-inner-gap: 12px;
+    --collection-row-gap: 14px;
+    --collection-side-gutter: 10px;
+  }
+}
