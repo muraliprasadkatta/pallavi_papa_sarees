@@ -672,7 +672,7 @@ def cart_page(request):
 
 
 def favorites_page(request):
-    return render(request, "store/user_homepage/favorites/favorites.html")
+    return render(request,"store/user_homepage/favorites/favorite_page.html")
 
 
 def health_check(request):

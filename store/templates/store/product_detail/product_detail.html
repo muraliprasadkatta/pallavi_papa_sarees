@@ -3,6 +3,76 @@
 
 {% block title %}{{ product.name }} • Pallavi Papa Sarees{% endblock %}
 
+{% block meta %}
+  {% url 'store:product_detail' product.id as product_path %}
+
+  <meta
+    name="description"
+    content="{% if product.description %}{{ product.description|striptags|truncatechars:155 }}{% else %}Shop {{ product.name }} from Pallavi Papa Sarees Collections.{% endif %}"
+  >
+
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:site_name" content="Pallavi Papa Sarees Collections">
+  <meta property="og:type" content="product">
+
+  <meta
+    property="og:title"
+    content="{{ product.name }} | Pallavi Papa Sarees Collections"
+  >
+
+  <meta
+    property="og:description"
+    content="{% if product.description %}{{ product.description|striptags|truncatechars:155 }}{% else %}{% if product.category %}{{ product.category.name }} • {% endif %}{% if product.offer_price %}₹{{ product.offer_price|floatformat:0 }}{% else %}₹{{ product.actual_price|floatformat:0 }}{% endif %} • View product details and order on WhatsApp.{% endif %}"
+  >
+
+  <meta
+    property="og:url"
+    content="{{ request.scheme }}://{{ request.get_host }}{{ product_path }}"
+  >
+
+  {% if product.main_image %}
+    <meta
+      property="og:image"
+      content="{{ product.main_image.url }}"
+    >
+
+    <meta
+      property="og:image:secure_url"
+      content="{{ product.main_image.url }}"
+    >
+
+    <meta
+      property="og:image:alt"
+      content="{{ product.name }}"
+    >
+  {% endif %}
+
+  <meta name="twitter:card" content="summary_large_image">
+
+  <meta
+    name="twitter:title"
+    content="{{ product.name }} | Pallavi Papa Sarees Collections"
+  >
+
+  <meta
+    name="twitter:description"
+    content="{% if product.category %}{{ product.category.name }} • {% endif %}{% if product.offer_price %}₹{{ product.offer_price|floatformat:0 }}{% else %}₹{{ product.actual_price|floatformat:0 }}{% endif %}"
+  >
+
+  {% if product.main_image %}
+    <meta
+      name="twitter:image"
+      content="{{ product.main_image.url }}"
+    >
+  {% endif %}
+
+  <link
+    rel="canonical"
+    href="{{ request.scheme }}://{{ request.get_host }}{{ product_path }}"
+  >
+{% endblock %}
+
 {% block body_class %}product-detail-template{% endblock %}
 {% block main_class %}pd-page{% endblock %}
 
@@ -643,7 +713,6 @@
 
           const selectedVariant = getSelectedVariantForWhatsApp();
           const productUrl = absoluteUrl(link.dataset.productUrl);
-          const imageUrl = absoluteUrl(selectedVariant?.image || link.dataset.productImage);
           const productPrice = Number(selectedVariant?.price || link.dataset.productPrice || 0);
           const selectedColor = meaningfulColor(selectedVariant?.colorName);
 
@@ -672,11 +741,9 @@
           }
 
           if (productUrl) {
-            lines.push("Product Link: " + productUrl);
-          }
-
-          if (imageUrl) {
-            lines.push("Image: " + imageUrl);
+            lines.push("");
+            lines.push("View Product:");
+            lines.push(productUrl);
           }
 
           lines.push("");

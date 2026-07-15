@@ -1,5 +1,6 @@
 {% url 'store:user_home' as home_url %}
 {% url 'store:collections' as collections_url %}
+{% url 'store:favorites' as favorites_url %}
 {% url 'store:cart' as cart_url %}
 {% url 'store:about_contact' as about_contact_url %}
 
@@ -112,6 +113,19 @@
           <small>Latest sarees in store</small>
         </span>
       </a>
+
+      <a href="{{ favorites_url }}" class="site-menu-link">
+      <span class="site-menu-link__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.7-7.5 1.1-1.1a5.5 5.5 0 0 0 0-7.8Z"/>
+        </svg>
+      </span>
+
+      <span>
+        <strong>Favorites</strong>
+        <small>Your saved sarees</small>
+      </span>
+    </a>
 
       <a href="{{ cart_url }}" class="site-menu-link">
         <span class="site-menu-link__icon" aria-hidden="true">
