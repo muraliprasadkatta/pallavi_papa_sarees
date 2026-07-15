@@ -819,16 +819,53 @@ class ProductSizeMeasurement(models.Model):
 
 
 class ProductVariant(models.Model):
+    IMAGE_FIELDS = (
+        "variant_image",
+        "variant_sub_image_1",
+        "variant_sub_image_2",
+        "variant_sub_image_3",
+    )
+
     product = models.ForeignKey(
         Product,
         on_delete=models.CASCADE,
         related_name="variants",
     )
 
-    color_name = models.CharField(max_length=80, blank=True)
-    color_code = models.CharField(max_length=20, blank=True)
+    color_name = models.CharField(
+        max_length=80,
+        blank=True,
+    )
 
+    color_code = models.CharField(
+        max_length=20,
+        blank=True,
+    )
+
+    # Main image for this colour variant
     variant_image = models.ImageField(
+        upload_to=product_variant_image_upload_to,
+        blank=True,
+        null=True,
+        max_length=255,
+    )
+
+    # Optional additional images for this colour variant
+    variant_sub_image_1 = models.ImageField(
+        upload_to=product_variant_image_upload_to,
+        blank=True,
+        null=True,
+        max_length=255,
+    )
+
+    variant_sub_image_2 = models.ImageField(
+        upload_to=product_variant_image_upload_to,
+        blank=True,
+        null=True,
+        max_length=255,
+    )
+
+    variant_sub_image_3 = models.ImageField(
         upload_to=product_variant_image_upload_to,
         blank=True,
         null=True,
@@ -880,44 +917,185 @@ class ProductVariant(models.Model):
         if actual_price <= 0 or offer_price >= actual_price:
             return 0
 
-        discount = ((actual_price - offer_price) * Decimal("100")) / actual_price
+        discount = (
+            (actual_price - offer_price) * Decimal("100")
+        ) / actual_price
 
-        return int(discount.quantize(Decimal("1"), rounding=ROUND_HALF_UP))
+        return int(
+            discount.quantize(
+                Decimal("1"),
+                rounding=ROUND_HALF_UP,
+            )
+        )
+
+    @property
+    def gallery_images(self):
+        """
+        Returns only the images belonging to this variant.
+
+        Example:
+        [
+            variant main image,
+            variant sub image 1,
+            variant sub image 2,
+            variant sub image 3,
+        ]
+        """
+        images = []
+
+        for field_name in self.IMAGE_FIELDS:
+            image = getattr(self, field_name, None)
+
+            if image:
+                images.append(image)
+
+        return images
 
     def clean(self):
         super().clean()
 
-        if self.actual_price and self.offer_price and self.offer_price > self.actual_price:
-            raise ValidationError("Variant offer price cannot be greater than actual price.")
+        errors = {}
 
-    def _image_changed(self):
-        if not self.variant_image:
-            return False
-
-        if not self.pk:
-            return True
-
-        old_variant = type(self).objects.only("variant_image").filter(pk=self.pk).first()
-
-        if not old_variant:
-            return True
-
-        return old_variant.variant_image.name != self.variant_image.name
-
-    def save(self, *args, **kwargs):
-        if self._image_changed():
-            converted_image = convert_product_image_to_webp(
-                uploaded_file=self.variant_image,
-                base_name=f"{self.product.name}-{self.color_name or 'variant'}",
-                target_width=PRODUCT_TARGET_WIDTH,
-                target_height=PRODUCT_TARGET_HEIGHT,
-                max_size_kb=PRODUCT_MAX_SIZE_KB,
-                keep_alpha=False,
+        if (
+            self.actual_price
+            and self.offer_price
+            and self.offer_price > self.actual_price
+        ):
+            errors["offer_price"] = (
+                "Variant offer price cannot be greater than actual price."
             )
 
-            self.variant_image = converted_image
+        # Sub-images should be uploaded in sequence.
+        if self.variant_sub_image_2 and not self.variant_sub_image_1:
+            errors["variant_sub_image_2"] = (
+                "Upload Variant Sub Image 1 before Variant Sub Image 2."
+            )
+
+        if self.variant_sub_image_3 and not self.variant_sub_image_2:
+            errors["variant_sub_image_3"] = (
+                "Upload Variant Sub Image 2 before Variant Sub Image 3."
+            )
+
+        if errors:
+            raise ValidationError(errors)
+
+    def _get_changed_image_fields(self):
+        """
+        Returns image field names that contain a newly uploaded
+        or replaced image.
+
+        Existing Cloudinary/storage images will not be converted again.
+        """
+        if not self.pk:
+            return [
+                field_name
+                for field_name in self.IMAGE_FIELDS
+                if getattr(self, field_name, None)
+            ]
+
+        old_variant = (
+            type(self)
+            .objects
+            .only(*self.IMAGE_FIELDS)
+            .filter(pk=self.pk)
+            .first()
+        )
+
+        if not old_variant:
+            return [
+                field_name
+                for field_name in self.IMAGE_FIELDS
+                if getattr(self, field_name, None)
+            ]
+
+        changed_fields = []
+
+        for field_name in self.IMAGE_FIELDS:
+            current_image = getattr(self, field_name, None)
+            old_image = getattr(old_variant, field_name, None)
+
+            if not current_image:
+                continue
+
+            current_name = getattr(current_image, "name", "")
+            old_name = getattr(old_image, "name", "")
+
+            # Newly assigned files normally have _committed=False.
+            is_new_upload = not getattr(
+                current_image,
+                "_committed",
+                True,
+            )
+
+            if is_new_upload or current_name != old_name:
+                changed_fields.append(field_name)
+
+        return changed_fields
+
+    def save(self, *args, **kwargs):
+        changed_image_fields = self._get_changed_image_fields()
+
+        update_fields = kwargs.get("update_fields")
+
+        if update_fields is not None:
+            update_fields = set(update_fields)
+
+        for field_name in changed_image_fields:
+            # Respect save(update_fields=[...]) when it is used.
+            if (
+                update_fields is not None
+                and field_name not in update_fields
+            ):
+                continue
+
+            uploaded_image = getattr(self, field_name, None)
+
+            if not uploaded_image:
+                continue
+
+            image_label = field_name.replace("variant_", "").replace("_", "-")
+
+            base_name = (
+                f"{self.product.name}-"
+                f"{self.color_name or 'variant'}-"
+                f"{image_label}"
+            )
+
+            if field_name in {
+                "variant_sub_image_1",
+                "variant_sub_image_2",
+                "variant_sub_image_3",
+            }:
+                converted_image = convert_sub_product_image_to_webp(
+                    uploaded_file=uploaded_image,
+                    base_name=base_name,
+                )
+            else:
+                converted_image = convert_product_image_to_webp(
+                    uploaded_file=uploaded_image,
+                    base_name=base_name,
+                    target_width=PRODUCT_TARGET_WIDTH,
+                    target_height=PRODUCT_TARGET_HEIGHT,
+                    max_size_kb=PRODUCT_MAX_SIZE_KB,
+                    keep_alpha=False,
+                )
+
+            setattr(
+                self,
+                field_name,
+                converted_image,
+            )
+
+            if update_fields is not None:
+                update_fields.add(field_name)
+
+        if update_fields is not None:
+            kwargs["update_fields"] = list(update_fields)
 
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.product.name} - {self.color_name or 'Variant'}"
+        return (
+            f"{self.product.name} - "
+            f"{self.color_name or 'Variant'}"
+        )

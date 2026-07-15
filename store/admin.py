@@ -183,39 +183,121 @@ class ProductHighlightInline(admin.TabularInline):
 class ProductVariantInline(admin.StackedInline):
     model = ProductVariant
     extra = 0
+    show_change_link = True
 
     fieldsets = (
-        ("Variant Details", {
-            "fields": (
-                "color_name",
-                "color_code",
-                "actual_price",
-                "offer_price",
-                "is_available",
-            )
-        }),
-        ("Variant Image", {
-            "fields": (
-                "variant_image",
-                "variant_image_preview",
-            )
-        }),
+        (
+            "Variant Details",
+            {
+                "fields": (
+                    "color_name",
+                    "color_code",
+                    "actual_price",
+                    "offer_price",
+                    "is_available",
+                )
+            },
+        ),
+        (
+            "Variant Main Image",
+            {
+                "fields": (
+                    (
+                        "variant_image",
+                        "variant_image_preview",
+                    ),
+                ),
+                "description": (
+                    "Main image is shown first when the customer selects "
+                    "this colour variant."
+                ),
+            },
+        ),
+        (
+            "Variant Additional Images",
+            {
+                "fields": (
+                    (
+                        "variant_sub_image_1",
+                        "variant_sub_image_1_preview",
+                    ),
+                    (
+                        "variant_sub_image_2",
+                        "variant_sub_image_2_preview",
+                    ),
+                    (
+                        "variant_sub_image_3",
+                        "variant_sub_image_3_preview",
+                    ),
+                ),
+                "description": (
+                    "Optional additional images for this colour. "
+                    "Upload them in order: Sub Image 1, then 2, then 3."
+                ),
+            },
+        ),
     )
 
     readonly_fields = (
         "variant_image_preview",
+        "variant_sub_image_1_preview",
+        "variant_sub_image_2_preview",
+        "variant_sub_image_3_preview",
     )
 
+    ordering = (
+        "id",
+    )
+
+    @staticmethod
+    def _render_image_preview(image):
+        if not image:
+            return "-"
+
+        return format_html(
+            (
+                '<a href="{}" target="_blank" rel="noopener noreferrer">'
+                '<img '
+                'src="{}" '
+                'style="'
+                'width:90px;'
+                'height:115px;'
+                'object-fit:cover;'
+                'border-radius:8px;'
+                'border:1px solid #ddd;'
+                'background:#f7f7f7;'
+                '" '
+                'alt="Variant image preview"'
+                '>'
+                "</a>"
+            ),
+            image.url,
+            image.url,
+        )
+
+    @admin.display(description="Main Image Preview")
     def variant_image_preview(self, obj):
-        if obj.variant_image:
-            return format_html(
-                '<img src="{}" style="width:90px;height:115px;object-fit:cover;border-radius:8px;" />',
-                obj.variant_image.url,
-            )
-        return "-"
+        return self._render_image_preview(
+            getattr(obj, "variant_image", None)
+        )
 
-    variant_image_preview.short_description = "Preview"
+    @admin.display(description="Sub Image 1 Preview")
+    def variant_sub_image_1_preview(self, obj):
+        return self._render_image_preview(
+            getattr(obj, "variant_sub_image_1", None)
+        )
 
+    @admin.display(description="Sub Image 2 Preview")
+    def variant_sub_image_2_preview(self, obj):
+        return self._render_image_preview(
+            getattr(obj, "variant_sub_image_2", None)
+        )
+
+    @admin.display(description="Sub Image 3 Preview")
+    def variant_sub_image_3_preview(self, obj):
+        return self._render_image_preview(
+            getattr(obj, "variant_sub_image_3", None)
+        )
 
 class ProductSizeInline(admin.StackedInline):
     model = ProductSize

@@ -1,5 +1,9 @@
 <div class="pd-gallery">
-  <div class="pd-main-media" id="productSwipeArea">
+  <div
+    class="pd-main-media"
+    id="productSwipeArea"
+    aria-label="{{ product.name }} image gallery"
+  >
     {% url 'store:product_detail' product.id as product_detail_url %}
 
     <button
@@ -30,7 +34,11 @@
       <span class="pd-badge">New</span>
     {% endif %}
 
-    <button class="pd-gallery-arrow pd-gallery-arrow--prev" type="button" aria-label="Previous image">
+    <button
+      class="pd-gallery-arrow pd-gallery-arrow--prev"
+      type="button"
+      aria-label="Previous image"
+    >
       ‹
     </button>
 
@@ -41,37 +49,114 @@
         alt="{{ product.name }}"
         draggable="false"
       >
+    {% else %}
+      <div
+        class="pd-main-image-placeholder"
+        id="mainProductImagePlaceholder"
+        role="img"
+        aria-label="{{ product.name }} image unavailable"
+      >
+        Image unavailable
+      </div>
     {% endif %}
 
-    <button class="pd-gallery-arrow pd-gallery-arrow--next" type="button" aria-label="Next image">
+    <button
+      class="pd-gallery-arrow pd-gallery-arrow--next"
+      type="button"
+      aria-label="Next image"
+    >
       ›
     </button>
 
-    <span class="pd-image-count" id="imageCount">1 / 4</span>
+    <span
+      class="pd-image-count"
+      id="imageCount"
+      aria-live="polite"
+    >
+      {% if product.main_image %}1{% else %}0{% endif %} /
+      {% if product.sub_image_3 %}
+        4
+      {% elif product.sub_image_2 %}
+        3
+      {% elif product.sub_image_1 %}
+        2
+      {% elif product.main_image %}
+        1
+      {% else %}
+        0
+      {% endif %}
+    </span>
   </div>
 
-  <div class="pd-thumbs" aria-label="Product images">
+  <div
+    class="pd-thumbs"
+    id="productThumbs"
+    aria-label="Product images"
+  >
     {% if product.main_image %}
-      <button class="pd-thumb is-active" type="button" data-image="{{ product.main_image.url }}">
-        <img src="{{ product.main_image.url }}" alt="{{ product.name }}" draggable="false">
+      <button
+        class="pd-thumb is-active"
+        type="button"
+        data-image="{{ product.main_image.url }}"
+        aria-label="View main product image"
+        aria-current="true"
+      >
+        <img
+          src="{{ product.main_image.url }}"
+          alt="{{ product.name }}"
+          draggable="false"
+        >
       </button>
     {% endif %}
 
     {% if product.sub_image_1 %}
-      <button class="pd-thumb" type="button" data-image="{{ product.sub_image_1.url }}">
-        <img src="{{ product.sub_image_1.url }}" alt="{{ product.name }} sub image 1" draggable="false">
+      <button
+        class="pd-thumb"
+        type="button"
+        data-image="{{ product.sub_image_1.url }}"
+        aria-label="View product image 2"
+        aria-current="false"
+      >
+        <img
+          src="{{ product.sub_image_1.url }}"
+          alt="{{ product.name }} sub image 1"
+          draggable="false"
+          loading="lazy"
+        >
       </button>
     {% endif %}
 
     {% if product.sub_image_2 %}
-      <button class="pd-thumb" type="button" data-image="{{ product.sub_image_2.url }}">
-        <img src="{{ product.sub_image_2.url }}" alt="{{ product.name }} sub image 2" draggable="false">
+      <button
+        class="pd-thumb"
+        type="button"
+        data-image="{{ product.sub_image_2.url }}"
+        aria-label="View product image 3"
+        aria-current="false"
+      >
+        <img
+          src="{{ product.sub_image_2.url }}"
+          alt="{{ product.name }} sub image 2"
+          draggable="false"
+          loading="lazy"
+        >
       </button>
     {% endif %}
 
     {% if product.sub_image_3 %}
-      <button class="pd-thumb" type="button" data-image="{{ product.sub_image_3.url }}">
-        <img src="{{ product.sub_image_3.url }}" alt="{{ product.name }} sub image 3" draggable="false">
+      <button
+        class="pd-thumb"
+        type="button"
+        data-image="{{ product.sub_image_3.url }}"
+        aria-label="View product image 4"
+        aria-current="false"
+      >
+        <img
+          src="{{ product.sub_image_3.url }}"
+          alt="{{ product.name }} sub image 3"
+          draggable="false"
+          loading="lazy"
+        >
       </button>
     {% endif %}
   </div>

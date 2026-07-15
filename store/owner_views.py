@@ -63,6 +63,9 @@ EXTRA_IMAGE_FIELD_NAMES = [
     "sub_image_2",
     "sub_image_3",
     "variant_images",
+    "variant_sub_images_1",
+    "variant_sub_images_2",
+    "variant_sub_images_3",
 ]
 
 EXTRA_IMAGE_MAX_MB = 5
@@ -972,29 +975,108 @@ def owner_product_upload_image_view(request, product_id):
 @login_required(login_url="store_owner:owner_login")
 def owner_product_upload_variant_view(request, product_id):
     if not request.user.is_staff:
-        return _json_error("You do not have owner access.", status=403)
+        return _json_error(
+            "You do not have owner access.",
+            status=403,
+        )
 
-    product = get_object_or_404(Product, id=product_id)
+    product = get_object_or_404(
+        Product,
+        id=product_id,
+    )
 
-    uploaded_file = request.FILES.get("image")
-    color_name = (request.POST.get("color_name") or "").strip()
-    color_code = (request.POST.get("color_code") or "").strip()
-    actual_price = request.POST.get("actual_price", "")
-    offer_price = request.POST.get("offer_price", "")
-    is_available = request.POST.get("is_available") == "1"
+    main_image = request.FILES.get("image")
+    sub_image_1 = request.FILES.get("sub_image_1")
+    sub_image_2 = request.FILES.get("sub_image_2")
+    sub_image_3 = request.FILES.get("sub_image_3")
 
-    if not uploaded_file:
-        return _json_error("Variant image is required.")
+    color_name = (
+        request.POST.get("color_name")
+        or ""
+    ).strip()
+
+    color_code = (
+        request.POST.get("color_code")
+        or ""
+    ).strip()
+
+    actual_price = request.POST.get(
+        "actual_price",
+        "",
+    )
+
+    offer_price = request.POST.get(
+        "offer_price",
+        "",
+    )
+
+    is_available = (
+        request.POST.get("is_available") == "1"
+    )
+
+    if not main_image:
+        return _json_error(
+            "Variant main image is required."
+        )
 
     if not color_name:
-        return _json_error("Variant color name is required.")
+        return _json_error(
+            "Variant color name is required."
+        )
+
+    if len(color_name) > 80:
+        return _json_error(
+            "Variant color name should be under 80 characters."
+        )
+
+    if sub_image_2 and not sub_image_1:
+        return _json_error(
+            "Upload Variant Sub Image 1 before Sub Image 2."
+        )
+
+    if sub_image_3 and not sub_image_2:
+        return _json_error(
+            "Upload Variant Sub Image 2 before Sub Image 3."
+        )
 
     try:
-        _validate_extra_image(uploaded_file)
+        image_files = (
+            ("Variant main image", main_image),
+            ("Variant sub image 1", sub_image_1),
+            ("Variant sub image 2", sub_image_2),
+            ("Variant sub image 3", sub_image_3),
+        )
 
-        cleaned_color_code = _clean_color_code(color_code)
-        cleaned_actual_price = _optional_decimal(actual_price, "Variant actual price")
-        cleaned_offer_price = _optional_decimal(offer_price, "Variant offer price")
+        for image_label, uploaded_file in image_files:
+            if not uploaded_file:
+                continue
+
+            try:
+                _validate_extra_image(uploaded_file)
+            except ValidationError as error:
+                error_message = (
+                    " ".join(error.messages)
+                    if hasattr(error, "messages")
+                    else str(error)
+                )
+
+                raise ValidationError(
+                    f"{image_label}: {error_message}"
+                )
+
+        cleaned_color_code = _clean_color_code(
+            color_code
+        )
+
+        cleaned_actual_price = _optional_decimal(
+            actual_price,
+            "Variant actual price",
+        )
+
+        cleaned_offer_price = _optional_decimal(
+            offer_price,
+            "Variant offer price",
+        )
 
         if (
             cleaned_actual_price is not None
@@ -1002,30 +1084,60 @@ def owner_product_upload_variant_view(request, product_id):
             and cleaned_offer_price > cleaned_actual_price
         ):
             raise ValidationError(
-                "Variant offer price cannot be greater than actual price."
+                "Variant offer price cannot be greater "
+                "than actual price."
             )
 
-        converted_file = convert_sub_product_image_to_webp(
-            uploaded_file=uploaded_file,
-            base_name=f"{product.name or 'product'}-{color_name}-variant",
-        )
-
-        variant = ProductVariant.objects.create(
+        variant = ProductVariant(
             product=product,
             color_name=color_name,
             color_code=cleaned_color_code,
-            variant_image=converted_file,
+            variant_image=main_image,
+            variant_sub_image_1=sub_image_1,
+            variant_sub_image_2=sub_image_2,
+            variant_sub_image_3=sub_image_3,
             actual_price=cleaned_actual_price,
             offer_price=cleaned_offer_price,
             is_available=is_available,
         )
 
+        # Executes model validation, including sub-image sequence.
+        variant.full_clean()
+
+        # ProductVariant.save() converts newly uploaded images to WebP.
+        with transaction.atomic():
+            variant.save()
+
         return JsonResponse(
             {
                 "ok": True,
                 "variant_id": variant.id,
-                "image_url": variant.variant_image.url if variant.variant_image else "",
-                "message": "Variant uploaded successfully.",
+                "images": {
+                    "main": (
+                        variant.variant_image.url
+                        if variant.variant_image
+                        else ""
+                    ),
+                    "sub_image_1": (
+                        variant.variant_sub_image_1.url
+                        if variant.variant_sub_image_1
+                        else ""
+                    ),
+                    "sub_image_2": (
+                        variant.variant_sub_image_2.url
+                        if variant.variant_sub_image_2
+                        else ""
+                    ),
+                    "sub_image_3": (
+                        variant.variant_sub_image_3.url
+                        if variant.variant_sub_image_3
+                        else ""
+                    ),
+                },
+                "message": (
+                    "Variant and variant gallery "
+                    "uploaded successfully."
+                ),
             }
         )
 
@@ -1035,10 +1147,14 @@ def owner_product_upload_variant_view(request, product_id):
             if hasattr(error, "messages")
             else str(error)
         )
+
         return _json_error(error_message)
 
     except Exception as error:
         return _json_error(
-            f"Variant upload failed. Please try again. Error: {error}",
+            (
+                "Variant upload failed. "
+                f"Please try again. Error: {error}"
+            ),
             status=500,
         )

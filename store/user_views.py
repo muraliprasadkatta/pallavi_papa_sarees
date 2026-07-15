@@ -531,6 +531,95 @@ def _build_size_measurement_groups(product_sizes):
     return groups
 
 
+
+def _get_image_url(image_field):
+    """Return a safe storage/Cloudinary URL for an image field."""
+    if not image_field:
+        return ""
+
+    try:
+        return image_field.url
+    except (AttributeError, ValueError):
+        return ""
+
+
+def _build_product_gallery_map(product, variants):
+    """Build an isolated gallery for the base product and each variant.
+
+    Base product sub-images are never mixed into a valid variant gallery.
+    This prevents a selected colour from showing images of another colour
+    while the customer swipes through the product gallery.
+    """
+
+    def build_gallery(image_fields, label):
+        images = []
+        seen_urls = set()
+
+        for image_field in image_fields:
+            image_url = _get_image_url(image_field)
+
+            if not image_url or image_url in seen_urls:
+                continue
+
+            seen_urls.add(image_url)
+            image_number = len(images) + 1
+
+            images.append(
+                {
+                    "url": image_url,
+                    "alt": (
+                        f"{product.name} - {label}"
+                        if image_number == 1
+                        else f"{product.name} - {label} image {image_number}"
+                    ),
+                }
+            )
+
+        return images
+
+    base_label = (product.color_name or "").strip() or "Default colour"
+    base_images = build_gallery(
+        (
+            product.main_image,
+            product.sub_image_1,
+            product.sub_image_2,
+            product.sub_image_3,
+        ),
+        base_label,
+    )
+
+    gallery_map = {
+        "base": {
+            "label": base_label,
+            "images": base_images,
+        }
+    }
+
+    for variant in variants:
+        variant_label = (variant.color_name or "").strip() or "Variant"
+        variant_images = build_gallery(
+            (
+                variant.variant_image,
+                variant.variant_sub_image_1,
+                variant.variant_sub_image_2,
+                variant.variant_sub_image_3,
+            ),
+            variant_label,
+        )
+
+        # Backward compatibility only for legacy variants that do not have
+        # any image. Do not append base sub-images to a valid variant gallery.
+        if not variant_images and base_images:
+            variant_images = [base_images[0].copy()]
+
+        gallery_map[str(variant.id)] = {
+            "label": variant_label,
+            "images": variant_images,
+        }
+
+    return gallery_map
+
+
 def product_detail_view(request, product_id):
     size_measurements_queryset = ProductSizeMeasurement.objects.order_by(
         "sort_order",
@@ -576,6 +665,8 @@ def product_detail_view(request, product_id):
     )
 
     variants = list(getattr(product, "available_variants", []))
+    variant_gallery_map = _build_product_gallery_map(product, variants)
+
     # Keep stock-0 sizes in this list so the template can show them as
     # disabled Sold Out options instead of hiding them.
     available_sizes = list(getattr(product, "display_sizes_for_detail", []))
@@ -642,6 +733,7 @@ def product_detail_view(request, product_id):
     context = {
         "product": product,
         "variants": variants,
+        "variant_gallery_map": variant_gallery_map,
         "available_sizes": available_sizes,
         "in_stock_sizes": in_stock_sizes,
         "default_size": default_size,
@@ -672,7 +764,10 @@ def cart_page(request):
 
 
 def favorites_page(request):
-    return render(request,"store/user_homepage/favorites/favorite_page.html")
+    return render(
+        request,
+        "store/user_homepage/favorites/favorite_page.html",
+    )
 
 
 def health_check(request):

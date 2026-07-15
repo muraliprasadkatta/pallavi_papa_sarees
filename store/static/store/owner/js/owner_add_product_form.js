@@ -672,7 +672,8 @@
 
     function isVariantImageInput(input) {
       if (!input) return false;
-      return input.matches('input[name="variant_images"], input[data-variant-image="true"]');
+
+      return input.matches('input[data-variant-image="true"]');
     }
 
     function removeSelectedUploadImage(input) {
@@ -1052,42 +1053,149 @@
       card.dataset.variantIndex = String(variantCount);
 
       const variantImageId = `variantImage${variantCount}`;
+      const variantSubImage1Id = `variantSubImage1_${variantCount}`;
+      const variantSubImage2Id = `variantSubImage2_${variantCount}`;
+      const variantSubImage3Id = `variantSubImage3_${variantCount}`;
+
       const variantColorPickerId = `variantColorCode${variantCount}`;
       const variantColorTextId = `variantColorText${variantCount}`;
 
       card.innerHTML = `
         <div class="variant-card__top">
           <div>
-            <div class="variant-card__title">Variant ${variantCount}</div>
-            <div class="variant-required-note">Variant image is required.</div>
+            <div class="variant-card__title">
+              Variant ${variantCount}
+            </div>
+
+            <div class="variant-required-note">
+              Main variant image is required. Additional images are optional.
+            </div>
           </div>
 
-          <button type="button" class="remove-variant-btn">
+          <button
+            type="button"
+            class="remove-variant-btn"
+          >
             Remove
           </button>
         </div>
 
         <div class="variant-grid">
-          <div class="field">
-            <label for="${variantImageId}">Variant Image *</label>
+          <div class="variant-image-fields">
 
-            <label class="variant-upload" for="${variantImageId}">
-              <input
-                type="file"
-                id="${variantImageId}"
-                name="variant_images"
-                accept="image/*"
-                data-variant-image="true"
+            <div class="field">
+              <label for="${variantImageId}">
+                Main Variant Image *
+              </label>
+
+              <label
+                class="variant-upload"
+                for="${variantImageId}"
               >
-              <span>+</span>
-              <small>Upload variant image</small>
-            </label>
-            <div class="upload-limit-note">Required. Max ${MAX_IMAGE_MB}MB.</div>
+                <input
+                  type="file"
+                  id="${variantImageId}"
+                  name="variant_images"
+                  accept="image/*"
+                  data-variant-image="true"
+                  data-variant-image-type="main"
+                >
+
+                <span>+</span>
+                <small>Upload main image</small>
+              </label>
+
+              <div class="upload-limit-note">
+                Required. Max ${MAX_IMAGE_MB}MB.
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="${variantSubImage1Id}">
+                Variant Sub Image 1
+              </label>
+
+              <label
+                class="variant-upload"
+                for="${variantSubImage1Id}"
+              >
+                <input
+                  type="file"
+                  id="${variantSubImage1Id}"
+                  name="variant_sub_images_1"
+                  accept="image/*"
+                  data-variant-image="true"
+                  data-variant-image-type="sub-1"
+                >
+
+                <span>+</span>
+                <small>Upload sub image 1</small>
+              </label>
+
+              <div class="upload-limit-note">
+                Optional. Max ${MAX_IMAGE_MB}MB.
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="${variantSubImage2Id}">
+                Variant Sub Image 2
+              </label>
+
+              <label
+                class="variant-upload"
+                for="${variantSubImage2Id}"
+              >
+                <input
+                  type="file"
+                  id="${variantSubImage2Id}"
+                  name="variant_sub_images_2"
+                  accept="image/*"
+                  data-variant-image="true"
+                  data-variant-image-type="sub-2"
+                >
+
+                <span>+</span>
+                <small>Upload sub image 2</small>
+              </label>
+
+              <div class="upload-limit-note">
+                Optional. Upload after Sub Image 1.
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="${variantSubImage3Id}">
+                Variant Sub Image 3
+              </label>
+
+              <label
+                class="variant-upload"
+                for="${variantSubImage3Id}"
+              >
+                <input
+                  type="file"
+                  id="${variantSubImage3Id}"
+                  name="variant_sub_images_3"
+                  accept="image/*"
+                  data-variant-image="true"
+                  data-variant-image-type="sub-3"
+                >
+
+                <span>+</span>
+                <small>Upload sub image 3</small>
+              </label>
+
+              <div class="upload-limit-note">
+                Optional. Upload after Sub Image 2.
+              </div>
+            </div>
           </div>
 
           <div class="variant-fields">
             <div class="field">
               <label>Variant Color Name *</label>
+
               <input
                 type="text"
                 name="variant_color_names"
@@ -1098,6 +1206,7 @@
 
             <div class="field">
               <label>Variant Color Code</label>
+
               <div class="color-row">
                 <input
                   type="text"
@@ -1106,6 +1215,7 @@
                   value="#8f1731"
                   placeholder="#8f1731"
                 >
+
                 <input
                   type="color"
                   id="${variantColorPickerId}"
@@ -1117,6 +1227,7 @@
 
             <div class="field">
               <label>Actual Price</label>
+
               <input
                 type="text"
                 name="variant_actual_prices"
@@ -1129,6 +1240,7 @@
 
             <div class="field">
               <label>Offer Price</label>
+
               <input
                 type="text"
                 name="variant_offer_prices"
@@ -1140,7 +1252,13 @@
             </div>
 
             <label class="check-field">
-              <input type="checkbox" name="variant_is_available" value="${variantCount}" checked>
+              <input
+                type="checkbox"
+                name="variant_is_available"
+                value="${variantCount}"
+                checked
+              >
+
               <span>Variant Available</span>
             </label>
           </div>
@@ -1150,12 +1268,26 @@
       variantsList.appendChild(card);
 
       setupImagePreview(variantImageId);
+      setupImagePreview(variantSubImage1Id);
+      setupImagePreview(variantSubImage2Id);
+      setupImagePreview(variantSubImage3Id);
+
       setupAllPriceInputs(card);
 
-      const variantColorPicker = document.getElementById(variantColorPickerId);
-      const variantColorText = document.getElementById(variantColorTextId);
-      syncColorInputs(variantColorText, variantColorPicker);
-  const removeBtn = card.querySelector(".remove-variant-btn");
+      const variantColorPicker =
+        document.getElementById(variantColorPickerId);
+
+      const variantColorText =
+        document.getElementById(variantColorTextId);
+
+      syncColorInputs(
+        variantColorText,
+        variantColorPicker
+      );
+
+      const removeBtn =
+        card.querySelector(".remove-variant-btn");
+
       if (removeBtn) {
         removeBtn.addEventListener("click", function () {
           card.remove();
@@ -1165,7 +1297,10 @@
 
       refreshVariantTitles();
 
-      card.scrollIntoView({ behavior: "smooth", block: "center" });
+      card.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
     }
 
     function refreshVariantTitles() {
@@ -1910,39 +2045,161 @@
     async function validateVariants(errors) {
       if (!variantsList) return;
 
-      const cards = Array.from(variantsList.querySelectorAll(".variant-card"));
+      const cards = Array.from(
+        variantsList.querySelectorAll(".variant-card")
+      );
 
       for (const [index, card] of cards.entries()) {
-        const imageInput = card.querySelector('input[name="variant_images"]');
-        const colorNameInput = card.querySelector('input[name="variant_color_names"]');
-        const colorCodeInput = card.querySelector('input[name="variant_color_codes"]');
-        const actualPriceInput = card.querySelector('input[name="variant_actual_prices"]');
-        const offerPriceInput = card.querySelector('input[name="variant_offer_prices"]');
+        const variantNumber = index + 1;
 
-        const imageFile = await getSelectedFileFromInput(imageInput);
-        const colorName = String(colorNameInput?.value || "").trim();
-        const colorCode = String(colorCodeInput?.value || "").trim();
+        const imageInput = card.querySelector(
+          'input[name="variant_images"]'
+        );
+
+        const subImage1Input = card.querySelector(
+          'input[name="variant_sub_images_1"]'
+        );
+
+        const subImage2Input = card.querySelector(
+          'input[name="variant_sub_images_2"]'
+        );
+
+        const subImage3Input = card.querySelector(
+          'input[name="variant_sub_images_3"]'
+        );
+
+        const colorNameInput = card.querySelector(
+          'input[name="variant_color_names"]'
+        );
+
+        const colorCodeInput = card.querySelector(
+          'input[name="variant_color_codes"]'
+        );
+
+        const actualPriceInput = card.querySelector(
+          'input[name="variant_actual_prices"]'
+        );
+
+        const offerPriceInput = card.querySelector(
+          'input[name="variant_offer_prices"]'
+        );
+
+        const imageFile = await getSelectedFileFromInput(
+          imageInput
+        );
+
+        const subImage1 = await getSelectedFileFromInput(
+          subImage1Input
+        );
+
+        const subImage2 = await getSelectedFileFromInput(
+          subImage2Input
+        );
+
+        const subImage3 = await getSelectedFileFromInput(
+          subImage3Input
+        );
+
+        const colorName = String(
+          colorNameInput?.value || ""
+        ).trim();
+
+        const colorCode = String(
+          colorCodeInput?.value || ""
+        ).trim();
 
         if (!imageFile) {
-          addError(errors, imageInput, `Variant ${index + 1}: image is required.`);
+          addError(
+            errors,
+            imageInput,
+            `Variant ${variantNumber}: main image is required.`
+          );
         } else {
           try {
-            validateImageFile(imageFile, `Variant ${index + 1} image`);
+            validateImageFile(
+              imageFile,
+              `Variant ${variantNumber} main image`
+            );
           } catch (error) {
-            addError(errors, imageInput, error.message);
+            addError(
+              errors,
+              imageInput,
+              error.message
+            );
           }
         }
 
-        if (!colorName) {
-          addError(errors, colorNameInput, `Variant ${index + 1}: color name is required.`);
+        const optionalImages = [
+          {
+            input: subImage1Input,
+            file: subImage1,
+            label: `Variant ${variantNumber} sub image 1`
+          },
+          {
+            input: subImage2Input,
+            file: subImage2,
+            label: `Variant ${variantNumber} sub image 2`
+          },
+          {
+            input: subImage3Input,
+            file: subImage3,
+            label: `Variant ${variantNumber} sub image 3`
+          }
+        ];
+
+        optionalImages.forEach((imageItem) => {
+          if (!imageItem.file) return;
+
+          try {
+            validateImageFile(
+              imageItem.file,
+              imageItem.label
+            );
+          } catch (error) {
+            addError(
+              errors,
+              imageItem.input,
+              error.message
+            );
+          }
+        });
+
+        if (subImage2 && !subImage1) {
+          addError(
+            errors,
+            subImage2Input,
+            `Variant ${variantNumber}: upload Sub Image 1 before Sub Image 2.`
+          );
         }
 
-        if (colorName.length > 80) {
-          addError(errors, colorNameInput, `Variant ${index + 1}: color name should be under 80 characters.`);
+        if (subImage3 && !subImage2) {
+          addError(
+            errors,
+            subImage3Input,
+            `Variant ${variantNumber}: upload Sub Image 2 before Sub Image 3.`
+          );
+        }
+
+        if (!colorName) {
+          addError(
+            errors,
+            colorNameInput,
+            `Variant ${variantNumber}: color name is required.`
+          );
+        } else if (colorName.length > 80) {
+          addError(
+            errors,
+            colorNameInput,
+            `Variant ${variantNumber}: color name should be under 80 characters.`
+          );
         }
 
         if (!isValidHexColor(colorCode)) {
-          addError(errors, colorCodeInput, `Variant ${index + 1}: enter a valid color code like #2f6b45.`);
+          addError(
+            errors,
+            colorCodeInput,
+            `Variant ${variantNumber}: enter a valid color code like #2f6b45.`
+          );
         }
 
         const actual = numberValue(actualPriceInput);
@@ -1950,19 +2207,43 @@
 
         if (actual !== null) {
           if (Number.isNaN(actual)) {
-            addError(errors, actualPriceInput, `Variant ${index + 1}: actual price should be a valid number.`);
+            addError(
+              errors,
+              actualPriceInput,
+              `Variant ${variantNumber}: actual price should be a valid number.`
+            );
           } else if (actual < 0) {
-            addError(errors, actualPriceInput, `Variant ${index + 1}: actual price cannot be negative.`);
+            addError(
+              errors,
+              actualPriceInput,
+              `Variant ${variantNumber}: actual price cannot be negative.`
+            );
           }
         }
 
         if (offer !== null) {
           if (Number.isNaN(offer)) {
-            addError(errors, offerPriceInput, `Variant ${index + 1}: offer price should be a valid number.`);
+            addError(
+              errors,
+              offerPriceInput,
+              `Variant ${variantNumber}: offer price should be a valid number.`
+            );
           } else if (offer < 0) {
-            addError(errors, offerPriceInput, `Variant ${index + 1}: offer price cannot be negative.`);
-          } else if (actual !== null && !Number.isNaN(actual) && offer > actual) {
-            addError(errors, offerPriceInput, `Variant ${index + 1}: offer price cannot be greater than actual price.`);
+            addError(
+              errors,
+              offerPriceInput,
+              `Variant ${variantNumber}: offer price cannot be negative.`
+            );
+          } else if (
+            actual !== null
+            && !Number.isNaN(actual)
+            && offer > actual
+          ) {
+            addError(
+              errors,
+              offerPriceInput,
+              `Variant ${variantNumber}: offer price cannot be greater than actual price.`
+            );
           }
         }
       }
@@ -2012,16 +2293,48 @@
     async function getSelectedVariants() {
       if (!variantsList) return [];
 
-      const cards = Array.from(variantsList.querySelectorAll(".variant-card"));
+      const cards = Array.from(
+        variantsList.querySelectorAll(".variant-card")
+      );
+
       const output = [];
 
       for (const [index, card] of cards.entries()) {
-        const imageInput = card.querySelector('input[name="variant_images"]');
-        const colorNameInput = card.querySelector('input[name="variant_color_names"]');
-        const colorCodeInput = card.querySelector('input[name="variant_color_codes"]');
-        const actualPriceInput = card.querySelector('input[name="variant_actual_prices"]');
-        const offerPriceInput = card.querySelector('input[name="variant_offer_prices"]');
-        const availableInput = card.querySelector('input[name="variant_is_available"]');
+        const imageInput = card.querySelector(
+          'input[name="variant_images"]'
+        );
+
+        const subImage1Input = card.querySelector(
+          'input[name="variant_sub_images_1"]'
+        );
+
+        const subImage2Input = card.querySelector(
+          'input[name="variant_sub_images_2"]'
+        );
+
+        const subImage3Input = card.querySelector(
+          'input[name="variant_sub_images_3"]'
+        );
+
+        const colorNameInput = card.querySelector(
+          'input[name="variant_color_names"]'
+        );
+
+        const colorCodeInput = card.querySelector(
+          'input[name="variant_color_codes"]'
+        );
+
+        const actualPriceInput = card.querySelector(
+          'input[name="variant_actual_prices"]'
+        );
+
+        const offerPriceInput = card.querySelector(
+          'input[name="variant_offer_prices"]'
+        );
+
+        const availableInput = card.querySelector(
+          'input[name="variant_is_available"]'
+        );
 
         cleanPriceInput(actualPriceInput);
         cleanPriceInput(offerPriceInput);
@@ -2029,12 +2342,43 @@
         output.push({
           index,
           label: `Variant ${index + 1}`,
-          file: await getSelectedFileFromInput(imageInput),
-          colorName: String(colorNameInput?.value || "").trim(),
-          colorCode: String(colorCodeInput?.value || "").trim(),
-          actualPrice: String(actualPriceInput?.value || "").trim(),
-          offerPrice: String(offerPriceInput?.value || "").trim(),
-          isAvailable: availableInput && availableInput.checked ? "1" : "0"
+
+          file: await getSelectedFileFromInput(
+            imageInput
+          ),
+
+          subImage1: await getSelectedFileFromInput(
+            subImage1Input
+          ),
+
+          subImage2: await getSelectedFileFromInput(
+            subImage2Input
+          ),
+
+          subImage3: await getSelectedFileFromInput(
+            subImage3Input
+          ),
+
+          colorName: String(
+            colorNameInput?.value || ""
+          ).trim(),
+
+          colorCode: String(
+            colorCodeInput?.value || ""
+          ).trim(),
+
+          actualPrice: String(
+            actualPriceInput?.value || ""
+          ).trim(),
+
+          offerPrice: String(
+            offerPriceInput?.value || ""
+          ).trim(),
+
+          isAvailable:
+            availableInput && availableInput.checked
+              ? "1"
+              : "0"
         });
       }
 
@@ -2051,12 +2395,15 @@
       });
 
       formData.delete("variant_images");
+      formData.delete("variant_sub_images_1");
+      formData.delete("variant_sub_images_2");
+      formData.delete("variant_sub_images_3");
       formData.delete("variant_color_names");
       formData.delete("variant_color_codes");
       formData.delete("variant_actual_prices");
       formData.delete("variant_offer_prices");
       formData.delete("variant_is_available");
-
+      
       const mainImageInput = document.getElementById("mainImage");
       const mainImageFile = await getSelectedFileFromInput(mainImageInput);
 
@@ -2154,46 +2501,119 @@
       return data;
     }
 
-    async function uploadSingleVariant(productId, variantItem, index, total) {
-      const uploadUrlTemplate = productForm.dataset.variantUploadUrlTemplate;
+    async function uploadSingleVariant(
+      productId,
+      variantItem,
+      index,
+      total
+    ) {
+      const uploadUrlTemplate =
+        productForm.dataset.variantUploadUrlTemplate;
 
       if (!uploadUrlTemplate) {
-        throw new Error("Variant upload URL is missing. Please check product form template.");
+        throw new Error(
+          "Variant upload URL is missing. Please check product form template."
+        );
       }
 
-      const uploadUrl = uploadUrlTemplate.replace("/0/", `/${productId}/`);
+      const uploadUrl = uploadUrlTemplate.replace(
+        "/0/",
+        `/${productId}/`
+      );
 
       const formData = new FormData();
-      const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]")?.value || "";
 
-      formData.append("csrfmiddlewaretoken", csrfToken);
-      formData.append("image", variantItem.file);
-      formData.append("color_name", variantItem.colorName);
-      formData.append("color_code", variantItem.colorCode);
-      formData.append("actual_price", variantItem.actualPrice);
-      formData.append("offer_price", variantItem.offerPrice);
-      formData.append("is_available", variantItem.isAvailable);
+      const csrfToken =
+        document.querySelector(
+          "[name=csrfmiddlewaretoken]"
+        )?.value || "";
 
-      setSavingStatus(`Uploading ${variantItem.label} (${index + 1}/${total})...`);
+      formData.append(
+        "csrfmiddlewaretoken",
+        csrfToken
+      );
 
-      const response = await fetchWithTimeout(uploadUrl, {
-        method: "POST",
-        body: formData,
-        headers: {
-          "X-Requested-With": "XMLHttpRequest"
+      formData.append(
+        "image",
+        variantItem.file
+      );
+
+      if (variantItem.subImage1) {
+        formData.append(
+          "sub_image_1",
+          variantItem.subImage1
+        );
+      }
+
+      if (variantItem.subImage2) {
+        formData.append(
+          "sub_image_2",
+          variantItem.subImage2
+        );
+      }
+
+      if (variantItem.subImage3) {
+        formData.append(
+          "sub_image_3",
+          variantItem.subImage3
+        );
+      }
+
+      formData.append(
+        "color_name",
+        variantItem.colorName
+      );
+
+      formData.append(
+        "color_code",
+        variantItem.colorCode
+      );
+
+      formData.append(
+        "actual_price",
+        variantItem.actualPrice
+      );
+
+      formData.append(
+        "offer_price",
+        variantItem.offerPrice
+      );
+
+      formData.append(
+        "is_available",
+        variantItem.isAvailable
+      );
+
+      setSavingStatus(
+        `Uploading ${variantItem.label} (${index + 1}/${total})...`
+      );
+
+      const response = await fetchWithTimeout(
+        uploadUrl,
+        {
+          method: "POST",
+          body: formData,
+          headers: {
+            "X-Requested-With": "XMLHttpRequest"
+          }
         }
-      });
+      );
 
       let data = null;
 
       try {
         data = await response.json();
       } catch (error) {
-        throw new Error(`${variantItem.label} upload failed. Server returned an invalid response.`);
+        throw new Error(
+          `${variantItem.label} upload failed. Server returned an invalid response.`
+        );
       }
 
       if (!response.ok || !data.ok) {
-        throw new Error(data.message || `${variantItem.label} upload failed.`);
+        throw new Error(
+          data.message
+          || `${variantItem.label} upload failed.`
+        );
       }
 
       return data;

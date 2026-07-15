@@ -244,6 +244,8 @@
 {% endblock %}
 
 {% block extra_js %}
+  {{ variant_gallery_map|json_script:"variantGalleryData" }}
+
   <script>
     window.PP_PRODUCT_DETAIL_STOCK = {
       isSoldOut: {% if available_sizes and not in_stock_sizes %}true{% elif not available_sizes and product.stock_quantity <= 0 %}true{% else %}false{% endif %},
@@ -769,135 +771,319 @@
       const productOldPrice = document.getElementById("productOldPrice");
       const selectedColorText = document.getElementById("selectedColorText");
 
-      const thumbs = Array.from(document.querySelectorAll(".pd-thumb"));
-      const variantButtons = Array.from(document.querySelectorAll(".pd-variant"));
+      const firstExistingThumb = document.querySelector(".pd-thumb");
+      const thumbsContainer =
+        document.getElementById("productThumbs")
+        || document.querySelector(".pd-thumbs")
+        || firstExistingThumb?.parentElement
+        || null;
+
+      const variantButtons = Array.from(
+        document.querySelectorAll(".pd-variant")
+      );
+
       const imageCount = document.getElementById("imageCount");
       const galleryPrevBtn = document.querySelector(".pd-gallery-arrow--prev");
       const galleryNextBtn = document.querySelector(".pd-gallery-arrow--next");
+      const galleryDataElement = document.getElementById("variantGalleryData");
 
+      let galleryMap = {};
+      let currentGalleryImages = [];
       let currentImageIndex = 0;
+      let selectedVariantState = null;
       let swipeStartX = 0;
       let swipeStartY = 0;
-      let swipeEndX = 0;
-      let swipeEndY = 0;
+
+      try {
+        galleryMap = galleryDataElement
+          ? JSON.parse(galleryDataElement.textContent || "{}")
+          : {};
+      } catch (error) {
+        console.error("Could not read variant gallery data:", error);
+        galleryMap = {};
+      }
 
       function cleanText(value) {
         return String(value || "").trim();
       }
 
       function numberFromValue(value) {
-        const parsed = Number(String(value || "").replace(/[^0-9.-]/g, ""));
+        const parsed = Number(
+          String(value || "").replace(/[^0-9.-]/g, "")
+        );
+
         return Number.isFinite(parsed) ? parsed : 0;
+      }
+
+      function getGalleryForVariant(variantId) {
+        const safeVariantId = cleanText(variantId) || "base";
+        const selectedGallery =
+          galleryMap[safeVariantId]
+          || galleryMap.base
+          || {};
+
+        const images = Array.isArray(selectedGallery.images)
+          ? selectedGallery.images.filter(
+              (image) => cleanText(image?.url)
+            )
+          : [];
+
+        return {
+          label: cleanText(selectedGallery.label),
+          images
+        };
       }
 
       function buildVariantFromButton(button) {
         if (!button) return null;
 
         const variantId = cleanText(button.dataset.variantId) || "base";
-        const variantType = cleanText(button.dataset.variantType) || (variantId === "base" ? "base" : "variant");
-        const priceValue = numberFromValue(button.dataset.priceValue || button.dataset.price);
-        const oldPriceValue = numberFromValue(button.dataset.oldPriceValue || button.dataset.oldPrice);
+        const variantType =
+          cleanText(button.dataset.variantType)
+          || (variantId === "base" ? "base" : "variant");
+
+        const priceValue = numberFromValue(
+          button.dataset.priceValue || button.dataset.price
+        );
+
+        const oldPriceValue = numberFromValue(
+          button.dataset.oldPriceValue || button.dataset.oldPrice
+        );
+
+        const variantGallery = getGalleryForVariant(variantId);
+        const primaryImage =
+          cleanText(variantGallery.images[0]?.url)
+          || cleanText(button.dataset.image);
 
         return {
           id: variantId,
           type: variantType,
           isBase: variantType === "base" || variantId === "base",
-          colorName: cleanText(button.dataset.color),
-          image: cleanText(button.dataset.image),
+          colorName:
+            cleanText(button.dataset.color)
+            || variantGallery.label,
+          image: primaryImage,
           price: priceValue,
-          priceLabel: cleanText(button.dataset.price) || (priceValue ? "₹" + priceValue.toLocaleString("en-IN") : ""),
+          priceLabel:
+            cleanText(button.dataset.price)
+            || (
+              priceValue
+                ? "₹" + priceValue.toLocaleString("en-IN")
+                : ""
+            ),
           oldPrice: oldPriceValue,
-          oldPriceLabel: cleanText(button.dataset.oldPrice) || (oldPriceValue ? "₹" + oldPriceValue.toLocaleString("en-IN") : "")
+          oldPriceLabel:
+            cleanText(button.dataset.oldPrice)
+            || (
+              oldPriceValue
+                ? "₹" + oldPriceValue.toLocaleString("en-IN")
+                : ""
+            )
         };
       }
 
       function getActiveVariantButton() {
-        return variantButtons.find((button) => button.classList.contains("is-active")) || variantButtons[0] || null;
+        return (
+          variantButtons.find(
+            (button) => button.classList.contains("is-active")
+          )
+          || variantButtons[0]
+          || null
+        );
       }
 
       function getSelectedVariant() {
-        return buildVariantFromButton(getActiveVariantButton());
+        return (
+          selectedVariantState
+          || buildVariantFromButton(getActiveVariantButton())
+        );
       }
 
-      function updateImageCount(activeIndex) {
+      function updateImageCount() {
         if (!imageCount) return;
 
-        const total = thumbs.length || 1;
-        imageCount.textContent = `${activeIndex + 1} / ${total}`;
+        const total = currentGalleryImages.length;
+
+        imageCount.textContent = total
+          ? `${currentImageIndex + 1} / ${total}`
+          : "0 / 0";
+      }
+
+      function updateGalleryControls() {
+        const hasMultipleImages = currentGalleryImages.length > 1;
+
+        if (galleryPrevBtn) {
+          galleryPrevBtn.hidden = !hasMultipleImages;
+          galleryPrevBtn.disabled = !hasMultipleImages;
+        }
+
+        if (galleryNextBtn) {
+          galleryNextBtn.hidden = !hasMultipleImages;
+          galleryNextBtn.disabled = !hasMultipleImages;
+        }
+      }
+
+      function updateActiveThumbnail() {
+        if (!thumbsContainer) return;
+
+        const thumbs = Array.from(
+          thumbsContainer.querySelectorAll(".pd-thumb")
+        );
+
+        thumbs.forEach((thumb, index) => {
+          const isActive = index === currentImageIndex;
+
+          thumb.classList.toggle("is-active", isActive);
+          thumb.setAttribute(
+            "aria-current",
+            isActive ? "true" : "false"
+          );
+        });
       }
 
       function showGalleryImage(index) {
-        if (!mainProductImage || !thumbs.length) return;
+        const total = currentGalleryImages.length;
 
-        const total = thumbs.length;
+        if (!mainProductImage || !total) return;
+
         const safeIndex = (index + total) % total;
-        const activeThumb = thumbs[safeIndex];
-        const imageUrl = activeThumb.dataset.image;
+        const selectedImage = currentGalleryImages[safeIndex];
 
-        if (!imageUrl) return;
+        if (!selectedImage?.url) return;
 
-        mainProductImage.src = imageUrl;
+        mainProductImage.src = selectedImage.url;
+        mainProductImage.alt =
+          cleanText(selectedImage.alt)
+          || selectedVariantState?.colorName
+          || "{{ product.name|escapejs }}";
+
         currentImageIndex = safeIndex;
 
-        thumbs.forEach((item) => {
-          item.classList.remove("is-active");
-        });
-
-        activeThumb.classList.add("is-active");
-        updateImageCount(safeIndex);
+        updateActiveThumbnail();
+        updateImageCount();
       }
 
-      function selectVariant(variant) {
-        const selectedVariant = buildVariantFromButton(variant);
-        if (!selectedVariant) return null;
+      function rebuildThumbnails() {
+        if (!thumbsContainer) return;
 
-        if (mainProductImage && selectedVariant.image) {
-          mainProductImage.src = selectedVariant.image;
+        thumbsContainer.innerHTML = "";
+
+        currentGalleryImages.forEach((image, index) => {
+          const imageUrl = cleanText(image?.url);
+
+          if (!imageUrl) return;
+
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "pd-thumb";
+          button.dataset.image = imageUrl;
+          button.setAttribute(
+            "aria-label",
+            `View product image ${index + 1}`
+          );
+          button.setAttribute(
+            "aria-current",
+            index === 0 ? "true" : "false"
+          );
+
+          if (index === 0) {
+            button.classList.add("is-active");
+          }
+
+          const thumbnailImage = document.createElement("img");
+          thumbnailImage.src = imageUrl;
+          thumbnailImage.alt =
+            cleanText(image?.alt)
+            || `Product image ${index + 1}`;
+          thumbnailImage.loading = "lazy";
+          thumbnailImage.decoding = "async";
+
+          button.appendChild(thumbnailImage);
+
+          button.addEventListener("click", function () {
+            showGalleryImage(index);
+          });
+
+          thumbsContainer.appendChild(button);
+        });
+      }
+
+      function renderGallery(variantId) {
+        const selectedGallery = getGalleryForVariant(variantId);
+
+        currentGalleryImages = selectedGallery.images;
+        currentImageIndex = 0;
+
+        rebuildThumbnails();
+        updateGalleryControls();
+
+        if (currentGalleryImages.length) {
+          showGalleryImage(0);
+        } else {
+          updateImageCount();
         }
+      }
 
+      function updateVariantPrice(selectedVariant) {
         if (productPrice && selectedVariant.priceLabel) {
           productPrice.textContent = selectedVariant.priceLabel;
         }
 
-        if (selectedColorText && selectedVariant.colorName) {
-          selectedColorText.textContent = selectedVariant.colorName;
-        }
+        if (!productOldPrice) return;
 
-        if (productOldPrice) {
-          if (selectedVariant.oldPriceLabel) {
-            productOldPrice.textContent = selectedVariant.oldPriceLabel;
-            productOldPrice.hidden = false;
-          } else {
-            productOldPrice.textContent = "";
-            productOldPrice.hidden = true;
-          }
+        if (selectedVariant.oldPriceLabel) {
+          productOldPrice.textContent = selectedVariant.oldPriceLabel;
+          productOldPrice.hidden = false;
+        } else {
+          productOldPrice.textContent = "";
+          productOldPrice.hidden = true;
         }
+      }
 
-        let matchedThumb = false;
-        thumbs.forEach((thumb, index) => {
-          if (thumb.dataset.image === selectedVariant.image) {
-            currentImageIndex = index;
-            thumb.classList.add("is-active");
-            updateImageCount(index);
-            matchedThumb = true;
-          } else {
-            thumb.classList.remove("is-active");
-          }
-        });
+      function selectVariant(button) {
+        const selectedVariant = buildVariantFromButton(button);
 
-        if (!matchedThumb) {
-          updateImageCount(currentImageIndex);
-        }
+        if (!selectedVariant) return null;
 
         variantButtons.forEach((item) => {
-          item.classList.toggle("is-active", item === variant);
+          const isSelected = item === button;
+
+          item.classList.toggle("is-active", isSelected);
+          item.setAttribute(
+            "aria-pressed",
+            isSelected ? "true" : "false"
+          );
         });
 
-        window.dispatchEvent(new CustomEvent("pp-product-variant-selected", {
-          detail: selectedVariant
-        }));
+        selectedVariantState = selectedVariant;
 
-        return selectedVariant;
+        renderGallery(selectedVariant.id);
+
+        const primaryGalleryImage =
+          cleanText(currentGalleryImages[0]?.url);
+
+        if (primaryGalleryImage) {
+          selectedVariantState.image = primaryGalleryImage;
+        }
+
+        updateVariantPrice(selectedVariantState);
+
+        if (selectedColorText) {
+          selectedColorText.textContent =
+            selectedVariantState.colorName
+            || "Available colour";
+        }
+
+        window.dispatchEvent(
+          new CustomEvent(
+            "pp-product-variant-selected",
+            {
+              detail: selectedVariantState
+            }
+          )
+        );
+
+        return selectedVariantState;
       }
 
       window.PPProductVariant = {
@@ -905,65 +1091,64 @@
         selectVariantByButton: selectVariant
       };
 
-      if (galleryPrevBtn) {
-        galleryPrevBtn.addEventListener("click", () => {
-          showGalleryImage(currentImageIndex - 1);
-        });
+      galleryPrevBtn?.addEventListener("click", function () {
+        showGalleryImage(currentImageIndex - 1);
+      });
+
+      galleryNextBtn?.addEventListener("click", function () {
+        showGalleryImage(currentImageIndex + 1);
+      });
+
+      if (productSwipeArea) {
+        productSwipeArea.addEventListener(
+          "touchstart",
+          function (event) {
+            const touch = event.touches[0];
+
+            swipeStartX = touch.clientX;
+            swipeStartY = touch.clientY;
+          },
+          { passive: true }
+        );
+
+        productSwipeArea.addEventListener(
+          "touchend",
+          function (event) {
+            if (currentGalleryImages.length <= 1) return;
+
+            const touch = event.changedTouches[0];
+            const diffX = touch.clientX - swipeStartX;
+            const diffY = touch.clientY - swipeStartY;
+
+            const isHorizontalSwipe =
+              Math.abs(diffX) > 45
+              && Math.abs(diffX) > Math.abs(diffY) * 1.2;
+
+            if (!isHorizontalSwipe) return;
+
+            showGalleryImage(
+              diffX < 0
+                ? currentImageIndex + 1
+                : currentImageIndex - 1
+            );
+          },
+          { passive: true }
+        );
       }
 
-      if (galleryNextBtn) {
-        galleryNextBtn.addEventListener("click", () => {
-          showGalleryImage(currentImageIndex + 1);
-        });
-      }
-
-      if (thumbs.length <= 1) {
-        if (galleryPrevBtn) galleryPrevBtn.hidden = true;
-        if (galleryNextBtn) galleryNextBtn.hidden = true;
-      }
-
-      thumbs.forEach((thumb, index) => {
-        thumb.addEventListener("click", () => {
-          showGalleryImage(index);
+      variantButtons.forEach((button) => {
+        button.addEventListener("click", function () {
+          selectVariant(button);
         });
       });
 
-      updateImageCount(0);
+      const initialVariantButton = getActiveVariantButton();
 
-      if (productSwipeArea && thumbs.length > 1) {
-        productSwipeArea.addEventListener("touchstart", (event) => {
-          const touch = event.touches[0];
-
-          swipeStartX = touch.clientX;
-          swipeStartY = touch.clientY;
-        }, { passive: true });
-
-        productSwipeArea.addEventListener("touchend", (event) => {
-          const touch = event.changedTouches[0];
-
-          swipeEndX = touch.clientX;
-          swipeEndY = touch.clientY;
-
-          const diffX = swipeEndX - swipeStartX;
-          const diffY = swipeEndY - swipeStartY;
-
-          const isHorizontalSwipe = Math.abs(diffX) > 45 && Math.abs(diffX) > Math.abs(diffY) * 1.2;
-
-          if (!isHorizontalSwipe) return;
-
-          if (diffX < 0) {
-            showGalleryImage(currentImageIndex + 1);
-          } else {
-            showGalleryImage(currentImageIndex - 1);
-          }
-        }, { passive: true });
+      if (initialVariantButton) {
+        selectVariant(initialVariantButton);
+      } else {
+        renderGallery("base");
       }
-
-      variantButtons.forEach((variant) => {
-        variant.addEventListener("click", () => {
-          selectVariant(variant);
-        });
-      });
     })();
   </script>
 {% endblock %}
