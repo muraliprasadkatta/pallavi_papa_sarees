@@ -621,9 +621,12 @@ def _build_product_gallery_map(product, variants):
 
 
 def product_detail_view(request, product_id):
-    size_measurements_queryset = ProductSizeMeasurement.objects.order_by(
-        "sort_order",
-        "id",
+    size_measurements_queryset = (
+        ProductSizeMeasurement.objects
+        .order_by(
+            "sort_order",
+            "id",
+        )
     )
 
     sizes_queryset = (
@@ -636,7 +639,10 @@ def product_detail_view(request, product_id):
                 to_attr="prefetched_custom_measurements",
             )
         )
-        .order_by("sort_order", "id")
+        .order_by(
+            "sort_order",
+            "id",
+        )
     )
 
     variants_queryset = (
@@ -664,30 +670,134 @@ def product_detail_view(request, product_id):
         id=product_id,
     )
 
-    variants = list(getattr(product, "available_variants", []))
-    variant_gallery_map = _build_product_gallery_map(product, variants)
+    variants = list(
+        getattr(
+            product,
+            "available_variants",
+            [],
+        )
+    )
 
-    # Keep stock-0 sizes in this list so the template can show them as
-    # disabled Sold Out options instead of hiding them.
-    available_sizes = list(getattr(product, "display_sizes_for_detail", []))
+    variant_gallery_map = _build_product_gallery_map(
+        product,
+        variants,
+    )
+
+    # URL example:
+    # /product/10/?variant=5
+    requested_variant_id = (
+        request.GET.get("variant")
+        or ""
+    ).strip()
+
+    share_variant = None
+
+    if requested_variant_id:
+        share_variant = next(
+            (
+                variant
+                for variant in variants
+                if str(variant.id) == requested_variant_id
+            ),
+            None,
+        )
+
+    # Selected variant main image should be used for
+    # WhatsApp/Open Graph preview.
+    if (
+        share_variant
+        and share_variant.variant_image
+    ):
+        share_image_field = (
+            share_variant.variant_image
+        )
+    else:
+        share_image_field = product.main_image
+
+    share_image_url = ""
+
+    if share_image_field:
+        try:
+            share_image_url = (
+                request.build_absolute_uri(
+                    share_image_field.url
+                )
+            )
+        except (
+            ValueError,
+            AttributeError,
+        ):
+            share_image_url = ""
+
+    share_title = product.name
+
+    if (
+        share_variant
+        and share_variant.color_name
+    ):
+        share_title = (
+            f"{product.name} - "
+            f"{share_variant.color_name}"
+        )
+
+    base_share_url = request.build_absolute_uri(
+        request.path
+    )
+
+    if share_variant:
+        share_url = (
+            f"{base_share_url}"
+            f"?variant={share_variant.id}"
+        )
+    else:
+        share_url = base_share_url
+
+    # Keep stock-0 sizes in this list so the
+    # template can show them as disabled Sold Out options.
+    available_sizes = list(
+        getattr(
+            product,
+            "display_sizes_for_detail",
+            [],
+        )
+    )
+
     in_stock_sizes = [
         product_size
         for product_size in available_sizes
         if product_size.stock_quantity > 0
     ]
 
-    default_size = in_stock_sizes[0] if in_stock_sizes else (
-        available_sizes[0] if available_sizes else None
+    default_size = (
+        in_stock_sizes[0]
+        if in_stock_sizes
+        else (
+            available_sizes[0]
+            if available_sizes
+            else None
+        )
     )
 
-    legacy_product_size = (product.product_size or "").strip()
-    size_measurement_groups = _build_size_measurement_groups(available_sizes)
+    legacy_product_size = (
+        product.product_size
+        or ""
+    ).strip()
+
+    size_measurement_groups = (
+        _build_size_measurement_groups(
+            available_sizes
+        )
+    )
+
     product_is_sold_out = (
-        bool(available_sizes)
-        and not in_stock_sizes
-    ) or (
-        not available_sizes
-        and product.stock_quantity <= 0
+        (
+            bool(available_sizes)
+            and not in_stock_sizes
+        )
+        or (
+            not available_sizes
+            and product.stock_quantity <= 0
+        )
     )
 
     related_fields = (
@@ -712,8 +822,13 @@ def product_detail_view(request, product_id):
     same_category_products = (
         Product.objects
         .select_related("category")
-        .prefetch_related(_card_variants_prefetch())
-        .filter(is_available=True, category=product.category)
+        .prefetch_related(
+            _card_variants_prefetch()
+        )
+        .filter(
+            is_available=True,
+            category=product.category,
+        )
         .exclude(id=product.id)
         .only(*related_fields)
         .order_by("-created_at")[:4]
@@ -722,7 +837,9 @@ def product_detail_view(request, product_id):
     different_category_products = (
         Product.objects
         .select_related("category")
-        .prefetch_related(_card_variants_prefetch())
+        .prefetch_related(
+            _card_variants_prefetch()
+        )
         .filter(is_available=True)
         .exclude(id=product.id)
         .exclude(category=product.category)
@@ -734,15 +851,33 @@ def product_detail_view(request, product_id):
         "product": product,
         "variants": variants,
         "variant_gallery_map": variant_gallery_map,
+
+        # Variant sharing/Open Graph data
+        "requested_variant_id": requested_variant_id,
+        "share_variant": share_variant,
+        "share_image_url": share_image_url,
+        "share_title": share_title,
+        "share_url": share_url,
+
         "available_sizes": available_sizes,
         "in_stock_sizes": in_stock_sizes,
         "default_size": default_size,
         "legacy_product_size": legacy_product_size,
-        "has_size_options": bool(available_sizes),
-        "product_is_sold_out": product_is_sold_out,
-        "size_measurement_groups": size_measurement_groups,
-        "same_category_products": same_category_products,
-        "different_category_products": different_category_products,
+        "has_size_options": bool(
+            available_sizes
+        ),
+        "product_is_sold_out": (
+            product_is_sold_out
+        ),
+        "size_measurement_groups": (
+            size_measurement_groups
+        ),
+        "same_category_products": (
+            same_category_products
+        ),
+        "different_category_products": (
+            different_category_products
+        ),
     }
 
     return render(
@@ -750,7 +885,6 @@ def product_detail_view(request, product_id):
         "store/product_detail/product_detail.html",
         context,
     )
-
 
 def about_contact_page(request):
     return render(

@@ -18,7 +18,7 @@
 
   <meta
     property="og:title"
-    content="{{ product.name }} | Pallavi Papa Sarees Collections"
+    content="{{ share_title|default:product.name }} | Pallavi Papa Sarees Collections"
   >
 
   <meta
@@ -28,23 +28,23 @@
 
   <meta
     property="og:url"
-    content="{{ request.scheme }}://{{ request.get_host }}{{ product_path }}"
+    content="{{ share_url }}"
   >
 
-  {% if product.main_image %}
+  {% if share_image_url %}
     <meta
       property="og:image"
-      content="{{ product.main_image.url }}"
+      content="{{ share_image_url }}"
     >
 
     <meta
       property="og:image:secure_url"
-      content="{{ product.main_image.url }}"
+      content="{{ share_image_url }}"
     >
 
     <meta
       property="og:image:alt"
-      content="{{ product.name }}"
+      content="{{ share_title|default:product.name }}"
     >
   {% endif %}
 
@@ -52,7 +52,7 @@
 
   <meta
     name="twitter:title"
-    content="{{ product.name }} | Pallavi Papa Sarees Collections"
+    content="{{ share_title|default:product.name }} | Pallavi Papa Sarees Collections"
   >
 
   <meta
@@ -60,10 +60,10 @@
     content="{% if product.category %}{{ product.category.name }} • {% endif %}{% if product.offer_price %}₹{{ product.offer_price|floatformat:0 }}{% else %}₹{{ product.actual_price|floatformat:0 }}{% endif %}"
   >
 
-  {% if product.main_image %}
+  {% if share_image_url %}
     <meta
       name="twitter:image"
-      content="{{ product.main_image.url }}"
+      content="{{ share_image_url }}"
     >
   {% endif %}
 
@@ -714,7 +714,9 @@
           if (sizeApi?.requiresSize && !selectedSize && !sizeApi?.isSoldOut?.()) return;
 
           const selectedVariant = getSelectedVariantForWhatsApp();
-          const productUrl = absoluteUrl(link.dataset.productUrl);
+          const productUrl = absoluteUrl(
+            window.location.href
+          );
           const productPrice = Number(selectedVariant?.price || link.dataset.productPrice || 0);
           const selectedColor = meaningfulColor(selectedVariant?.colorName);
 
@@ -1040,6 +1042,31 @@
         }
       }
 
+
+      function updateVariantUrl(variantId) {
+        const url = new URL(window.location.href);
+        const safeVariantId = cleanText(variantId);
+
+        if (
+          safeVariantId
+          && safeVariantId !== "base"
+        ) {
+          url.searchParams.set(
+            "variant",
+            safeVariantId
+          );
+        } else {
+          url.searchParams.delete("variant");
+        }
+
+        window.history.replaceState(
+          {},
+          "",
+          url.toString()
+        );
+      }
+
+
       function selectVariant(button) {
         const selectedVariant = buildVariantFromButton(button);
 
@@ -1056,6 +1083,9 @@
         });
 
         selectedVariantState = selectedVariant;
+        updateVariantUrl(
+          selectedVariantState.id
+        );
 
         renderGallery(selectedVariant.id);
 
@@ -1142,7 +1172,18 @@
         });
       });
 
-      const initialVariantButton = getActiveVariantButton();
+      const requestedVariantId =
+        new URLSearchParams(
+          window.location.search
+        ).get("variant");
+
+      const initialVariantButton =
+        variantButtons.find(
+          (button) =>
+            cleanText(button.dataset.variantId)
+            === cleanText(requestedVariantId)
+        )
+        || getActiveVariantButton();
 
       if (initialVariantButton) {
         selectVariant(initialVariantButton);
