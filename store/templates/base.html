@@ -6,6 +6,49 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <!-- Progressive Web App -->
+  <link
+    rel="manifest"
+    href="{% url 'pwa_manifest' %}"
+  >
+
+  <meta
+    name="theme-color"
+    content="#eff4da"
+  >
+
+  <meta
+    name="application-name"
+    content="Pallavi Papa"
+  >
+
+  <meta
+    name="mobile-web-app-capable"
+    content="yes"
+  >
+
+  <meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+  >
+
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="default"
+  >
+
+  <meta
+    name="apple-mobile-web-app-title"
+    content="Pallavi Papa"
+  >
+
+  <link
+    rel="apple-touch-icon"
+    sizes="180x180"
+    href="{% static 'store/pwa/icons/apple-touch-icon.png' %}?v=2"
+  >
+
+
   <title>{% block title %}Pallavi Papa Sarees Collections{% endblock %}</title>
 
   <link rel="icon" type="image/png" sizes="48x48" href="{% static 'store/favicon/favicon-48x48.png' %}?v=2">
@@ -140,6 +183,39 @@
 
   <!-- Brand first-open splash JS -->
   <script src="{% static 'store/js/brand/splash.js' %}?v=33"></script>
+
+  <script src="{% static 'store/js/pwa_install.js' %}?v=2"></script>
+
+    <!-- Register Pallavi Papa service worker -->
+  <script>
+    (function () {
+      if (!("serviceWorker" in navigator)) {
+        return;
+      }
+
+      window.addEventListener("load", function () {
+        navigator.serviceWorker
+          .register(
+            "{% url 'service_worker' %}",
+            {
+              scope: "/"
+            }
+          )
+          .then(function (registration) {
+            console.log(
+              "Pallavi Papa service worker registered:",
+              registration.scope
+            );
+          })
+          .catch(function (error) {
+            console.error(
+              "Pallavi Papa service worker registration failed:",
+              error
+            );
+          });
+      });
+    })();
+  </script>
 
   {% block extra_js %}{% endblock %}
 </body>

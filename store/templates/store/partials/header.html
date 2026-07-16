@@ -154,6 +154,43 @@
       </a>
     </nav>
 
+    <button
+      type="button"
+      class="site-menu-install"
+      data-pwa-install
+      aria-label="Install Pallavi Papa app"
+      aria-hidden="true"
+      hidden
+    >
+      <span class="site-menu-install__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 3v11"/>
+          <path d="m8 10 4 4 4-4"/>
+          <path d="M5 16v3h14v-3"/>
+        </svg>
+      </span>
+
+      <span class="site-menu-install__copy">
+        <strong>Install App</strong>
+        <small>Experience it like an app</small>
+      </span>
+
+      <span class="site-menu-install__arrow" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="m9 5 7 7-7 7"/>
+        </svg>
+      </span>
+
+      <span class="site-menu-install__sparkles" aria-hidden="true">
+        <span>✦</span>
+        <span>✧</span>
+      </span>
+
+      <span class="site-menu-install__ribbon" aria-hidden="true">
+        NEW
+      </span>
+    </button>
+
     <div class="site-menu-actions">
       <a
         href="https://api.whatsapp.com/send?phone=918333895789&amp;text=Hi%20Pallavi%20Papa%20Collections%2C%20I%20came%20from%20your%20website."
@@ -165,6 +202,91 @@
       </a>
     </div>
   </aside>
+
+
+  <div
+    class="pwa-ios-guide"
+    data-pwa-ios-guide
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="pwaIosGuideTitle"
+    hidden
+  >
+    <section class="pwa-ios-guide__card">
+      <button
+        type="button"
+        class="pwa-ios-guide__close"
+        aria-label="Close install instructions"
+        data-pwa-ios-guide-close
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M6 6l12 12M18 6 6 18"/>
+        </svg>
+      </button>
+
+      <div class="pwa-ios-guide__app-icon" aria-hidden="true">
+        <img
+          src="/static/store/pwa/icons/apple-touch-icon.png"
+          alt=""
+          width="72"
+          height="72"
+        >
+      </div>
+
+      <p class="pwa-ios-guide__eyebrow">Install on iPhone or iPad</p>
+      <h2 id="pwaIosGuideTitle">Add Pallavi Papa to your Home Screen</h2>
+      <p class="pwa-ios-guide__intro">
+        Open the browser menu and follow these quick steps.
+      </p>
+
+      <ol class="pwa-ios-guide__steps">
+        <li>
+          <span class="pwa-ios-guide__step-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 16V3"/>
+              <path d="m8 7 4-4 4 4"/>
+              <path d="M5 11v9h14v-9"/>
+            </svg>
+          </span>
+          <span>
+            <strong>Tap Share</strong>
+            <small>Use the Share icon in Safari.</small>
+          </span>
+        </li>
+
+        <li>
+          <span class="pwa-ios-guide__step-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 5v14M5 12h14"/>
+            </svg>
+          </span>
+          <span>
+            <strong>Add to Home Screen</strong>
+            <small>Choose it from the share menu.</small>
+          </span>
+        </li>
+
+        <li>
+          <span class="pwa-ios-guide__step-icon pwa-ios-guide__step-icon--text" aria-hidden="true">
+            Add
+          </span>
+          <span>
+            <strong>Tap Add</strong>
+            <small>The app icon will appear on your Home Screen.</small>
+          </span>
+        </li>
+      </ol>
+
+      <button
+        type="button"
+        class="pwa-ios-guide__done"
+        data-pwa-ios-guide-close
+      >
+        Got it
+      </button>
+    </section>
+  </div>
+
 {% endif %}
 
 <style>
@@ -628,6 +750,378 @@ body.site-menu-open {
   font-size: 13px !important;
   font-weight: 850 !important;
   letter-spacing: 0 !important;
+}
+
+
+/* =========================
+   PWA INSTALL CARD
+========================= */
+
+.site-menu-install[hidden],
+.pwa-ios-guide[hidden] {
+  display: none !important;
+}
+
+.site-menu-install {
+  position: relative !important;
+  width: 100% !important;
+  min-height: 76px !important;
+  margin: 0 0 12px !important;
+  padding: 12px 46px 12px 12px !important;
+  overflow: hidden !important;
+
+  border: 1px solid rgba(255, 211, 92, 0.92) !important;
+  border-radius: 12px !important;
+  color: #ffffff !important;
+  background:
+    radial-gradient(
+      circle at 15% 0%,
+      rgba(255, 255, 255, 0.18),
+      transparent 38%
+    ),
+    linear-gradient(
+      135deg,
+      #118865 0%,
+      #087052 50%,
+      #04523d 100%
+    ) !important;
+  box-shadow:
+    0 14px 28px rgba(5, 84, 62, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+
+  display: grid !important;
+  grid-template-columns: 46px minmax(0, 1fr) 22px !important;
+  align-items: center !important;
+  gap: 12px !important;
+  text-align: left !important;
+  cursor: pointer !important;
+
+  transition:
+    transform 170ms ease,
+    box-shadow 170ms ease,
+    filter 170ms ease !important;
+}
+
+.site-menu-install:hover,
+.site-menu-install:focus-visible {
+  transform: translateY(-2px) !important;
+  filter: saturate(1.05) brightness(1.02) !important;
+  box-shadow:
+    0 18px 34px rgba(5, 84, 62, 0.29),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  outline: none !important;
+}
+
+.site-menu-install:active {
+  transform: translateY(0) scale(0.992) !important;
+}
+
+.site-menu-install__icon {
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 12px !important;
+  color: #095b45 !important;
+  background:
+    linear-gradient(
+      145deg,
+      #fff0aa 0%,
+      #ffd86a 55%,
+      #f6bc3f 100%
+    ) !important;
+  box-shadow:
+    0 8px 18px rgba(22, 65, 50, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75) !important;
+  display: grid !important;
+  place-items: center !important;
+}
+
+.site-menu-install__icon svg {
+  width: 24px !important;
+  height: 24px !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 2 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+.site-menu-install__copy {
+  min-width: 0 !important;
+  display: block !important;
+}
+
+.site-menu-install__copy strong {
+  display: block !important;
+  color: #ffffff !important;
+  font-size: 15px !important;
+  font-weight: 900 !important;
+  line-height: 1.15 !important;
+  letter-spacing: 0.005em !important;
+}
+
+.site-menu-install__copy small {
+  display: block !important;
+  margin-top: 4px !important;
+  color: rgba(255, 244, 194, 0.94) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+}
+
+.site-menu-install__arrow {
+  color: rgba(255, 255, 255, 0.94) !important;
+  display: grid !important;
+  place-items: center !important;
+}
+
+.site-menu-install__arrow svg {
+  width: 21px !important;
+  height: 21px !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 2.2 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+.site-menu-install__sparkles {
+  position: absolute !important;
+  right: 31px !important;
+  bottom: 8px !important;
+  color: #ffd96d !important;
+  pointer-events: none !important;
+}
+
+.site-menu-install__sparkles span:first-child {
+  font-size: 12px !important;
+}
+
+.site-menu-install__sparkles span:last-child {
+  margin-left: 2px !important;
+  font-size: 8px !important;
+}
+
+.site-menu-install__ribbon {
+  position: absolute !important;
+  top: 7px !important;
+  right: -27px !important;
+  width: 86px !important;
+  padding: 3px 0 !important;
+  color: #064d39 !important;
+  background: #ffdc72 !important;
+  box-shadow: 0 2px 8px rgba(28, 54, 44, 0.16) !important;
+  font-size: 9px !important;
+  font-weight: 950 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.08em !important;
+  text-align: center !important;
+  transform: rotate(45deg) !important;
+  transform-origin: center !important;
+  pointer-events: none !important;
+}
+
+/* =========================
+   IOS INSTALL GUIDE
+========================= */
+
+html.pwa-guide-open,
+html.pwa-guide-open body {
+  overflow: hidden !important;
+}
+
+.pwa-ios-guide {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1900 !important;
+  padding: 20px !important;
+  background: rgba(13, 39, 31, 0.58) !important;
+  backdrop-filter: blur(7px) !important;
+  -webkit-backdrop-filter: blur(7px) !important;
+  display: grid !important;
+  place-items: end center !important;
+}
+
+.pwa-ios-guide__card {
+  position: relative !important;
+  width: min(100%, 430px) !important;
+  max-height: min(88dvh, 720px) !important;
+  padding: 26px 20px 20px !important;
+  overflow-y: auto !important;
+  border: 1px solid rgba(207, 175, 86, 0.38) !important;
+  border-radius: 24px !important;
+  color: #17382d !important;
+  background:
+    radial-gradient(
+      circle at top,
+      rgba(239, 244, 218, 0.95),
+      rgba(255, 251, 243, 0.98) 52%,
+      #ffffff 100%
+    ) !important;
+  box-shadow: 0 28px 70px rgba(7, 47, 35, 0.30) !important;
+  text-align: center !important;
+}
+
+.pwa-ios-guide__close {
+  position: absolute !important;
+  top: 14px !important;
+  right: 14px !important;
+  width: 36px !important;
+  height: 36px !important;
+  padding: 0 !important;
+  border: 1px solid rgba(12, 94, 69, 0.14) !important;
+  border-radius: 999px !important;
+  color: #0b644b !important;
+  background: rgba(255, 255, 255, 0.82) !important;
+  display: grid !important;
+  place-items: center !important;
+  cursor: pointer !important;
+}
+
+.pwa-ios-guide__close svg {
+  width: 18px !important;
+  height: 18px !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 2 !important;
+  stroke-linecap: round !important;
+}
+
+.pwa-ios-guide__app-icon {
+  width: 72px !important;
+  height: 72px !important;
+  margin: 0 auto 14px !important;
+  overflow: hidden !important;
+  border-radius: 18px !important;
+  box-shadow: 0 12px 24px rgba(7, 86, 62, 0.16) !important;
+}
+
+.pwa-ios-guide__app-icon img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
+.pwa-ios-guide__eyebrow {
+  margin: 0 0 6px !important;
+  color: #0d7658 !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.09em !important;
+  text-transform: uppercase !important;
+}
+
+.pwa-ios-guide h2 {
+  margin: 0 !important;
+  color: #16382c !important;
+  font-family: var(--font-serif) !important;
+  font-size: clamp(23px, 6vw, 30px) !important;
+  font-weight: 600 !important;
+  line-height: 1.14 !important;
+}
+
+.pwa-ios-guide__intro {
+  margin: 10px auto 0 !important;
+  max-width: 310px !important;
+  color: rgba(23, 56, 45, 0.68) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1.5 !important;
+}
+
+.pwa-ios-guide__steps {
+  margin: 20px 0 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+  display: grid !important;
+  gap: 10px !important;
+  text-align: left !important;
+}
+
+.pwa-ios-guide__steps li {
+  min-height: 64px !important;
+  padding: 10px 12px !important;
+  border: 1px solid rgba(13, 118, 88, 0.13) !important;
+  border-radius: 14px !important;
+  background: rgba(255, 255, 255, 0.75) !important;
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) !important;
+  align-items: center !important;
+  gap: 11px !important;
+}
+
+.pwa-ios-guide__step-icon {
+  width: 42px !important;
+  height: 42px !important;
+  border-radius: 12px !important;
+  color: #0b664c !important;
+  background: #eef5d9 !important;
+  display: grid !important;
+  place-items: center !important;
+}
+
+.pwa-ios-guide__step-icon svg {
+  width: 22px !important;
+  height: 22px !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.9 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+
+.pwa-ios-guide__step-icon--text {
+  font-size: 12px !important;
+  font-weight: 900 !important;
+}
+
+.pwa-ios-guide__steps strong {
+  display: block !important;
+  color: #17382d !important;
+  font-size: 13px !important;
+  font-weight: 850 !important;
+  line-height: 1.2 !important;
+}
+
+.pwa-ios-guide__steps small {
+  display: block !important;
+  margin-top: 3px !important;
+  color: rgba(23, 56, 45, 0.64) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  line-height: 1.35 !important;
+}
+
+.pwa-ios-guide__done {
+  width: 100% !important;
+  min-height: 48px !important;
+  margin-top: 18px !important;
+  padding: 11px 18px !important;
+  border: 0 !important;
+  border-radius: 14px !important;
+  color: #ffffff !important;
+  background:
+    linear-gradient(
+      135deg,
+      #118865,
+      #056046
+    ) !important;
+  box-shadow: 0 12px 24px rgba(5, 96, 70, 0.20) !important;
+  font-size: 14px !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+}
+
+@media (min-width: 768px) {
+  .pwa-ios-guide {
+    place-items: center !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-menu-install {
+    transition: none !important;
+  }
 }
 
 /* =========================
