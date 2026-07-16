@@ -170,9 +170,9 @@
         </svg>
       </span>
 
-      <span class="site-menu-install__copy">
-        <strong>Install App</strong>
-        <small>Experience it like an app</small>
+      <span class="site-menu-install__copy" aria-live="polite">
+        <strong data-pwa-install-title>Install App</strong>
+        <small data-pwa-install-subtitle>Experience it like an app</small>
       </span>
 
       <span class="site-menu-install__arrow" aria-hidden="true">
@@ -814,6 +814,43 @@ body.site-menu-open {
 
 .site-menu-install:active {
   transform: translateY(0) scale(0.992) !important;
+}
+
+.site-menu-install:disabled,
+.site-menu-install.is-installing {
+  cursor: wait !important;
+  transform: none !important;
+  filter: saturate(0.88) brightness(0.98) !important;
+  box-shadow:
+    0 12px 24px rgba(5, 84, 62, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+}
+
+.site-menu-install.is-installing .site-menu-install__icon svg {
+  display: none !important;
+}
+
+.site-menu-install.is-installing .site-menu-install__icon::after {
+  content: "";
+  width: 21px !important;
+  height: 21px !important;
+  border: 3px solid rgba(9, 91, 69, 0.25) !important;
+  border-top-color: #095b45 !important;
+  border-radius: 50% !important;
+  animation: pwa-install-spinner 780ms linear infinite !important;
+}
+
+.site-menu-install.is-installing .site-menu-install__arrow,
+.site-menu-install.is-installing .site-menu-install__sparkles,
+.site-menu-install.is-installing .site-menu-install__ribbon {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+@keyframes pwa-install-spinner {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .site-menu-install__icon {

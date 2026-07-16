@@ -2,6 +2,9 @@
   "use strict";
 
   let deferredInstallPrompt = null;
+  let installPromptOpen = false;
+  let installInProgress = false;
+  let appInstallCompleted = false;
 
   const installButtons = Array.from(
     document.querySelectorAll("[data-pwa-install]")
@@ -57,6 +60,41 @@
     });
   }
 
+  function setInstallButtonsBusy(isBusy) {
+    installButtons.forEach(function (button) {
+      const title = button.querySelector(
+        "[data-pwa-install-title]"
+      );
+
+      const subtitle = button.querySelector(
+        "[data-pwa-install-subtitle]"
+      );
+
+      button.disabled = isBusy;
+      button.classList.toggle(
+        "is-installing",
+        isBusy
+      );
+
+      button.setAttribute(
+        "aria-busy",
+        isBusy ? "true" : "false"
+      );
+
+      if (title) {
+        title.textContent = isBusy
+          ? "Installing App…"
+          : "Install App";
+      }
+
+      if (subtitle) {
+        subtitle.textContent = isBusy
+          ? "Adding it to your device"
+          : "Experience it like an app";
+      }
+    });
+  }
+
   function openIosGuide() {
     if (!iosGuide) {
       return;
@@ -103,19 +141,19 @@
       return;
     }
 
-    if (!deferredInstallPrompt) {
+    if (
+      !deferredInstallPrompt
+      || installPromptOpen
+      || installInProgress
+    ) {
       return;
     }
 
     const currentInstallPrompt = deferredInstallPrompt;
 
-    /*
-     * A BeforeInstallPromptEvent can be used only once.
-     * Clear only the event being consumed here. If the browser fires a new
-     * beforeinstallprompt event after a dismissal, the global variable will
-     * receive that fresh event and the Install option remains usable.
-     */
+    /* Each BeforeInstallPromptEvent can be used only once. */
     deferredInstallPrompt = null;
+    installPromptOpen = true;
 
     try {
       currentInstallPrompt.prompt();
@@ -123,10 +161,22 @@
       const choiceResult =
         await currentInstallPrompt.userChoice;
 
-      if (choiceResult.outcome === "accepted") {
-        setInstallButtonsVisible(false);
-      } else {
-        /* User pressed Cancel: keep the Install option visible. */
+      installPromptOpen = false;
+
+      if (choiceResult.outcome === "dismissed") {
+        /* Cancel: keep the normal Install App button visible. */
+        setInstallButtonsBusy(false);
+        setInstallButtonsVisible(true);
+        return;
+      }
+
+      /*
+       * Show "Installing App…" only after the user confirms
+       * Install in the browser's native popup.
+       */
+      if (!appInstallCompleted && !isStandaloneMode()) {
+        installInProgress = true;
+        setInstallButtonsBusy(true);
         setInstallButtonsVisible(true);
       }
     } catch (error) {
@@ -135,7 +185,9 @@
         error
       );
 
-      /* A temporary prompt error must not permanently remove the option. */
+      installPromptOpen = false;
+      installInProgress = false;
+      setInstallButtonsBusy(false);
       setInstallButtonsVisible(true);
     }
   }
@@ -185,7 +237,12 @@
 
       deferredInstallPrompt = event;
 
-      if (!isStandaloneMode()) {
+      if (
+        !isStandaloneMode()
+        && !installPromptOpen
+        && !installInProgress
+      ) {
+        setInstallButtonsBusy(false);
         setInstallButtonsVisible(true);
       }
     }
@@ -194,8 +251,12 @@
   window.addEventListener(
     "appinstalled",
     function () {
+      appInstallCompleted = true;
       deferredInstallPrompt = null;
+      installPromptOpen = false;
+      installInProgress = false;
 
+      setInstallButtonsBusy(false);
       setInstallButtonsVisible(false);
       closeIosGuide();
     }
@@ -213,12 +274,19 @@
       "change",
       function (event) {
         if (event.matches) {
+          appInstallCompleted = true;
+          deferredInstallPrompt = null;
+          installPromptOpen = false;
+          installInProgress = false;
+          setInstallButtonsBusy(false);
           setInstallButtonsVisible(false);
           closeIosGuide();
         }
       }
     );
   }
+
+  setInstallButtonsBusy(false);
 
   if (isStandaloneMode()) {
     setInstallButtonsVisible(false);
