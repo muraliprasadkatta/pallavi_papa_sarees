@@ -6,10 +6,9 @@
   let installInProgress = false;
   let installAccepted = false;
   let appInstallCompleted = false;
-  let installingStateStartedAt = 0;
   let installedHideTimer = null;
 
-  const minimumInstallingStateMs = 900;
+  const installedConfirmationMs = 5000;
 
   const installButtons = Array.from(
     document.querySelectorAll("[data-pwa-install]")
@@ -80,6 +79,7 @@
         "is-installing",
         isBusy
       );
+      button.classList.remove("is-installed");
 
       button.setAttribute(
         "aria-busy",
@@ -100,37 +100,59 @@
     });
   }
 
+  function setInstallButtonsInstalled() {
+    installButtons.forEach(function (button) {
+      const title = button.querySelector(
+        "[data-pwa-install-title]"
+      );
+
+      const subtitle = button.querySelector(
+        "[data-pwa-install-subtitle]"
+      );
+
+      button.disabled = true;
+      button.classList.remove("is-installing");
+      button.classList.add("is-installed");
+      button.setAttribute("aria-busy", "false");
+
+      if (title) {
+        title.textContent = "App Installed ✓";
+      }
+
+      if (subtitle) {
+        subtitle.textContent = "Open it from your home screen";
+      }
+    });
+  }
+
   function beginInstallingState() {
     installAccepted = true;
     installInProgress = true;
-    installingStateStartedAt = Date.now();
-
     setInstallButtonsBusy(true);
     setInstallButtonsVisible(true);
   }
 
   function finishInstalledState() {
-    const elapsed = installingStateStartedAt
-      ? Date.now() - installingStateStartedAt
-      : minimumInstallingStateMs;
-
-    const remainingTime = Math.max(
-      0,
-      minimumInstallingStateMs - elapsed
-    );
+    installPromptOpen = false;
+    installInProgress = false;
+    installAccepted = false;
 
     window.clearTimeout(installedHideTimer);
 
+    /*
+     * appinstalled is the browser's installation-complete signal.
+     * Keep a clear success confirmation visible because Android's
+     * own notification can be missed among other notifications.
+     */
+    setInstallButtonsInstalled();
+    setInstallButtonsVisible(true);
+
     installedHideTimer = window.setTimeout(
       function () {
-        installPromptOpen = false;
-        installInProgress = false;
-        installAccepted = false;
-
-        setInstallButtonsBusy(false);
         setInstallButtonsVisible(false);
+        setInstallButtonsBusy(false);
       },
-      remainingTime
+      installedConfirmationMs
     );
   }
 
