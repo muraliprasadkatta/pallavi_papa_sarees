@@ -45,6 +45,13 @@ def pwa_manifest_view(request):
         "theme_color": "#eff4da",
         "lang": "en-IN",
         "dir": "ltr",
+        "related_applications": [
+            {
+                "platform": "webapp",
+                "url": reverse("pwa_manifest"),
+                "id": request.build_absolute_uri(home_url),
+            }
+        ],
         "icons": [
             {
                 "src": _pwa_asset("store/pwa/icons/icon-192.png"),
