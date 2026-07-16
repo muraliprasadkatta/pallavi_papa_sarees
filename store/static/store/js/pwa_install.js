@@ -4,7 +4,12 @@
   let deferredInstallPrompt = null;
   let installPromptOpen = false;
   let installInProgress = false;
+  let installAccepted = false;
   let appInstallCompleted = false;
+  let installingStateStartedAt = 0;
+  let installedHideTimer = null;
+
+  const minimumInstallingStateMs = 900;
 
   const installButtons = Array.from(
     document.querySelectorAll("[data-pwa-install]")
@@ -95,6 +100,63 @@
     });
   }
 
+  function beginInstallingState() {
+    installAccepted = true;
+    installInProgress = true;
+    installingStateStartedAt = Date.now();
+
+    setInstallButtonsBusy(true);
+    setInstallButtonsVisible(true);
+  }
+
+  function finishInstalledState() {
+    const elapsed = installingStateStartedAt
+      ? Date.now() - installingStateStartedAt
+      : minimumInstallingStateMs;
+
+    const remainingTime = Math.max(
+      0,
+      minimumInstallingStateMs - elapsed
+    );
+
+    window.clearTimeout(installedHideTimer);
+
+    installedHideTimer = window.setTimeout(
+      function () {
+        installPromptOpen = false;
+        installInProgress = false;
+        installAccepted = false;
+
+        setInstallButtonsBusy(false);
+        setInstallButtonsVisible(false);
+      },
+      remainingTime
+    );
+  }
+
+  function handleInstallCompleted() {
+    appInstallCompleted = true;
+    deferredInstallPrompt = null;
+    closeIosGuide();
+
+    /*
+     * Chrome may fire appinstalled before userChoice resolves.
+     * While the native prompt is still open, wait for its result so
+     * "Installing App…" can be shown after the user confirms.
+     */
+    if (installPromptOpen && !installAccepted) {
+      return;
+    }
+
+    if (installAccepted || installInProgress) {
+      finishInstalledState();
+      return;
+    }
+
+    setInstallButtonsBusy(false);
+    setInstallButtonsVisible(false);
+  }
+
   function openIosGuide() {
     if (!iosGuide) {
       return;
@@ -165,6 +227,8 @@
 
       if (choiceResult.outcome === "dismissed") {
         /* Cancel: keep the normal Install App button visible. */
+        installAccepted = false;
+        installInProgress = false;
         setInstallButtonsBusy(false);
         setInstallButtonsVisible(true);
         return;
@@ -174,10 +238,14 @@
        * Show "Installing App…" only after the user confirms
        * Install in the browser's native popup.
        */
-      if (!appInstallCompleted && !isStandaloneMode()) {
-        installInProgress = true;
-        setInstallButtonsBusy(true);
-        setInstallButtonsVisible(true);
+      beginInstallingState();
+
+      /*
+       * If Chrome already completed the install before userChoice
+       * resolved, still keep the Installing state visible briefly.
+       */
+      if (appInstallCompleted || isStandaloneMode()) {
+        finishInstalledState();
       }
     } catch (error) {
       console.error(
@@ -187,6 +255,7 @@
 
       installPromptOpen = false;
       installInProgress = false;
+      installAccepted = false;
       setInstallButtonsBusy(false);
       setInstallButtonsVisible(true);
     }
@@ -250,16 +319,7 @@
 
   window.addEventListener(
     "appinstalled",
-    function () {
-      appInstallCompleted = true;
-      deferredInstallPrompt = null;
-      installPromptOpen = false;
-      installInProgress = false;
-
-      setInstallButtonsBusy(false);
-      setInstallButtonsVisible(false);
-      closeIosGuide();
-    }
+    handleInstallCompleted
   );
 
   const standaloneMedia = window.matchMedia(
@@ -274,13 +334,7 @@
       "change",
       function (event) {
         if (event.matches) {
-          appInstallCompleted = true;
-          deferredInstallPrompt = null;
-          installPromptOpen = false;
-          installInProgress = false;
-          setInstallButtonsBusy(false);
-          setInstallButtonsVisible(false);
-          closeIosGuide();
+          handleInstallCompleted();
         }
       }
     );
