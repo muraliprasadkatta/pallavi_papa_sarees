@@ -107,18 +107,36 @@
       return;
     }
 
-    deferredInstallPrompt.prompt();
+    const currentInstallPrompt = deferredInstallPrompt;
+
+    /*
+     * A BeforeInstallPromptEvent can be used only once.
+     * Clear only the event being consumed here. If the browser fires a new
+     * beforeinstallprompt event after a dismissal, the global variable will
+     * receive that fresh event and the Install option remains usable.
+     */
+    deferredInstallPrompt = null;
 
     try {
-      await deferredInstallPrompt.userChoice;
+      currentInstallPrompt.prompt();
+
+      const choiceResult =
+        await currentInstallPrompt.userChoice;
+
+      if (choiceResult.outcome === "accepted") {
+        setInstallButtonsVisible(false);
+      } else {
+        /* User pressed Cancel: keep the Install option visible. */
+        setInstallButtonsVisible(true);
+      }
     } catch (error) {
       console.error(
         "Pallavi Papa install prompt failed:",
         error
       );
-    } finally {
-      deferredInstallPrompt = null;
-      setInstallButtonsVisible(false);
+
+      /* A temporary prompt error must not permanently remove the option. */
+      setInstallButtonsVisible(true);
     }
   }
 

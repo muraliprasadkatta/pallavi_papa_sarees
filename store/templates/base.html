@@ -77,9 +77,23 @@
   <!-- Old page loader CSS/head restore -->
   {% include "store/partials/page_loader_head.html" %}
 
-  <!-- Prevent brand splash blink on refresh / same-tab navigation after already seen -->
+  <!--
+    Prevent custom splash blink:
+    - after it was already seen in this browser tab
+    - when the site is opened as an installed PWA/app
+  -->
   <script>
     (function () {
+      var isInstalledApp =
+        (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+        (window.matchMedia && window.matchMedia("(display-mode: fullscreen)").matches) ||
+        window.navigator.standalone === true ||
+        document.referrer.indexOf("android-app://") === 0;
+
+      if (isInstalledApp) {
+        document.documentElement.classList.add("ps-standalone-app");
+      }
+
       try {
         if (sessionStorage.getItem("pallaviPapaSareesSplashSeen") === "1") {
           document.documentElement.classList.add("ps-splash-seen");
@@ -87,14 +101,15 @@
       } catch (error) {
         /*
           If sessionStorage is blocked by browser settings,
-          fallback to normal splash behavior.
+          fallback to normal browser splash behavior.
         */
       }
     })();
   </script>
 
   <style>
-    html.ps-splash-seen .ps-splash {
+    html.ps-splash-seen .ps-splash,
+    html.ps-standalone-app .ps-splash {
       display: none !important;
     }
 
@@ -182,9 +197,9 @@
   <script src="{% static 'store/js/favorite_base.js' %}"></script>
 
   <!-- Brand first-open splash JS -->
-  <script src="{% static 'store/js/brand/splash.js' %}?v=33"></script>
+  <script src="{% static 'store/js/brand/splash.js' %}?v=34"></script>
 
-  <script src="{% static 'store/js/pwa_install.js' %}?v=2"></script>
+  <script src="{% static 'store/js/pwa_install.js' %}?v=3"></script>
 
     <!-- Register Pallavi Papa service worker -->
   <script>

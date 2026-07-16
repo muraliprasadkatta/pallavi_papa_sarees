@@ -3,6 +3,23 @@
 
   if (!splash) return;
 
+  const isInstalledApp =
+    (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+    (window.matchMedia && window.matchMedia("(display-mode: fullscreen)").matches) ||
+    window.navigator.standalone === true ||
+    document.referrer.indexOf("android-app://") === 0;
+
+  /*
+    Android/iOS already shows the native launch screen for an installed PWA.
+    Remove the website splash immediately so the app opens straight to home.
+  */
+  if (isInstalledApp) {
+    document.documentElement.classList.add("ps-standalone-app");
+    document.body.classList.remove("ps-splash-active");
+    splash.remove();
+    return;
+  }
+
   const showOnce = splash.dataset.once === "true";
   const sessionKey = "pallaviPapaSareesSplashSeen";
 
