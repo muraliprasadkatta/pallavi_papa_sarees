@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Progressive Web App -->
+  <!-- Progressive Web App -->
   <link
     rel="manifest"
     href="{% url 'pwa_manifest' %}"
@@ -63,6 +63,21 @@
     <meta property="og:description" content="Explore elegant pattu, silk, cotton and designer saree collections.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://pallavipapacollections.online/">
+
+    <meta
+      property="og:image"
+      content="https://pallavipapacollections.online/static/store/pwa/share-preview.png"
+    >
+
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <meta
+      property="og:image:alt"
+      content="Pallavi Papa Sarees Collections"
+    >
+
+    <meta name="twitter:card" content="summary_large_image">
 
     <link rel="canonical" href="https://pallavipapacollections.online/">
   {% endblock %}
@@ -199,9 +214,13 @@
   <!-- Brand first-open splash JS -->
   <script src="{% static 'store/js/brand/splash.js' %}?v=34"></script>
 
+  <!-- PWA install handling -->
   <script src="{% static 'store/js/pwa_install.js' %}?v=8"></script>
 
-    <!-- Register Pallavi Papa service worker -->
+  <!-- App share handling -->
+  <script src="{% static 'store/js/app_share.js' %}?v=1"></script>
+
+  <!-- Register Pallavi Papa service worker -->
   <script>
     (function () {
       if (!("serviceWorker" in navigator)) {
