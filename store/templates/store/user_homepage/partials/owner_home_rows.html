@@ -14,7 +14,7 @@
       </div>
 
     <div class="popular-items-grid">
-      {% for p in row.homepage_products|slice:":8" %}
+      {% for p in row.homepage_products %}
         {% include "store/collections/partials/product_card.html" with p=p hide_product_overlays=True link_to_category=True %}
       {% endfor %}
     </div>
