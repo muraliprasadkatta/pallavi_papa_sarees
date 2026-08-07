@@ -3,11 +3,14 @@
 
   if (!splash) return;
 
+  const startUrlSource = new URLSearchParams(window.location.search).get("source");
+
   const isInstalledApp =
     (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
     (window.matchMedia && window.matchMedia("(display-mode: fullscreen)").matches) ||
     window.navigator.standalone === true ||
-    document.referrer.indexOf("android-app://") === 0;
+    document.referrer.indexOf("android-app://") === 0 ||
+    startUrlSource === "pwa";
 
   /*
     Android/iOS already shows the native launch screen for an installed PWA.
@@ -22,8 +25,15 @@
 
   const showOnce = splash.dataset.once === "true";
   const sessionKey = "pallaviPapaSareesSplashSeen";
+  let wasAlreadySeen = false;
 
-  if (showOnce && sessionStorage.getItem(sessionKey) === "1") {
+  try {
+    wasAlreadySeen = sessionStorage.getItem(sessionKey) === "1";
+  } catch (error) {
+    wasAlreadySeen = false;
+  }
+
+  if (showOnce && wasAlreadySeen) {
     document.documentElement.classList.add("ps-splash-seen");
     splash.remove();
     return;
@@ -36,15 +46,26 @@
     So refresh/page navigation after splash starts will not show splash again.
   */
   if (showOnce) {
-    sessionStorage.setItem(sessionKey, "1");
+    try {
+      sessionStorage.setItem(sessionKey, "1");
+    } catch (error) {
+      // Continue normally when storage is blocked by browser settings.
+    }
   }
 
-  const minVisibleTime = 2200;
-  const maxVisibleTime = 3200;
+  const prefersReducedMotion =
+    window.matchMedia
+    && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  // Must be slightly more than CSS close animation duration.
-  // CSS close = 1050ms, JS waits = 1100ms.
-  const exitAnimationTime = 1100;
+  /*
+    Keep the website-only first-visit splash short.
+    Installed PWA/APK launches are already returned above and skip this timer.
+  */
+  const minVisibleTime = prefersReducedMotion ? 0 : 650;
+  const maxVisibleTime = prefersReducedMotion ? 0 : 1200;
+
+  // Must stay slightly above the CSS close-animation duration.
+  const exitAnimationTime = prefersReducedMotion ? 0 : 320;
 
   const startTime = performance.now();
 

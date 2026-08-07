@@ -1,5 +1,11 @@
-<!-- E:\pallavi_papa_sarees\store\templates\store\partials\page_loader.html -->
-<div class="pp-page-loader" id="ppPageLoader" aria-live="polite" aria-label="Page loading">
+<!-- store/templates/store/partials/page_loader.html -->
+<div
+  class="pp-page-loader is-hidden"
+  id="ppPageLoader"
+  aria-live="polite"
+  aria-label="Page loading"
+  aria-hidden="true"
+>
   <div class="pp-page-loader__mark" aria-hidden="true">
     <div class="pp-page-loader__crescent"></div>
   </div>
@@ -12,36 +18,75 @@
     if (!loader) return;
 
     const body = document.body;
-    const startedAt = Date.now();
+    const navigationDelay = 40;
+    const loaderSafetyTimeout = 12000;
+    let safetyTimer = null;
 
-    const minVisible = 250;
-    const maxVisible = 2200;
-    const navDelay = 90;
-
-    function showLoader() {
-      loader.classList.remove("is-hidden");
-      body.classList.add("pp-page-busy");
+    function clearSafetyTimer() {
+      if (safetyTimer !== null) {
+        window.clearTimeout(safetyTimer);
+        safetyTimer = null;
+      }
     }
 
-    function hideLoader() {
-      const elapsed = Date.now() - startedAt;
-      const wait = Math.max(0, minVisible - elapsed);
+    function showLoader() {
+      clearSafetyTimer();
 
-      window.setTimeout(function () {
-        loader.classList.add("is-hidden");
-        body.classList.remove("pp-page-busy");
-        body.classList.remove("pp-page-navigating");
-        body.classList.remove("pp-form-submitting");
-      }, wait);
+      loader.classList.remove("is-hidden");
+      loader.setAttribute("aria-hidden", "false");
+      body.classList.add("pp-page-busy");
+
+      safetyTimer = window.setTimeout(function () {
+        resetLoaderState();
+      }, loaderSafetyTimeout);
+    }
+
+    function restoreSubmitButtons() {
+      document
+        .querySelectorAll("[data-pp-loader-disabled='true']")
+        .forEach(function (button) {
+          button.disabled = false;
+          button.removeAttribute("aria-disabled");
+
+          if (button.tagName === "INPUT") {
+            button.value = button.dataset.ppOldValue || "";
+            delete button.dataset.ppOldValue;
+          } else if ("ppOldHtml" in button.dataset) {
+            button.innerHTML = button.dataset.ppOldHtml;
+            delete button.dataset.ppOldHtml;
+          }
+
+          delete button.dataset.ppLoaderDisabled;
+        });
+    }
+
+    function resetLoaderState() {
+      clearSafetyTimer();
+
+      loader.classList.add("is-hidden");
+      loader.setAttribute("aria-hidden", "true");
+      body.classList.remove("pp-page-busy");
+      body.classList.remove("pp-page-navigating");
+      body.classList.remove("pp-form-submitting");
+
+      restoreSubmitButtons();
     }
 
     function isModifiedClick(event) {
-      return event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0;
+      return (
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey ||
+        event.button !== 0
+      );
     }
 
     function shouldIgnoreLink(link, href) {
-      return (
-        link.target === "_blank" ||
+      const target = (link.getAttribute("target") || "").toLowerCase();
+
+      if (
+        (target && target !== "_self") ||
         link.hasAttribute("download") ||
         link.dataset.noLoader === "true" ||
         href === "" ||
@@ -51,63 +96,103 @@
         href.startsWith("mailto:") ||
         href.includes("wa.me") ||
         href.includes("whatsapp.com")
-      );
+      ) {
+        return true;
+      }
+
+      try {
+        const destination = new URL(link.href, window.location.href);
+
+        if (destination.origin !== window.location.origin) {
+          return true;
+        }
+
+        if (
+          destination.pathname === window.location.pathname &&
+          destination.search === window.location.search &&
+          destination.hash
+        ) {
+          return true;
+        }
+      } catch (error) {
+        return true;
+      }
+
+      return false;
     }
 
-    showLoader();
+    /* Never show this loader during the initial app/page startup. */
+    resetLoaderState();
 
-    window.addEventListener("load", hideLoader, { once: true });
-    window.setTimeout(hideLoader, maxVisible);
+    window.addEventListener("pageshow", resetLoaderState);
 
-    window.addEventListener("pageshow", function () {
-      loader.classList.add("is-hidden");
-      body.classList.remove("pp-page-busy");
-      body.classList.remove("pp-page-navigating");
-      body.classList.remove("pp-form-submitting");
-    });
+    document.addEventListener(
+      "click",
+      function (event) {
+        if (!(event.target instanceof Element)) return;
 
-    document.addEventListener("click", function (event) {
-      const link = event.target.closest("a");
-      if (!link || isModifiedClick(event)) return;
+        const link = event.target.closest("a");
+        if (!link || isModifiedClick(event)) return;
 
-      const href = link.getAttribute("href") || "";
+        const href = link.getAttribute("href") || "";
+        if (shouldIgnoreLink(link, href)) return;
 
-      if (shouldIgnoreLink(link, href)) return;
+        if (body.classList.contains("pp-page-navigating")) {
+          event.preventDefault();
+          return;
+        }
 
-      if (body.classList.contains("pp-page-navigating")) {
         event.preventDefault();
-        return;
-      }
+        body.classList.add("pp-page-navigating");
+        showLoader();
 
-      event.preventDefault();
+        window.setTimeout(function () {
+          window.location.assign(link.href);
+        }, navigationDelay);
+      },
+      true
+    );
 
-      body.classList.add("pp-page-navigating");
-      showLoader();
+    document.addEventListener(
+      "submit",
+      function (event) {
+        const form = event.target;
 
-      window.setTimeout(function () {
-        window.location.href = link.href;
-      }, navDelay);
-    }, true);
+        if (
+          !(form instanceof HTMLFormElement) ||
+          form.dataset.allowMultipleSubmit === "true" ||
+          form.dataset.noLoader === "true"
+        ) {
+          return;
+        }
 
-    document.addEventListener("submit", function (event) {
-      const form = event.target;
-      if (!form || form.dataset.allowMultipleSubmit === "true") return;
+        if (body.classList.contains("pp-form-submitting")) {
+          event.preventDefault();
+          return;
+        }
 
-      if (body.classList.contains("pp-form-submitting")) {
-        event.preventDefault();
-        return;
-      }
+        body.classList.add("pp-form-submitting");
 
-      body.classList.add("pp-form-submitting");
+        const submitButton = form.querySelector("button[type='submit'], input[type='submit']");
 
-      const submitButton = form.querySelector("[type='submit']");
-      if (submitButton) {
-        submitButton.disabled = true;
-        submitButton.dataset.oldText = submitButton.textContent || "";
-        submitButton.textContent = "Please wait...";
-      }
+        if (submitButton) {
+          submitButton.dataset.ppLoaderDisabled = "true";
+          submitButton.setAttribute("aria-disabled", "true");
 
-      showLoader();
-    }, true);
+          if (submitButton.tagName === "INPUT") {
+            submitButton.dataset.ppOldValue = submitButton.value;
+            submitButton.value = "Please wait...";
+          } else {
+            submitButton.dataset.ppOldHtml = submitButton.innerHTML;
+            submitButton.textContent = "Please wait...";
+          }
+
+          submitButton.disabled = true;
+        }
+
+        showLoader();
+      },
+      true
+    );
   })();
 </script>

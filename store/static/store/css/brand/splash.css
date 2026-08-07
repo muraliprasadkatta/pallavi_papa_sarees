@@ -11,6 +11,8 @@
   --splash-title-gold-soft: #dfbd68;
 
   --splash-shadow: rgba(118, 74, 12, 0.2);
+  --splash-enter-duration: 420ms;
+  --splash-exit-duration: 300ms;
 }
 
 .ps-splash {
@@ -60,11 +62,11 @@ body.ps-splash-active {
   backface-visibility: hidden;
   will-change: transform, opacity;
 
-  animation: psBrandEnter 1050ms linear both;
+  animation: psBrandEnter var(--splash-enter-duration) cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .ps-splash.is-leaving .ps-splash__brand {
-  animation: psBrandClose 1050ms linear both;
+  animation: psBrandClose var(--splash-exit-duration) ease-out both;
 }
 
 .ps-splash__brand-main {
@@ -156,7 +158,7 @@ body.ps-splash-active {
 }
 
 .ps-splash.is-leaving::after {
-  animation: psSpotlightClose 1050ms linear both;
+  animation: psSpotlightClose var(--splash-exit-duration) ease-out both;
 }
 
 /* Main circular stage */
@@ -179,12 +181,12 @@ body.ps-splash-active {
   backface-visibility: hidden;
   will-change: transform, opacity;
 
-  animation: psStageBalloon 1050ms linear both;
+  animation: psStageBalloon var(--splash-enter-duration) cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Close: exact reverse of open */
 .ps-splash.is-leaving .ps-splash__content {
-  animation: psStageBalloonClose 1050ms linear both;
+  animation: psStageBalloonClose var(--splash-exit-duration) ease-out both;
 }
 
 /* Inner glow */
@@ -209,11 +211,11 @@ body.ps-splash-active {
 
   filter: blur(20px);
   transform: translate(-50%, -50%);
-  animation: psGlowPulse 1050ms linear both;
+  animation: psGlowPulse var(--splash-enter-duration) ease-out both;
 }
 
 .ps-splash.is-leaving .ps-splash__glow {
-  animation: psGlowPulseClose 1050ms linear both;
+  animation: psGlowPulseClose var(--splash-exit-duration) ease-out both;
 }
 
 /* Orbit wrapper - rotates clockwise */
