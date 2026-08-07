@@ -37,6 +37,26 @@
     return url.toString();
   }
 
+  function getShareImageUrl(button, variant) {
+    const media = button.closest(".product-media, .pd-main-media");
+    const image = media?.querySelector("img");
+
+    const rawUrl = cleanText(
+      image?.currentSrc
+      || image?.src
+      || variant?.image
+      || button.dataset.productImage
+    );
+
+    if (!rawUrl) return "";
+
+    try {
+      return new URL(rawUrl, window.location.origin).toString();
+    } catch (error) {
+      return "";
+    }
+  }
+
   function formatPrice(value) {
     const price = Number(value || 0);
 
@@ -65,13 +85,100 @@
     const details = [category, price].filter(Boolean).join(" • ");
 
     return {
-      title: displayName + " | Pallavi Papa Sarees",
-      text:
-        "Check out "
-        + displayName
-        + (details ? " — " + details : "")
-        + " at Pallavi Papa Sarees Collections.",
-      url: getShareUrl(button)
+      payload: {
+        title: displayName + " | Pallavi Papa Sarees",
+        text:
+          "Check out "
+          + displayName
+          + (details ? " — " + details : "")
+          + " at Pallavi Papa Sarees Collections.",
+        url: getShareUrl(button)
+      },
+      imageUrl: getShareImageUrl(button, variant),
+      fileBaseName: displayName
+    };
+  }
+
+  function getImageExtension(mimeType) {
+    const extensions = {
+      "image/avif": "avif",
+      "image/gif": "gif",
+      "image/jpeg": "jpg",
+      "image/png": "png",
+      "image/webp": "webp"
+    };
+
+    return extensions[mimeType] || "jpg";
+  }
+
+  function getSafeFileName(value) {
+    const safeName = cleanText(value)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60);
+
+    return safeName || "pallavi-papa-product";
+  }
+
+  async function createShareImageFile(imageUrl, fileBaseName) {
+    if (!imageUrl || typeof File !== "function") {
+      return null;
+    }
+
+    try {
+      const response = await fetch(imageUrl, {
+        cache: "force-cache",
+        credentials: "same-origin"
+      });
+
+      if (!response.ok) return null;
+
+      const blob = await response.blob();
+      const mimeType = cleanText(blob.type).toLowerCase();
+
+      if (
+        !mimeType.startsWith("image/")
+        || blob.size <= 0
+        || blob.size > 15 * 1024 * 1024
+      ) {
+        return null;
+      }
+
+      const fileName =
+        getSafeFileName(fileBaseName)
+        + "."
+        + getImageExtension(mimeType);
+
+      return new File([blob], fileName, {
+        type: mimeType,
+        lastModified: Date.now()
+      });
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async function getNativeSharePayload(productShare) {
+    const payload = productShare.payload;
+
+    if (typeof navigator.canShare !== "function") {
+      return payload;
+    }
+
+    const imageFile = await createShareImageFile(
+      productShare.imageUrl,
+      productShare.fileBaseName
+    );
+
+    if (!imageFile || !navigator.canShare({ files: [imageFile] })) {
+      return payload;
+    }
+
+    return {
+      title: payload.title,
+      text: payload.text + "\n" + payload.url,
+      files: [imageFile]
     };
   }
 
@@ -144,7 +251,7 @@
 
       if (copied) return true;
     } catch (error) {
-      // The Clipboard API can fail when browser permission is denied.
+      // Clipboard permission failed. Use the fallback below.
     }
 
     return copyUsingFallback(url);
@@ -153,14 +260,17 @@
   async function handleShare(button) {
     if (button.disabled) return;
 
-    const shareData = getShareData(button);
+    const productShare = getShareData(button);
+    const shareData = productShare.payload;
 
     button.disabled = true;
     button.setAttribute("aria-busy", "true");
 
     try {
       if (typeof navigator.share === "function") {
-        await navigator.share(shareData);
+        const nativeSharePayload = await getNativeSharePayload(productShare);
+
+        await navigator.share(nativeSharePayload);
         showToast("Product shared successfully ✓");
         return;
       }
