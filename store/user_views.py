@@ -7,7 +7,14 @@ from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.templatetags.static import static
 from django.utils.cache import patch_vary_headers
-from .models import Category, Product, ProductSize, ProductSizeMeasurement, ProductVariant
+from .models import (
+    Category,
+    OwnerHomePageRow,
+    Product,
+    ProductSize,
+    ProductSizeMeasurement,
+    ProductVariant,
+)
 
 
 def _card_variants_prefetch():
@@ -819,7 +826,7 @@ def product_detail_view(request, product_id):
         "created_at",
     )
 
-    same_category_products = (
+    same_category_products = list(
         Product.objects
         .select_related("category")
         .prefetch_related(
@@ -831,21 +838,61 @@ def product_detail_view(request, product_id):
         )
         .exclude(id=product.id)
         .only(*related_fields)
-        .order_by("-created_at")[:4]
+        .order_by("-created_at")[:8]
     )
 
-    different_category_products = (
+    custom_row_products = (
         Product.objects
         .select_related("category")
         .prefetch_related(
             _card_variants_prefetch()
         )
         .filter(is_available=True)
-        .exclude(id=product.id)
-        .exclude(category=product.category)
+        .exclude(main_image="")
         .only(*related_fields)
-        .order_by("-created_at")[:4]
+        .order_by("-created_at")
     )
+
+    custom_rows = (
+        OwnerHomePageRow.objects
+        .filter(is_active=True)
+        .prefetch_related(
+            Prefetch(
+                "products",
+                queryset=custom_row_products,
+                to_attr="detail_products",
+            )
+        )
+        .order_by("sort_order", "name")
+    )
+
+    seen_product_ids = {product.id}
+    seen_product_ids.update(
+        item.id for item in same_category_products
+    )
+    product_custom_rows = []
+
+    for row in custom_rows:
+        row_products = []
+
+        for item in row.detail_products:
+            if item.id in seen_product_ids:
+                continue
+
+            seen_product_ids.add(item.id)
+            row_products.append(item)
+
+        if not row_products:
+            continue
+
+        product_custom_rows.append(
+            {
+                "name": row.name,
+                "slug": row.slug,
+                "subtitle": row.subtitle,
+                "products": row_products,
+            }
+        )
 
     context = {
         "product": product,
@@ -875,8 +922,8 @@ def product_detail_view(request, product_id):
         "same_category_products": (
             same_category_products
         ),
-        "different_category_products": (
-            different_category_products
+        "product_custom_rows": (
+            product_custom_rows
         ),
     }
 

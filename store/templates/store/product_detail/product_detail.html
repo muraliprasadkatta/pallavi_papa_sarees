@@ -78,7 +78,7 @@
 
 {% block extra_css %}
   <link rel="stylesheet" href="{% static 'store/css/collections/product_card.css' %}?v=20260615-card-typography1">
-  <link rel="stylesheet" href="{% static 'store/css/product_detail/product_detail.css' %}?v=20260622-soldout-detail1">
+  <link rel="stylesheet" href="{% static 'store/css/product_detail/product_detail.css' %}?v=20260807-custom-rows1">
 {% endblock %}
 
 {% block content %}
@@ -240,7 +240,7 @@
   </section>
 
   {% include "store/product_detail/partials/product_same_category.html" %}
-  {% include "store/product_detail/partials/product_more_suggestions.html" %}
+  {% include "store/product_detail/partials/product_custom_rows.html" %}
 {% endblock %}
 
 {% block extra_js %}

@@ -1,0 +1,49 @@
+{% url 'store:collections' as collections_url %}
+
+{% for row in product_custom_rows %}
+  <section
+    class="pd-related pd-related--slider pd-custom-row"
+    aria-label="{{ row.name }}"
+  >
+    <div class="pd-related-head">
+      <div>
+        <span>Curated Collection</span>
+        <h2>{{ row.name }}</h2>
+
+        <div class="pd-related-subrow">
+          <p>
+            {% if row.subtitle %}
+              {{ row.subtitle }}
+            {% else %}
+              Swipe to explore this collection.
+            {% endif %}
+          </p>
+
+          <a
+            class="pd-related-swipe pd-related-swipe--mobile pd-custom-row-view"
+            href="{{ collections_url }}?focus=shop"
+          >
+            View All ›
+          </a>
+        </div>
+      </div>
+
+      <a
+        class="pd-related-swipe pd-related-swipe--desktop pd-custom-row-view"
+        href="{{ collections_url }}?focus=shop"
+      >
+        View All ›
+      </a>
+    </div>
+
+    <div class="pd-related-rail-wrap">
+      <div class="pd-related-grid pd-related-product-grid pd-related-rail">
+        {% for item in row.products %}
+          <div class="pd-related-slide">
+            {% include "store/collections/partials/product_card.html" with p=item hide_product_overlays=True %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endfor %}
