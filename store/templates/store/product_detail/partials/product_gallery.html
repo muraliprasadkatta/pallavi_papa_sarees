@@ -22,6 +22,26 @@
       ♥
     </button>
 
+    <button
+      class="product-share pd-product-share"
+      type="button"
+      aria-label="Share {{ product.name }}"
+      data-product-share
+      data-product-share-current-url
+      data-product-name="{{ product.name }}"
+      data-product-category="{% if product.category %}{{ product.category.name }}{% endif %}"
+      data-product-price="{% if product.offer_price %}{{ product.offer_price|floatformat:0 }}{% else %}{{ product.actual_price|floatformat:0 }}{% endif %}"
+      data-product-url="{{ product_detail_url }}"
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <circle cx="18" cy="5" r="3"></circle>
+        <circle cx="6" cy="12" r="3"></circle>
+        <circle cx="18" cy="19" r="3"></circle>
+        <path d="M8.6 10.5 15.4 6.5"></path>
+        <path d="m8.6 13.5 6.8 4"></path>
+      </svg>
+    </button>
+
     {% if product.has_offer %}
       <span class="pd-badge">
         {% if product.discount_percentage %}
